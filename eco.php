@@ -6,52 +6,49 @@ $eco_indx = str_replace('index.php', '', $eco_page);
 $eco_data = '/home/www/public_html' . $eco_page . '_comments.html';
 $eco_cmax = 512;
 
-// default user name, flag
+// default user, admin prefix, admin suffix
 $eco_user = 'anonymous';
-$eco_flag = '$';
-
-// admin prefix, suffix
 $eco_apfx = 'joe';
 $eco_asfx = 'root';
 
-// init name, status
+// init name and status
 $eco_name = '';
 $eco_stat = '';
 
 // notify, mailto, from
 $eco_note = 'n';
 $eco_mail = 'eco@' . $eco_host;
-$eco_from = 'From: eco <' . $eco_mail . '>';
+$eco_from = 'From: eco <eco@' . $eco_host . '>';
 
-// verification code
-$eco_vmin = 1;
-$eco_vmax = 9;
-$eco_vone = mt_rand($eco_vmin, $eco_vmax);
-$eco_vtwo = mt_rand($eco_vmin, $eco_vmax);
+// captcha
+$cap_min = 1;
+$cap_max = 9;
+$cap_one = mt_rand($cap_min, $cap_max);
+$cap_two = mt_rand($cap_min, $cap_max);
 
 
 // form was posted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    // filter name, text
+    // filter name and text
     $eco_name = htmlspecialchars($_POST['eco_name']);
     $eco_text = htmlspecialchars($_POST['eco_text']);
 
     // fix escaped quotes
     $eco_text = str_replace("\'", "'", $eco_text);
 
-    // link verification code
-    $eco_vsum = $_POST['eco_vsum'];
-    $eco_vone = $_POST['eco_vone'];
-    $eco_vtwo = $_POST['eco_vtwo'];
-    $eco_vval = $eco_vone + $eco_vtwo;
+    // captcha
+    $cap_sum = $_POST['cap_sum'];
+    $cap_one = $_POST['cap_one'];
+    $cap_two = $_POST['cap_two'];
+    $cap_val = $cap_one + $cap_two;
 
-    // check missing name
+    // missing name
     if ($eco_name == '') {
         $eco_name = $eco_user;
     }
 
-    // check restricted name
+    // restricted name
     if (($eco_name == $eco_asfx) || 
         ($eco_name == 'admin') || 
         ($eco_name == 'administrator') || 
@@ -62,19 +59,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $eco_save = 'n';
     }
 
-    // mark admin reply
+    // admin reply
     if ($eco_name == $eco_apfx . $eco_asfx) {
-        $eco_name = $eco_asfx;
-        $eco_flag = '#';
+        $eco_name = $eco_asfx . ' #';
+    // user comment
+    } else {
+        $eco_name = $eco_name . ' $';
     }
 
-    // check missing text
+    // missing text
     if ($eco_text == '') {
         $eco_stat = 'Text field cannot be empty!';
         $eco_save = 'n';
     }
 
-    // check maximum characters
+    // maximum characters
     if (strlen($eco_text) > $eco_cmax) {
         $eco_clen = strlen($eco_text);
         $eco_cfix = ($eco_clen - $eco_cmax);
@@ -84,42 +83,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $eco_text = substr($eco_text, 0, $eco_cmax);
     }
 
-    // check verification code
-    if ($eco_vval != $eco_vsum) {
+    // captcha
+    if ($cap_val != $cap_sum) {
         $eco_stat = 'Invalid verification code!';
         $eco_save = 'n';
     }
 
-    // check valid comment
+    // valid comment
     if ($eco_save != 'n') {
         $eco_post = '<div id="eco_' . gmdate('Y_m_d_H_i_s') . 
                     '_' . str_replace(' ', '_', $eco_name) . 
                     '" class="eco_item"><span>' . 
-                    gmdate('Y-m-d H:i:s') . ' ' . $eco_name . ' ' . 
-                    $eco_flag . '</span> ' . $eco_text . "</div>\n";
+                    gmdate('Y-m-d H:i:s') . ' ' . $eco_name . 
+                    '</span> ' . $eco_text . "</div>\n";
 
         // save comment, existing data file
         if (is_file($eco_data)) {
             $eco_post .= file_get_contents($eco_data);
-
-        // save comment, new data file
-        } else {
-            file_put_contents($eco_data, $eco_post);
         }
 
-        // check if user comment
+        // save comment, new data file
+        file_put_contents($eco_data, $eco_post);
+
+        // user comment
         if ($eco_name != $eco_asfx) {
 
-            // check whether to send notifiy
+            // notifiy
             if ($eco_note == 'y') {
 
-                // build subject, body
+                // subject, body
                 $eco_subj = $eco_host . '_Comment';
-                $eco_body = $eco_name . ' regarding ' . $eco_host . 
+                $eco_text = $eco_name . ' regarding ' . $eco_host . 
                             $eco_indx . "\n\n" . $eco_text;
 
-                // try sending notify -- hide status
-                mail($eco_mail, $eco_subj, $eco_body, $eco_from);
+                // try sending -- hide status
+                mail($eco_mail, $eco_subj, $eco_text, $eco_from);
             }
         }
     }
@@ -127,15 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // check if comments disabled
 if (!isset ($com)) {
-
-    // include data file if it exists
-    if (is_file ($eco_data)) {
-        include ($eco_data);
-    }
 ?>
-        <form action="#Add_Comment" 
-              method="POST" 
-              id="Add_Comment">
+        <form action="#Add_Comment" method="POST" id="Add_Comment">
 <?php
     // print header depending whether data file exists or not
     if (is_file ($eco_data)) {
@@ -145,28 +136,28 @@ if (!isset ($com)) {
                title="Add new comment">Add Comment</a>
         </p>
 <?php
+        // include data file if it exists
+        if (is_file ($eco_data)) {
+            include ($eco_data);
+        }
     } else {
 ?>
         <p id="eco_main">
             No comments yet. Be the first to share your thoughts.
         </p>
-
 <?php
     }
 ?>
-            <div id="eco_stat">
-                <?php echo $eco_stat; ?>
-            </div>
+            <div id="eco_stat"><?php echo $eco_stat; ?></div>
             <p id="eco_form">
                 <label for="eco_name">
                     Name
                 </label>
             </p>
             <div>
-                <input name="eco_name" 
-                       id="eco_name" 
+                <input name="eco_name" id="eco_name" 
                        value="anonymous" 
-                       title="Enter your name or post as anonymous" 
+                       title="Enter your name or post anonymous" 
                        class="eco_input">
             </div>
             <p>
@@ -175,46 +166,37 @@ if (!isset ($com)) {
                 </label>
             </p>
             <div>
-                <textarea name="eco_text" 
-                          id="eco_text" 
-                          rows="2" 
-                          cols="26" 
+                <textarea name="eco_text" id="eco_text" 
+                          rows="2" cols="26" 
                           title="Enter the text of your comment" 
-                          class="eco_input">
+                          class=    >
                 </textarea>
             </div>
             <p>
-                <label for="eco_vsum">
+                <label for="cap_sum">
                     Code
                 </label> 
-                <?php echo $eco_vone . ' + ' . $eco_vtwo . ' = '; ?>
-                <input name="eco_vsum" 
-                       id="eco_vsum" 
-                       size="2" 
-                       maxlength="2" 
+                <?php echo $cap_one . ' + ' . $cap_two . ' = '; ?>
+                <input name="cap_sum" id="cap_sum" 
+                       size="2" maxlength="2" 
                        title="Enter verification code">
-                <input name="eco_vone" 
-                       id="eco_vtwo" 
+                <input name="cap_one" id="cap_code" 
                        type="hidden" 
-                       value="<?php echo $eco_vone; ?>">
-                <input name="eco_vtwo" 
-                       id="eco_vtwo" 
+                       value="<?php echo $cap_one; ?>">
+                <input name="cap_two" id="cap_two" 
                        type="hidden" 
-                       value="<?php echo $eco_vtwo; ?>">
+                       value="<?php echo $cap_two; ?>">
             </p>
             <p>
-                <input type="submit" 
-                       value="Add Comment" 
+                <input type="submit" value="Add Comment" 
                        title="Click to post your comment" 
                        class="eco_input">
             </p>
-            <p>
-                <small>
-                    <a href="http://phclaus.eu.org/?eco" 
-                       title="Get a free copy of Easy Comments">
-                       powered by Easy Comments</a>
-                </small>
-                </p>
+            <p id="eco_by">
+                <a href="http://phclaus.eu.org/?eco" 
+                   title="Get a free copy of Easy Comments">
+                   powered by Easy Comments</a>
+            </p>
         </form>
 <?php
 }
