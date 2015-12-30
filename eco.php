@@ -193,7 +193,7 @@ if (!isset ($com)) {
                        class="eco_input">
             </p>
             <p id="eco_by">
-                <a href="http://phclaus.eu.org/?eco" 
+                <a href="http://phclaus.eu.org/php-scripts/easy-comments" 
                    title="Get a free copy of Easy Comments">
                    powered by Easy Comments</a>
             </p>
