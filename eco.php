@@ -59,44 +59,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $eco_save = 'n';
     }
 
-     // user or admin reply
-    if ($eco_name == $eco_apfx . $eco_asfx) {
-      $eco_name = $eco_asfx . ' &#35;';
-    } else {
-      $eco_name = $eco_name . ' &#36;';
-    }
-
-    // missing text
-    if ($eco_text == '') {
+      // prefix admin or user
+      if ($eco_name == $eco_apfx . $eco_asfx) {
+        $eco_name = $eco_asfx;
+        $eco_pfx  = ' $';
+      } else {
+        $eco_name = $eco_name;
+        $eco_pfx  = ' #';
+      }
+    
+      // missing text
+      if ($eco_text == '') {
         $eco_stat = 'Text field cannot be empty!';
         $eco_save = 'n';
-    }
-
-    // maximum characters
-    if (strlen($eco_text) > $eco_cmax) {
+      }
+    
+      // maximum characters
+      if (strlen($eco_text) > $eco_cmax) {
         $eco_clen = strlen($eco_text);
         $eco_cfix = ($eco_clen - $eco_cmax);
-        $eco_stat = 'Maximum characters allowed: ' . 
-                    $eco_cmax . ' (' . $eco_cfix . 
-                    ' characters have been removed!)';
+        $eco_stat = 'Maximum characters allowed: ' . $eco_cmax . 
+                    ' (' . $eco_cfix . ' characters have been removed!)';
         $eco_text = substr($eco_text, 0, $eco_cmax);
-    }
-
-    // captcha
-    if ($cap_val != $cap_sum) {
+      }
+    
+      // captcha
+      if ($cap_val != $cap_sum) {
         $eco_stat = 'Invalid verification code!';
         $eco_save = 'n';
-    }
+      }
+    
+      // valid comment
+      if ($eco_save != 'n') {
+        $eco_post = '      <div id="eco_' . gmdate('Y_m_d_H_i_s') . '_' . 
+                    $_SERVER['REMOTE_ADDR'] . '_' . $eco_name . 
+                    '" class="eco_item"><span>' . gmdate('Y-m-d H:i:s') . 
+                    ' ' . $eco_name . $eco_pfx . '</span> ' . $eco_text . 
+                    "</div>\n";
 
-    // valid comment
-    if ($eco_save != 'n') {
-        $eco_post = '<div id="eco_' . gmdate('Y_m_d_H_i_s') . 
-                    '_' . str_replace(' ', '_', $eco_name) . 
-                    '" class="eco_item"><span>' . 
-                    gmdate('Y-m-d H:i:s') . ' ' . $eco_name . 
-                    '</span> ' . $eco_text . "</div>\n";
-
-        // save comment, existing data file
+    // save comment, existing data file
         if (is_file($eco_data)) {
             $eco_post .= file_get_contents($eco_data);
         }
@@ -194,7 +195,7 @@ if (!isset ($com)) {
             <p id="eco_by">
                 <a href="http://phclaus.eu.org/php-scripts/easy-comments" 
                    title="Get a free copy of Easy Comments">
-                   powered by Easy Comments</a>
+                   powered by Easy Comments v <?php echo $eco_ver; ?></a>
             </p>
         </form>
 <?php
