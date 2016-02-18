@@ -59,12 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $eco_save = 'n';
     }
 
-    // admin reply
+     // user or admin reply
     if ($eco_name == $eco_apfx . $eco_asfx) {
-        $eco_name = $eco_asfx . ' #';
-    // user comment
+      $eco_name = $eco_asfx . ' &#35;';
     } else {
-        $eco_name = $eco_name . ' $';
+      $eco_name = $eco_name . ' &#36;';
     }
 
     // missing text
