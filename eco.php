@@ -161,7 +161,7 @@ if (!isset ($com)) {
       <p>
         <label for="eco_text">Text (<small>maximum <?php echo $eco_cmax; ?> characters</small>)</label>
       </p>
-      <div class="eco_by">For the sake of sanity: Spare us the links, thank you.</div>
+      <div class="eco_by">For the sake of sanity: Be human!</div>
       <div>
         <textarea name="eco_text" id="eco_text" rows="2" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_cmax('eco_text', 'eco_ccnt', <?php echo $eco_cmax; ?>)" onKeyDown="eco_cmax('eco_text', 'eco_ccnt', <?php echo $eco_cmax; ?>)" onKeyUp="eco_cmax('eco_text', 'eco_ccnt', <?php echo $eco_cmax; ?>)"></textarea>
       </div>
