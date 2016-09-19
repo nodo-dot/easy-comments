@@ -120,6 +120,9 @@ if (isset ($_POST['eco_post'])) {
           $eco_text = $eco_name . ' regarding ' . $eco_host . 
           $eco_indx . "\n\n" . $eco_text;
           mail($eco_mail, $eco_subj, $eco_text, $eco_from);
+
+          //** PRG redirect to prevent re-submission
+          redir($eco_indx . '#Comments');
         }
       }
     }
