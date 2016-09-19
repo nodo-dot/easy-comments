@@ -163,7 +163,7 @@ if (!isset ($com)) {
       </p>
       <div class="eco_by">For the sake of sanity: Spare us the links, thank you.</div>
       <div>
-        <textarea name="eco_text" id="eco_text" rows="2" cols="26" title="Please enter the text of your comment" class="input"></textarea>
+        <textarea name="eco_text" id="eco_text" rows="2" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_cmax('eco_text', 'eco_ccnt', <?php echo $eco_cmax; ?>)" onKeyDown="eco_cmax('eco_text', 'eco_ccnt', <?php echo $eco_cmax; ?>)" onKeyUp="eco_cmax('eco_text', 'eco_ccnt', <?php echo $eco_cmax; ?>)"></textarea>
       </div>
       <p>
         <label for="eco_csum">Code</label> 
@@ -178,6 +178,18 @@ if (!isset ($com)) {
       <p class="eco_by">All posts are monitored and subject for removal!</p>
       <p class="eco_by"><a href="http://phclaus.eu.org/php-scripts/easy-comments/" title="Click here to get a free copy of this script">Powered by Easy Comments v<?php echo $eco_ver; ?></a></p>
     </form>
+    <script type="text/javascript">
+    //** update max character counter
+    function eco_cmax(eco_text, eco_ccnt, eco_cmax) {
+      var eco_ccur = (eco_cmax - document.getElementById("eco_text").value.length);
+
+      if (eco_ccur < 0) {
+        document.getElementById("eco_ccnt").innerHTML = eco_ccur;
+      } else {
+        document.getElementById("eco_ccnt").innerHTML = eco_ccur;
+      }
+    }
+    </script>
 <?php
 }
 ?>
