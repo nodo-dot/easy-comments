@@ -5,11 +5,11 @@ $eco_host = 'example.com';
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace('index.php', '', $eco_page);
 $eco_data = $_SERVER['DOCUMENT_ROOT'] . $eco_page . '_comments.html';
-$eco_cmax = 512;
+$eco_cmax = 1024;
 
 // default user name, admin prefix and suffix
 $eco_user = 'anonymous';
-$eco_apfx = 'phc_';
+$eco_apfx = 'foobar_';
 $eco_asfx = 'root';
 
 // init name and status
