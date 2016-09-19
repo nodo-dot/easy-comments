@@ -24,8 +24,8 @@ $eco_from = 'From: Comment ' . $eco_host . ' <info@' . $eco_host . '>';
 // captcha
 $cap_min  = 1;
 $cap_max  = 9;
-$eco_cone  = mt_rand($cap_min, $cap_max);
-$eco_ctwo  = mt_rand($cap_min, $cap_max);
+$eco_cone = mt_rand($cap_min, $cap_max);
+$eco_ctwo = mt_rand($cap_min, $cap_max);
 
 // grab ip and init save flag
 $eco_myip = $_SERVER['REMOTE_ADDR'];
@@ -164,7 +164,7 @@ if (!isset ($com)) {
       <p>
         <label for="eco_text">Text (<small>maximum <?php echo $eco_cmax; ?> characters</small>)</label>
       </p>
-      <div class="eco_by">For the sake of sanity: Spare us the links, thank you.</div>
+      <div class="eco_by">For the sake of sanity: Be human!</div>
       <div>
         <textarea name="eco_text" id="eco_text" rows="2" cols="26" title="Please enter the text of your comment" class="input"></textarea>
       </div>
@@ -179,7 +179,7 @@ if (!isset ($com)) {
         <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">
       </p>
       <p class="eco_by">All posts are monitored and subject for removal!</p>
-      <p class="eco_by"><a href="<?php echo $home; ?>/php-scripts/easy-comments/" title="Click here to get a free copy of this script">Powered by Easy Comments v<?php echo $eco_ver; ?></a></p>
+      <p class="eco_by"><a href="http://phclaus.eu.org/php-scripts/easy-comments/" title="Click here to get a free copy of this script">Powered by Easy Comments v<?php echo $eco_ver; ?></a></p>
     </form>
 <?php
 }
