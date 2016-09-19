@@ -37,10 +37,8 @@ $eco_ver  = 20160919;
 function redir($url) {
   if (!headers_sent()) {    
     header('Location: ' . $url);
-    exit;
   } else {
     echo '<meta http-equiv="refresh" content="0;url=' . $url . '">';
-    exit;
   }
 }
 
