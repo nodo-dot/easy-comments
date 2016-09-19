@@ -38,7 +38,7 @@ function redir($url) {
   if (!headers_sent()) {    
     header('Location: ' . $url);
   } else {
-    echo '<meta http-equiv="refresh" content="0;url=' . $url . '">';
+    echo '<meta http-equiv="refresh" content="0; url=' . $url . '">';
   }
 }
 
@@ -129,7 +129,8 @@ if (isset ($_POST['eco_post'])) {
 //** check if comments enabled
 if (!isset ($com)) {
 ?>
-    <form action="<?php echo $cwd; ?>#Add_Comment" method="POST">
+    <form action="<?php echo $cwd; ?>#Comments" method="POST">
+      <div id="Comments"></div>
 <?php
   //** print header depending whether data file exists or not
   if (is_file ($eco_data)) {
