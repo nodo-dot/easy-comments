@@ -32,7 +32,7 @@ $eco_myip = $_SERVER['REMOTE_ADDR'];
 $eco_save = '';
 
 // version
-$eco_ver = 20160420;
+$eco_ver = 20160919;
 
 // redirect helper
 function redir($url) {
