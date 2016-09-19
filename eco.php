@@ -18,7 +18,7 @@ $eco_stat = '';
 
 // notify flag, mailto and from
 $eco_note = 'y';
-$eco_mail = 'phhpro@gmail.com';
+$eco_mail = 'yourname@yourdomain.com';
 $eco_from = 'From: Comment ' . $eco_host . ' <info@' . $eco_host . '>';
 
 // captcha
