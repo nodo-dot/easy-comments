@@ -1,20 +1,22 @@
 
 <?php
-//** host, current page, default index, data file, maximum characters
+//** host, current page, default index, data file, maximum characters, IP
 $eco_host = 'example.com';
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace('index.php', '', $eco_page);
 $eco_data = $_SERVER['DOCUMENT_ROOT'] . $eco_page . '_comments.html';
 $eco_cmax = 1024;
+$eco_myip = $_SERVER['REMOTE_ADDR'];
 
 //** default user name, admin prefix and suffix
 $eco_user = 'anonymous';
 $eco_apfx = 'rootprefix_';
 $eco_asfx = 'root';
 
-//** init name and status
+//** init name, status, and save flag
 $eco_name = '';
 $eco_stat = '';
+$eco_save = '';
 
 //** notify flag, mailto and from
 $eco_note = 'n';
@@ -26,12 +28,6 @@ $cap_min  = 1;
 $cap_max  = 9;
 $eco_cone = mt_rand($cap_min, $cap_max);
 $eco_ctwo = mt_rand($cap_min, $cap_max);
-
-//** store IP -- for what it's worth
-$eco_myip = $_SERVER['REMOTE_ADDR'];
-
-//** init save flag
-$eco_save = '';
 
 //** version
 $eco_ver  = 20160920;
