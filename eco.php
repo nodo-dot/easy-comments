@@ -17,7 +17,7 @@ $eco_name = '';
 $eco_stat = '';
 
 //** notify flag, mailto and from
-$eco_note = 'y';
+$eco_note = 'n';
 $eco_mail = 'you@yourmail.com';
 $eco_from = 'From: Comment ' . $eco_host . ' <info@' . $eco_host . '>';
 
@@ -27,11 +27,14 @@ $cap_max  = 9;
 $eco_cone = mt_rand($cap_min, $cap_max);
 $eco_ctwo = mt_rand($cap_min, $cap_max);
 
+//** store IP -- for what it's worth
+$eco_myip = $_SERVER['REMOTE_ADDR'];
+
 //** init save flag
 $eco_save = '';
 
 //** version
-$eco_ver  = 20160919;
+$eco_ver  = 20160920;
 
 //** redirect helper
 function redir($url) {
