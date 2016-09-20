@@ -1,6 +1,5 @@
-
 <?php
-//** host, current page, default index, data file, maximum characters, IP
+//** host, page, index, data, maximum chars, IP
 $eco_host = 'example.com';
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace('index.php', '', $eco_page);
