@@ -5,7 +5,7 @@ $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace('index.php', '', $eco_page);
 $eco_data = $_SERVER['DOCUMENT_ROOT'] . $eco_page . '_comments.html';
 $eco_cmax = 1024;
-$eco_myip = $_SERVER['REMOTE_ADDR'];
+$eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 
 //** default user name, admin prefix and suffix
 $eco_user = 'anonymous';
