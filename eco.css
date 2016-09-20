@@ -1,40 +1,35 @@
 #Add_Comment {
-    clear: both;
-    margin-top: 2.000em;
+  clear: both;
+  margin-top: 2.000em;
 }
 
 #eco_main {
-    font-size: 105%;
-    font-weight: bold;
-    border-top: 0.063em #ccc solid;
-    padding-top :0.500em;
+  font-size: 95%;
+  padding-top: 0.500em;
 }
 
 #eco_form {
-    padding-top :0.500em;
+  padding-top: 0.500em;
 }
 
 .eco_item {
-    font-size: 95%;
-    border-bottom: 0.125em solid #ccc;
-    margin-bottom: 0.500em;
-    padding-bottom: 0.250em;
+  font-size: 85%;
+  border-bottom: 1px solid #ccc;
+  white-space: pre-wrap;
+  margin-bottom: 0.500em;
+  padding-bottom: 0.250em;
 }
 
 .eco_item span {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 #eco_stat {
-    background-color: transparent;
-    color: #f00;
-    font-weight: bold;
+  background-color: transparent;
+  color: #f00;
+  font-weight: bold;
 }
 
-.eco_input {
-    width: 30%;
-}
-
-#eco_by {
-    font-size: 85%;
+.eco_by {
+  font-size: 75%;
 }
