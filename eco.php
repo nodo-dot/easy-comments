@@ -131,7 +131,7 @@ if (isset ($_POST['eco_post'])) {
 //** check if comments enabled
 if (!isset ($com)) {
 ?>
-    <form action="<?php echo $cwd; ?>#Comments" method="POST">
+    <form action="<?php echo $eco_indx; ?>#Comments" method="POST">
       <div id="Comments"></div>
 <?php
   //** print header depending whether data file exists or not
