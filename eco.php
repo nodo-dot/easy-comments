@@ -29,7 +29,7 @@ $eco_cone = mt_rand($cap_min, $cap_max);
 $eco_ctwo = mt_rand($cap_min, $cap_max);
 
 //** version
-$eco_ver  = 20160920;
+$eco_ver  = 20160924;
 
 //** redirect helper
 function redir($url) {
@@ -93,10 +93,12 @@ if (isset ($_POST['eco_post'])) {
     $eco_text = substr($eco_text, 0, $eco_cmax);
   }
 
-  //** check captcha
+  //** check captcha and re-generate
   if ($eco_cval != $eco_csum) {
     $eco_stat = 'Invalid verification code!';
     $eco_save = 'n';
+    $eco_cone = mt_rand($cap_min, $cap_max);
+    $eco_ctwo = mt_rand($cap_min, $cap_max);
   }
 
   //** valid comment
@@ -108,20 +110,19 @@ if (isset ($_POST['eco_post'])) {
       $eco_post .= file_get_contents($eco_data);
     }
 
-      // save comment to new data file
-      file_put_contents($eco_data, $eco_post);
+    // save comment to new data file
+    file_put_contents($eco_data, $eco_post);
 
-      // check if user post and whether to notify. NO VISUAL OUTPUT!
-      if ($eco_name != $eco_asfx) {
-        if ($eco_note == 'y') {
-          $eco_subj = $eco_host . '_Comment';
-          $eco_text = $eco_name . ' regarding ' . $eco_host . 
-          $eco_indx . "\n\n" . $eco_text;
-          mail($eco_mail, $eco_subj, $eco_text, $eco_from);
+    // check if user post and whether to notify. NO VISUAL OUTPUT!
+    if ($eco_name != $eco_asfx) {
 
-          //** PRG redirect to prevent re-submission
-          redir($eco_indx . '#Comments');
-        }
+      if ($eco_note == 'y') {
+        $eco_subj = $eco_host . '_Comment';
+        $eco_text = $eco_name . ' regarding ' . $eco_host . $eco_indx . "\n\n" . $eco_text;
+        mail($eco_mail, $eco_subj, $eco_text, $eco_from);
+
+        //** PRG redirect to prevent re-submission
+        redir($eco_indx . '#Comments');
       }
     }
   }
