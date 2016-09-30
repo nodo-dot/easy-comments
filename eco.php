@@ -29,10 +29,11 @@ $eco_cone = mt_rand($cap_min, $cap_max);
 $eco_ctwo = mt_rand($cap_min, $cap_max);
 
 //** version
-$eco_ver  = 20160924;
+$eco_ver  = 20160930;
 
 //** redirect helper
 function redir($url) {
+
   if (!headers_sent()) {    
     header('Location: ' . $url);
   } else {
@@ -110,18 +111,23 @@ if (isset ($_POST['eco_post'])) {
       $eco_post .= file_get_contents($eco_data);
     }
 
-    // save comment to new data file
+    //** save comment to new data file
     file_put_contents($eco_data, $eco_post);
 
-    // check if user post and whether to notify. NO VISUAL OUTPUT!
+    //** check if user post
     if ($eco_name != $eco_asfx) {
 
+      //** check whether to notify
       if ($eco_note == 'y') {
+
+        //** prepare message
         $eco_subj = $eco_host . '_Comment';
         $eco_text = $eco_name . ' regarding ' . $eco_host . $eco_indx . "\n\n" . $eco_text;
+
+        //** try sending -- NO VISUAL
         mail($eco_mail, $eco_subj, $eco_text, $eco_from);
 
-        //** PRG redirect to prevent re-submission
+        //** try to prevent re-submission
         redir($eco_indx . '#Comments');
       }
     }
@@ -131,8 +137,7 @@ if (isset ($_POST['eco_post'])) {
 //** check if comments enabled
 if (!isset ($com)) {
 ?>
-    <form action="<?php echo $eco_indx; ?>#Comments" method="POST">
-      <div id="Comments"></div>
+    <form action="<?php echo $eco_indx; ?>#Comments" method="POST" id="Comments">
 <?php
   //** print header depending whether data file exists or not
   if (is_file ($eco_data)) {
@@ -175,7 +180,7 @@ if (!isset ($com)) {
         <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">
       </p>
       <p class="eco_by">All posts are monitored and subject for removal!</p>
-      <p class="eco_by"><a href="http://phclaus.eu.org/php-scripts/easy-comments/" title="Click here to get a free copy of this script">Powered by Easy Comments v<?php echo $eco_ver; ?></a></p>
+      <p class="eco_by"><a href="http://phclaus.eu.org/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by Easy Comments v<?php echo $eco_ver; ?></a></p>
     </form>
     <script type="text/javascript">
     //** update max character counter
