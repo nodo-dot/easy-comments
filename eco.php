@@ -180,7 +180,7 @@ if (!isset ($com)) {
         <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">
       </p>
       <p class="eco_by">All posts are monitored and subject for removal!</p>
-      <p class="eco_by"><a href="http://phclaus.eu.org/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by Easy Comments v<?php echo $eco_ver; ?></a></p>
+      <p class="eco_by"><a href="http://phclaus.eu.org/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_ver; ?></a></p>
     </form>
     <script type="text/javascript">
     //** update max character counter
