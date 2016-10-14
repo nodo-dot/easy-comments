@@ -12,4 +12,4 @@ You can post an admin reply by entering the values of `$eco_apfx` and `$eco_asfx
 
 Basic formatting is supplied via CSS. You may find it convenient to add the contents of `eco.css` to your existing default style sheet.
 
-[Script homepage](http://phclaus.eu.org/php-scripts/easy-comments)
+[Script homepage](http://phclaus.com/php-scripts/easy-comments/)
