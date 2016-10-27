@@ -3,13 +3,13 @@
 $eco_host = 'example.com';
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace('index.php', '', $eco_page);
-$eco_data = $_SERVER['DOCUMENT_ROOT'] . $eco_page . '_comments.html';
-$eco_cmax = 1024;
+$eco_data = '/home/www/public_html' . $eco_page . '_comments.html';
+$eco_tmax = 1024;
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 
 //** default user name, admin prefix and suffix
 $eco_user = 'anonymous';
-$eco_apfx = 'rootprefix_';
+$eco_apfx = 'secret_';
 $eco_asfx = 'root';
 
 //** init name, status, and save flag
@@ -19,17 +19,17 @@ $eco_save = '';
 
 //** notify flag, mailto and from
 $eco_note = 'n';
-$eco_mail = 'you@yourmail.com';
+$eco_mail = 'info@example.com';
 $eco_from = 'From: Comment ' . $eco_host . ' <info@' . $eco_host . '>';
 
 //** captcha
-$cap_min  = 1;
-$cap_max  = 9;
-$eco_cone = mt_rand($cap_min, $cap_max);
-$eco_ctwo = mt_rand($cap_min, $cap_max);
+$eco_cmin  = 1;
+$eco_cmax  = 9;
+$eco_cone = mt_rand($eco_cmin, $eco_cmax);
+$eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
 
 //** version
-$eco_ver  = 20160930;
+$eco_ver  = 20161027;
 
 //** redirect helper
 function redir($url) {
@@ -43,9 +43,11 @@ function redir($url) {
 
 //** form submitted
 if (isset ($_POST['eco_post'])) {
-  //** filter name, text, hard links, and fix escaped quotes
+  //** filter name, text, and hard links, fix escaped quotes
   $eco_name = htmlspecialchars($_POST['eco_name']);
   $eco_text = htmlspecialchars($_POST['eco_text']);
+
+  //** strip anchors
   $eco_text = preg_replace('/<a([\s\S])*a>/', '***', $_POST['eco_text']);
   $eco_text = str_replace("\'", "'", $eco_text);
 
@@ -87,19 +89,19 @@ if (isset ($_POST['eco_post'])) {
   }
 
   //** check maximum characters
-  if (strlen($eco_text) > $eco_cmax) {
+  if (strlen($eco_text) > $eco_tmax) {
     $eco_clen = strlen($eco_text);
-    $eco_cfix = ($eco_clen - $eco_cmax);
-    $eco_stat = 'Maximum characters allowed: ' . $eco_cmax . ' (' . $eco_cfix . ' characters have been removed!)';
-    $eco_text = substr($eco_text, 0, $eco_cmax);
+    $eco_cfix = ($eco_clen - $eco_tmax);
+    $eco_stat = 'Maximum characters allowed: ' . $eco_tmax . ' (' . $eco_cfix . ' characters have been removed!)';
+    $eco_text = substr($eco_text, 0, $eco_tmax);
   }
 
   //** check captcha and re-generate
   if ($eco_cval != $eco_csum) {
     $eco_stat = 'Invalid verification code!';
     $eco_save = 'n';
-    $eco_cone = mt_rand($cap_min, $cap_max);
-    $eco_ctwo = mt_rand($cap_min, $cap_max);
+    $eco_cone = mt_rand($eco_cmin, $eco_cmax);
+    $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
   }
 
   //** valid comment
@@ -117,15 +119,19 @@ if (isset ($_POST['eco_post'])) {
     //** check if user post
     if ($eco_name != $eco_asfx) {
 
-      //** check whether to notify
+      //** check whether to send notification -- NO VISUAL
       if ($eco_note == 'y') {
 
         //** prepare message
         $eco_subj = $eco_host . '_Comment';
         $eco_text = $eco_name . ' regarding ' . $eco_host . $eco_indx . "\n\n" . $eco_text;
 
-        //** try sending -- NO VISUAL
-        mail($eco_mail, $eco_subj, $eco_text, $eco_from);
+        // try sending
+        if (mail($eco_mail, $eco_subj, $eco_text, $eco_from)) {
+          $eco_info = 'Thank you, your message has been sent.';
+        } else {
+          $eco_info = 'There was a problem sending your message!';
+        }
 
         //** try to prevent re-submission
         redir($eco_indx . '#Comments');
@@ -135,7 +141,7 @@ if (isset ($_POST['eco_post'])) {
 }
 
 //** check if comments enabled
-if (!isset ($com)) {
+if (!isset ($eco_this)) {
 ?>
     <form action="<?php echo $eco_indx; ?>#Comments" method="POST" id="Comments">
 <?php
@@ -154,20 +160,18 @@ if (!isset ($com)) {
 <?php
   }
 ?>
-      <div id="Add_Comment"></div>
-      <div id="eco_stat"><?php echo $eco_stat; ?></div>
-      <p id="eco_form">
+      <div id="eco_stat"><span id="Add_Comment"><?php echo $eco_stat; ?></span></div>
+      <p>
         <label for="eco_name">Name</label>
       </p>
       <div>
         <input name="eco_name" id="eco_name" value="anonymous" title="Please enter your name or just post anonymous" class="input">
       </div>
       <p>
-        <label for="eco_text">Text (<small>maximum <?php echo $eco_cmax; ?> characters</small>)</label>
+        <label for="eco_text">Text (<small>maximum <span id="eco_ccnt"><?php echo $eco_tmax; ?></span> characters</small>)</label>
       </p>
-      <div class="eco_by">For the sake of sanity: Be human!</div>
       <div>
-        <textarea name="eco_text" id="eco_text" rows="2" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_cmax('eco_text', 'eco_ccnt', <?php echo $eco_cmax; ?>)" onKeyDown="eco_cmax('eco_text', 'eco_ccnt', <?php echo $eco_cmax; ?>)" onKeyUp="eco_cmax('eco_text', 'eco_ccnt', <?php echo $eco_cmax; ?>)"></textarea>
+        <textarea name="eco_text" id="eco_text" rows="2" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_tmax('eco_text', 'eco_ccnt', <?php echo $eco_tmax; ?>)" onKeyDown="eco_tmax('eco_text', 'eco_ccnt', <?php echo $eco_tmax; ?>)" onKeyUp="eco_tmax('eco_text', 'eco_ccnt', <?php echo $eco_tmax; ?>)"></textarea>
       </div>
       <p>
         <label for="eco_csum">Code</label> 
@@ -184,8 +188,8 @@ if (!isset ($com)) {
     </form>
     <script type="text/javascript">
     //** update max character counter
-    function eco_cmax(eco_text, eco_ccnt, eco_cmax) {
-      var eco_ccur = (eco_cmax - document.getElementById("eco_text").value.length);
+    function eco_tmax(eco_text, eco_ccnt, eco_tmax) {
+      var eco_ccur = (eco_tmax - document.getElementById("eco_text").value.length);
 
       if (eco_ccur < 0) {
         document.getElementById("eco_ccnt").innerHTML = eco_ccur;
