@@ -23,8 +23,8 @@ $eco_mail = 'info@example.com';
 $eco_from = 'From: Comment ' . $eco_host . ' <info@' . $eco_host . '>';
 
 //** captcha
-$eco_cmin  = 1;
-$eco_cmax  = 9;
+$eco_cmin = 1;
+$eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
 $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
 
