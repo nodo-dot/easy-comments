@@ -30,7 +30,7 @@ $eco_asfx = "bar";
  * mailto token
  * header token
  */
-$eco_note = "y";
+$eco_note = "n";
 $eco_mail = "$eco_nota@$eco_hdom";
 $eco_head = "From: Easy Comments <$eco_mail>";
 
