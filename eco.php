@@ -129,12 +129,12 @@ if (isset ($_POST["eco_post"])) {
   if ($eco_save != "n") {
     $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . gmdate('Y-m-d H:i:s') . ' ' . $eco_name . ' ' . $eco_ukey . '</span> ' . $eco_text . "</div>\n";
 
-    //** save comment to existing data file
+    //** check existing data file
     if (is_file($eco_data)) {
       $eco_post .= file_get_contents($eco_data);
     }
 
-    //** save comment to new data file
+    //** save comment to data file
     file_put_contents($eco_data, $eco_post);
 
     //** check if user post
