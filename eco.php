@@ -1,6 +1,6 @@
 <?php
 /*
- * host and domain on which the script is running
+ * host on which the script is running
  * current page for which comment is received
  * strip default index from URL
  * comments data file
@@ -8,7 +8,7 @@
  * mail account to receive notifications
  * try to link user's IP
  */
-$eco_hdom = "example.com";
+$eco_host = $_SERVER["HTTP_HOST"];
 $eco_page = $_SERVER["SCRIPT_NAME"];
 $eco_indx = str_replace("index.php", "", $eco_page);
 $eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . "_comments.html";
@@ -16,22 +16,21 @@ $eco_tmax = 1024;
 $eco_nota = "info";
 $eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
 
-/*
- * default user name
+/* default user name
  * admin prefix
  * admin suffix
-*/
+ */
 $eco_user = "anonymous";
-$eco_apfx = "foo";
-$eco_asfx = "bar";
+$eco_apfx = "rootprefix";
+$eco_asfx = "rootsuffix";
 
 /*
  * send notification for new comments
  * mailto token
  * header token
  */
-$eco_note = "n";
-$eco_mail = "$eco_nota@$eco_hdom";
+$eco_note = "y";
+$eco_mail = "$eco_nota@$eco_host";
 $eco_head = "From: Easy Comments <$eco_mail>";
 
 //** init captcha
@@ -40,13 +39,18 @@ $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
 $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
 
-//** init internals -- must be empty!
+/* user name
+ * status text
+ * save flag
+ *
+ * must be declared empty!
+ */
 $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
 
 //** script version
-$eco_ver  = 20161215;
+$eco_ver  = 20161218;
 
 //** redirect helper
 function redir($url) {
@@ -123,7 +127,7 @@ if (isset ($_POST["eco_post"])) {
 
   //** valid comment
   if ($eco_save != "n") {
-    $eco_post = '      <div id="eco_' . gmdate('Ymd_His') . '_' . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . gmdate('Y-m-d H:i:s') . ' ' . $eco_name . ' ' . $eco_ukey . '</span> ' . $eco_text . "</div>\n";
+    $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . gmdate('Y-m-d H:i:s') . ' ' . $eco_name . ' ' . $eco_ukey . '</span> ' . $eco_text . "</div>\n";
 
     //** save comment to existing data file
     if (is_file($eco_data)) {
@@ -141,7 +145,7 @@ if (isset ($_POST["eco_post"])) {
 
         //** prepare message
         $eco_subj = "New_Comment";
-        $eco_text = $eco_name . " regarding " . $eco_hdom . $eco_indx . "\n\n" . $eco_text;
+        $eco_text = $eco_name . " regarding " . $eco_host . $eco_indx . "\n\n" . $eco_text;
 
         // try sending -- NO VISUAL
         mail($eco_mail, $eco_subj, $eco_text, $eco_head);
@@ -184,7 +188,7 @@ if (!isset ($eco_this)) {
         <label for="eco_text">Text (<small>maximum <span id="eco_ccnt"><?php echo $eco_tmax; ?></span> characters</small>)</label>
       </p>
       <div>
-        <textarea name="eco_text" id="eco_text" rows="4" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_tmax('eco_text', 'eco_ccnt', <?php echo $eco_tmax; ?>)" onKeyDown="eco_tmax('eco_text', 'eco_ccnt', <?php echo $eco_tmax; ?>)" onKeyUp="eco_tmax('eco_text', 'eco_ccnt', <?php echo $eco_tmax; ?>)"></textarea>
+        <textarea name="eco_text" id="eco_text" rows="4" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_tmax()" onKeyDown="eco_tmax()" onKeyUp="eco_tmax()"></textarea>
       </div>
       <p>
         <label for="eco_csum">Code</label> 
@@ -200,15 +204,9 @@ if (!isset ($eco_this)) {
       <p class="eco_by"><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_ver; ?></a></p>
     </form>
     <script type="text/javascript">
-    //** update max character counter
-    function eco_tmax(eco_text, eco_ccnt, eco_tmax) {
-      var eco_ccur = (eco_tmax - document.getElementById("eco_text").value.length);
-
-      if (eco_ccur < 0) {
-        document.getElementById("eco_ccnt").innerHTML = eco_ccur;
-      } else {
-        document.getElementById("eco_ccnt").innerHTML = eco_ccur;
-      }
+    //** update character counter
+    function eco_tmax() {
+      document.getElementById("eco_ccnt").innerHTML = (<?php echo $eco_tmax; ?> - document.getElementById("eco_text").value.length);
     }
     </script>
 <?php
