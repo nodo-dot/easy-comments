@@ -1,4 +1,37 @@
 <?php
+/* default directory index
+ * comments data file
+ * maximum characters allowed for comments text
+ * mail account to receive notifications
+ * default user name
+ * admin prefix
+ * admin suffix
+ * restricted user names
+ */
+$eco_defx = "index.php";
+$eco_comd = "_comments.html";
+$eco_tmax = 1024;
+$eco_nota = "info";
+$eco_user = "anonymous";
+$eco_apfx = "rootsuffix";
+$eco_asfx = "rootprefix";
+$eco_rest = array ("admin",
+                   "administrator",
+                   "moderator",
+                   "root",
+                   "webmaster");
+
+
+
+/* #####################################################################
+ *
+ * NO NEED TO EDIT BELOW --- UNLESS YOU ARE CURIOUS ENOUGH TO MESS IT UP
+ *
+ * #####################################################################
+ */
+
+
+
 /*
  * host on which the script is running
  * current page for which comment is received
@@ -7,50 +40,31 @@
  * maximum characters allowed for comments text
  * mail account to receive notifications
  * try to link user's IP
- */
-$eco_host = $_SERVER["HTTP_HOST"];
-$eco_page = $_SERVER["SCRIPT_NAME"];
-$eco_indx = str_replace("index.php", "", $eco_page);
-$eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . "_comments.html";
-$eco_tmax = 1024;
-$eco_nota = "info";
-$eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
-
-/* default user name
- * admin prefix
- * admin suffix
- */
-$eco_user = "anonymous";
-$eco_apfx = "rootprefix";
-$eco_asfx = "rootsuffix";
-
-/*
  * send notification for new comments
  * mailto token
  * header token
+ * captcha
+ * user name
+ * status text
+ * save flag
+ * script version
  */
+$eco_host = $_SERVER["HTTP_HOST"];
+$eco_page = $_SERVER["SCRIPT_NAME"];
+$eco_indx = str_replace($eco_defx, "", $eco_page);
+$eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . $eco_comd;
+$eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
 $eco_note = "y";
 $eco_mail = "$eco_nota@$eco_host";
 $eco_head = "From: Easy Comments <$eco_mail>";
-
-//** init captcha
 $eco_cmin = 1;
 $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
 $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
-
-/* user name
- * status text
- * save flag
- *
- * must be declared empty!
- */
 $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
-
-//** script version
-$eco_ver  = 20161218;
+$eco_ver  = 20161219;
 
 //** redirect helper
 function redir($url) {
@@ -68,7 +82,7 @@ if (isset ($_POST["eco_post"])) {
   $eco_name = htmlspecialchars($_POST["eco_name"]);
   $eco_text = htmlspecialchars($_POST["eco_text"]);
 
-  //** bust anchors
+  //** defuse anchors
   $eco_text = preg_replace("/<a([\s\S])*a>/", "***", $_POST["eco_text"]);
   $eco_text = str_replace("\'", "'", $eco_text);
 
@@ -84,11 +98,7 @@ if (isset ($_POST["eco_post"])) {
   }
 
   //** check restricted name
-  if (($eco_name == $eco_asfx) || 
-      ($eco_name == "admin") || 
-      ($eco_name == "administrator") || 
-      ($eco_name == "root") || 
-      ($eco_name == "webmaster")) {
+  if (in_array($eco_name, $eco_rest)) {
     $eco_name = $eco_user;
     $eco_stat = "Sorry, that name is restricted!";
     $eco_save = "n";
