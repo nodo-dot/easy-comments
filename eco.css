@@ -8,6 +8,15 @@
   padding-top: 0.500em;
 }
 
+#eco_form {
+  padding-top: 0.500em;
+}
+
+#eco_text {
+  font-size: 85%;
+  word-wrap: break-word;
+}
+
 .eco_item {
   font-size: 85%;
   border-bottom: 1px solid #ccc;
