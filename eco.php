@@ -9,7 +9,8 @@
  */
 
 
-/* default directory index
+/*
+ * default directory index
  * comments data file
  * maximum characters allowed for comments text
  * send notification for new comments
