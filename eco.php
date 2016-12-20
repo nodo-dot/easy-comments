@@ -19,7 +19,7 @@
  * restricted user names
  */
 $eco_dirx = "index.php";
-$eco_comd = "_comments.html";
+$eco_cdat = "_comments.html";
 $eco_tmax = 1024;
 $eco_nota = "info";
 $eco_anon = "anonymous";
@@ -62,7 +62,7 @@ $eco_rest = array ("admin",
 $eco_host = $_SERVER["HTTP_HOST"];
 $eco_page = $_SERVER["SCRIPT_NAME"];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
-$eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . $eco_comd;
+$eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . $eco_cdat;
 $eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
 $eco_note = "y";
 $eco_mail = "$eco_nota@$eco_host";
@@ -98,7 +98,7 @@ if (isset ($_POST["eco_post"])) {
   $eco_name = htmlspecialchars($_POST["eco_name"]);
   $eco_text = htmlspecialchars($_POST["eco_text"]);
 
-  //** defuse anchors
+  //** strip anchors
   $eco_text = preg_replace("/<a([\s\S])*a>/", "***", $_POST["eco_text"]);
   $eco_text = str_replace("\'", "'", $eco_text);
 
