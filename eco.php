@@ -12,6 +12,7 @@
 /* default directory index
  * comments data file
  * maximum characters allowed for comments text
+ * send notification for new comments
  * mail account to receive notifications
  * default anonymous user name
  * admin prefix
@@ -21,6 +22,7 @@
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_tmax = 1024;
+$eco_note = "n";
 $eco_nota = "info";
 $eco_anon = "anonymous";
 $eco_apfx = "rootprefix";
@@ -51,7 +53,6 @@ $eco_rest = array ("admin",
  * maximum characters allowed for comments text
  * mail account to receive notifications
  * try to link user's IP
- * send notification for new comments
  * mailto token
  * header token
  * captcha
@@ -65,7 +66,6 @@ $eco_page = $_SERVER["SCRIPT_NAME"];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . $eco_cdat;
 $eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
-$eco_note = "y";
 $eco_mail = "$eco_nota@$eco_host";
 $eco_head = "From: Easy Comments <$eco_mail>";
 $eco_cmin = 1;
