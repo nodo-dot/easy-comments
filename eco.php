@@ -3,7 +3,7 @@
  * comments data file
  * maximum characters allowed for comments text
  * mail account to receive notifications
- * default user name
+ * default anonymous user name
  * admin prefix
  * admin suffix
  * restricted user names
@@ -12,9 +12,9 @@ $eco_defx = "index.php";
 $eco_comd = "_comments.html";
 $eco_tmax = 1024;
 $eco_nota = "info";
-$eco_user = "anonymous";
-$eco_apfx = "rootsuffix";
-$eco_asfx = "rootprefix";
+$eco_anon = "anonymous";
+$eco_apfx = "rootprefix";
+$eco_asfx = "rootsuffix";
 $eco_rest = array ("admin",
                    "administrator",
                    "moderator",
@@ -61,10 +61,11 @@ $eco_cmin = 1;
 $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
 $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
+$eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
-$eco_ver  = 20161219;
+$eco_ver  = 20161220;
 
 //** redirect helper
 function redir($url) {
@@ -74,6 +75,11 @@ function redir($url) {
   } else {
     echo "<meta http-equiv=\"refresh\" content=\"0; url=$url\">";
   }
+}
+
+//** link anon user if empty name
+if ($eco_name == "") {
+  $eco_name = $eco_anon;
 }
 
 //** form submitted
@@ -94,12 +100,12 @@ if (isset ($_POST["eco_post"])) {
 
   //** substitute missing name
   if ($eco_name == "") {
-    $eco_name = $eco_user;
+    $eco_name = $eco_anon;
   }
 
   //** check restricted name
   if (in_array($eco_name, $eco_rest)) {
-    $eco_name = $eco_user;
+    $eco_name = $eco_anon;
     $eco_stat = "Sorry, that name is restricted!";
     $eco_save = "n";
   }
@@ -123,7 +129,7 @@ if (isset ($_POST["eco_post"])) {
   if (strlen($eco_text) > $eco_tmax) {
     $eco_clen = strlen($eco_text);
     $eco_cfix = ($eco_clen - $eco_tmax);
-    $eco_stat = "Maximum characters allowed: $eco_tmax ($eco_cfix characters have been removed!)";
+    $eco_stat = "$eco_cfix characters have been trimmed!";
     $eco_text = substr($eco_text, 0, $eco_tmax);
   }
 
@@ -164,6 +170,9 @@ if (isset ($_POST["eco_post"])) {
         redir($eco_indx . "#Comments");
       }
     }
+  } else {
+    $eco_name = $eco_name;
+    $eco_text = $eco_text;
   }
 }
 
@@ -192,13 +201,13 @@ if (!isset ($eco_this)) {
         <label for="eco_name">Name</label>
       </p>
       <div>
-        <input name="eco_name" id="eco_name" value="anonymous" title="Please enter your name or just post anonymous" class="input">
+        <input name="eco_name" id="eco_name" value="<?php echo $eco_name; ?>" title="Please enter your name or just post anonymous" class="input">
       </div>
       <p>
-        <label for="eco_text">Text (<small>maximum <span id="eco_ccnt"><?php echo $eco_tmax; ?></span> characters</small>)</label>
+        <label for="eco_text">Text (<small id="eco_ccnt"><?php echo $eco_tmax; ?></small>)</label>
       </p>
       <div>
-        <textarea name="eco_text" id="eco_text" rows="4" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_tmax()" onKeyDown="eco_tmax()" onKeyUp="eco_tmax()"></textarea>
+        <textarea name="eco_text" id="eco_text" rows="4" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_tmax()" onKeyDown="eco_tmax()" onKeyUp="eco_tmax()" value="<?php echo $eco_text; ?>"></textarea>
       </div>
       <p>
         <label for="eco_csum">Code</label> 
@@ -216,7 +225,18 @@ if (!isset ($eco_this)) {
     <script type="text/javascript">
     //** update character counter
     function eco_tmax() {
-      document.getElementById("eco_ccnt").innerHTML = (<?php echo $eco_tmax; ?> - document.getElementById("eco_text").value.length);
+      var eco_cmax = <?php echo $eco_tmax; ?>;
+      var eco_ccnt = document.getElementById("eco_ccnt").innerHTML = (eco_cmax - document.getElementById("eco_text").value.length);
+
+      if (eco_ccnt == 0) {
+        document.getElementById("eco_ccnt").innerHTML = "You have reached the maximum characters limit!";
+      } else if (eco_ccnt < 0) {
+        var eco_repi = document.getElementById("eco_ccnt").innerHTML;
+        var eco_repo = eco_repi.replace("-", "");
+        document.getElementById("eco_ccnt").innerHTML = "You are " + eco_repo + " characters over the limit!";
+      } else {
+        document.getElementById("eco_ccnt").innerHTML = eco_ccnt;
+      }
     }
     </script>
 <?php
