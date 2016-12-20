@@ -18,7 +18,7 @@
  * admin suffix
  * restricted user names
  */
-$eco_defx = "index.php";
+$eco_dirx = "index.php";
 $eco_comd = "_comments.html";
 $eco_tmax = 1024;
 $eco_nota = "info";
@@ -61,7 +61,7 @@ $eco_rest = array ("admin",
  */
 $eco_host = $_SERVER["HTTP_HOST"];
 $eco_page = $_SERVER["SCRIPT_NAME"];
-$eco_indx = str_replace($eco_defx, "", $eco_page);
+$eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . $eco_comd;
 $eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
 $eco_note = "y";
