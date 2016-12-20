@@ -1,4 +1,14 @@
 <?php
+/*
+ * PHP Easy Comments is a free PHP comments script with minimal bloat.
+ *
+ * Note that input fields carry a class="input" which is NOT included 
+ * in the eco.css style sheet. It is assumed that you already have such 
+ * a class in your default style sheet. Just replace any occurances of 
+ * class="input" with the proper name of your own class.
+ */
+
+
 /* default directory index
  * comments data file
  * maximum characters allowed for comments text
