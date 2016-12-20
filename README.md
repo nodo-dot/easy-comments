@@ -1,15 +1,13 @@
 # Easy Comments
 
-Free PHP script to add inline comments to web pages.
+**Easy Comments** is a **free PHP script** to add inline comments to web pages.
 
-Comments are stored in flat ASCII data files. Hence, no database is required. The script can send a brief notification whenever a user adds a new comment; if the server supports sending mail. However, this feature is disabled by default.
+Comments are stored in flat ASCII data files in the same folder with the file to which the comments apply. Hence, there is absolutely no need for any cryptic database voodoo. The script can send a brief notification whenever a new comment is posted and  the server has access to PHP's internal `mail()` function. This feature is disabled by default. You may have to change the format of `$eco_from` if you fail to receive the mail.
 
-Change `$eco_note = 'n'` to `$eco_note = 'y'` to enable and then configure `$eco_mail` and `$eco_from` to match your settings. In case you never receive the mail you may have to adjust the format of `$eco_from`.
+A typical reference to the script would look something like `include ('/path/to/eco.php);`and goes where you want the comments to appear. If you enabled comments for all pages but then want to exclude some files, you can do so by adding `$eco_this = 'n'` above the reference.
 
-To enable comments you need to link the script first, e.g. `include('/path/to/eco.php);` where you want the comments to appear. Adding `$eco_this = 'n'` above the line referencing `eco.php` disables comments for the given page.
+You can post an admin reply by entering the values of `$eco_apfx` and `$eco_asfx` into the name field. For example, if you set `eco_apfx = joe` and `eco_asfx = root` you would enter `joeroot` without space. Your reply will then appear as `root # ...` rather than `joe $ ...`
 
-You can post an admin reply by entering the values of `$eco_apfx` and `$eco_asfx` into the name field. For example, if you set `eco_apfx = joe` and `eco_asfx = root` you would enter `joeroot` (without space) and your reply appear as `root # ...` rather than `joe $ ...`
-
-Basic formatting is supplied via CSS. You may find it convenient to add the contents of `eco.css` to your existing default style sheet.
+Basic formatting is supplied via CSS. It may be more convenient to add the contents of `eco.css` to an existing style sheet.
 
 [Script homepage](http://phclaus.com/php-scripts/easy-comments/)
