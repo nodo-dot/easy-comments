@@ -10,33 +10,35 @@
 
 
 /*
- * default directory index
+ * directory index
  * comments data file
  * maximum characters allowed for comments text
+ * accept latin characters only
  * send notification for new comments
  * mail account to receive notifications
  * default anonymous user name
  * admin prefix
  * admin suffix
- * restricted user names
+ * restricted names
  */
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_tmax = 1024;
+$eco_lato = "n";
 $eco_note = "n";
 $eco_nota = "info";
 $eco_anon = "anonymous";
-$eco_apfx = "rootprefix";
-$eco_asfx = "rootsuffix";
+$eco_apfx = "supersecret";
+$eco_asfx = "root";
 $eco_rest = array ("admin",
                    "administrator",
                    "moderator",
                    "root",
-                   "webmaster");
+                   "webmaster",);
 
 
 
-/* 
+/*
  * #####################################################################
  *
  * NO NEED TO EDIT BELOW --- UNLESS YOU ARE CURIOUS ENOUGH TO MESS IT UP
@@ -49,7 +51,7 @@ $eco_rest = array ("admin",
 /*
  * host on which the script is running
  * current page for which comment is received
- * strip default index from URL
+ * strip default index
  * comments data file
  * maximum characters allowed for comments text
  * mail account to receive notifications
@@ -63,7 +65,7 @@ $eco_rest = array ("admin",
  * script version
  */
 $eco_host = $_SERVER["HTTP_HOST"];
-$eco_page = $_SERVER["SCRIPT_NAME"];
+$eco_page = $_SERVER["PHP_SELF"];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . $eco_cdat;
 $eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
@@ -77,16 +79,25 @@ $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
-$eco_ver  = 20161220;
+$eco_ver  = 20170102;
 
 //** redirect helper
-function redir($url) {
+function eco_post($url) {
 
   if (!headers_sent()) {    
     header("Location: $url");
+    exit;
   } else {
     echo "<meta http-equiv=\"refresh\" content=\"0; url=$url\">";
   }
+}
+
+//** init protocol
+$van_prot = "http";
+
+//** check https
+if (isset ($_SERVER["HTTPS"]) && ("on" === $_SERVER["HTTPS"])) {
+  $van_prot .= "s";
 }
 
 //** link anon user if empty name
@@ -137,6 +148,15 @@ if (isset ($_POST["eco_post"])) {
     $eco_save = "n";
   }
 
+  //** check non-latin characters
+  if ($eco_lato == "y") {
+
+    if (preg_match("/[^\\p{Common}\\p{Latin}]/u", $eco_text)) {
+      $eco_stat = "Only latin characters allowed!";
+      $eco_save = "n";
+    }
+  }
+
   //** check and trim maximum characters
   if (strlen($eco_text) > $eco_tmax) {
     $eco_clen = strlen($eco_text);
@@ -154,8 +174,8 @@ if (isset ($_POST["eco_post"])) {
   }
 
   //** valid comment
-  if ($eco_save != "n") {
-    $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . gmdate('Y-m-d H:i:s') . ' ' . $eco_name . ' ' . $eco_ukey . '</span> ' . $eco_text . "</div>\n";
+  if ($eco_save != "n") {    
+    $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . gmdate('Y-m-d H:i:s') . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
 
     //** check existing data file
     if (is_file($eco_data)) {
@@ -168,6 +188,9 @@ if (isset ($_POST["eco_post"])) {
     //** check if user post
     if ($eco_name != $eco_asfx) {
 
+      //** try to catch re-submission
+      eco_post($van_prot . "://" . $eco_host . $eco_indx . "#Comments");
+
       //** check whether to send notification
       if ($eco_note == "y") {
 
@@ -177,12 +200,10 @@ if (isset ($_POST["eco_post"])) {
 
         // try sending -- NO VISUAL
         mail($eco_mail, $eco_subj, $eco_text, $eco_head);
-
-        //** try to catch re-submission
-        redir($eco_indx . "#Comments");
       }
     }
   } else {
+    //** link defaults
     $eco_name = $eco_name;
     $eco_text = $eco_text;
   }
@@ -191,7 +212,7 @@ if (isset ($_POST["eco_post"])) {
 //** check if comments enabled
 if (!isset ($eco_this)) {
 ?>
-    <form action="<?php echo $eco_indx; ?>#Comments" method="POST" id="Comments">
+    <form action="<?php echo $van_prot . "://" . $eco_host . $eco_indx; ?>#Comments" method="POST" id="Comments">
 <?php
   //** print header depending whether data file exists or not
   if (is_file ($eco_data)) {
@@ -223,7 +244,7 @@ if (!isset ($eco_this)) {
       </div>
       <p>
         <label for="eco_csum">Code</label> 
-        <?php echo $eco_cone . ' + ' . $eco_ctwo . ' = '; ?>
+        <?php echo $eco_cone . " + " . $eco_ctwo . " = "; ?>
         <input name="eco_csum" id="eco_csum" size="4" maxlength="2" title="Please enter the verification code">
         <input name="eco_cone" type="hidden" value="<?php echo $eco_cone; ?>">
         <input name="eco_ctwo" type="hidden" value="<?php echo $eco_ctwo; ?>">
