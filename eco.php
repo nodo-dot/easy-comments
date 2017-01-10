@@ -2,10 +2,19 @@
 /*
  * PHP Easy Comments is a free PHP comments script with minimal bloat.
  *
- * Note that input fields carry a class="input" which is NOT included 
- * in the eco.css style sheet. It is assumed that you already have such 
- * a class in your default style sheet. Just replace any occurances of 
- * class="input" with the proper name of your own class.
+ * Please note that input fields carry class="input" which is NOT in
+ * eco.css, assuming you already have a similar class in your default
+ * style sheet. Just replace any occurances of class="input" with the
+ * proper name of your own class.
+ * 
+ * phclaus.com/php-scripts/easy-comments
+ */
+
+
+/*
+ ***********************************************************************
+ * USER CONFIG
+ ***********************************************************************
  */
 
 
@@ -13,23 +22,29 @@
  * directory index
  * comments data file
  * maximum characters allowed for comments text
+ *
  * accept latin characters only
  * send notification for new comments
+ *
  * mail account to receive notifications
  * default anonymous user name
  * admin prefix
  * admin suffix
+ *
  * restricted names
  */
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_tmax = 1024;
+
 $eco_lato = "n";
 $eco_note = "n";
+
 $eco_nota = "info";
 $eco_anon = "anonymous";
 $eco_apfx = "supersecret";
 $eco_asfx = "root";
+
 $eco_rest = array ("admin",
                    "administrator",
                    "moderator",
@@ -37,15 +52,11 @@ $eco_rest = array ("admin",
                    "webmaster",);
 
 
-
 /*
- * #####################################################################
- *
- * NO NEED TO EDIT BELOW --- UNLESS YOU ARE CURIOUS ENOUGH TO MESS IT UP
- *
- * #####################################################################
+ ***********************************************************************
+ * NO NEED TO EDIT BELOW
+ ***********************************************************************
  */
-
 
 
 /*
@@ -79,7 +90,7 @@ $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
-$eco_ver  = 20170102;
+$eco_ver  = 20170110;
 
 //** redirect helper
 function eco_post($url) {
@@ -252,7 +263,7 @@ if (!isset ($eco_this)) {
       <p>
         <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">
       </p>
-      <p class="eco_by">All posts are monitored and subject for removal!</p>
+      <p class="eco_by">All posts are monitored and subject to removal!</p>
       <p class="eco_by"><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_ver; ?></a></p>
     </form>
     <script type="text/javascript">
@@ -264,9 +275,8 @@ if (!isset ($eco_this)) {
       if (eco_ccnt == 0) {
         document.getElementById("eco_ccnt").innerHTML = "You have reached the maximum characters limit!";
       } else if (eco_ccnt < 0) {
-        var eco_repi = document.getElementById("eco_ccnt").innerHTML;
-        var eco_repo = eco_repi.replace("-", "");
-        document.getElementById("eco_ccnt").innerHTML = "You are " + eco_repo + " characters over the limit!";
+        var eco_repi = document.getElementById("eco_ccnt").innerHTML.replace("-", "");
+        document.getElementById("eco_ccnt").innerHTML = "You are " + eco_repi + " characters over the limit!";
       } else {
         document.getElementById("eco_ccnt").innerHTML = eco_ccnt;
       }
