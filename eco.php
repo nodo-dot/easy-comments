@@ -90,7 +90,7 @@ $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
-$eco_ver  = 20170110;
+$eco_ver  = 20170208;
 
 //** redirect helper
 function eco_post($url) {
@@ -122,9 +122,8 @@ if (isset ($_POST["eco_post"])) {
   $eco_name = htmlspecialchars($_POST["eco_name"]);
   $eco_text = htmlspecialchars($_POST["eco_text"]);
 
-  //** strip anchors
-  $eco_text = preg_replace("/<a([\s\S])*a>/", "***", $_POST["eco_text"]);
-  $eco_text = str_replace("\'", "'", $eco_text);
+  //** defuse links
+  $eco_text = preg_replace("@(http?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?).*$)@", "", $eco_text);
 
   //** link captcha
   $eco_csum = $_POST["eco_csum"];
