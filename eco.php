@@ -90,7 +90,7 @@ $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
-$eco_ver  = 20170208;
+$eco_ver  = 20170213;
 
 //** redirect helper
 function eco_post($url) {
@@ -122,8 +122,9 @@ if (isset ($_POST["eco_post"])) {
   $eco_name = htmlspecialchars($_POST["eco_name"]);
   $eco_text = htmlspecialchars($_POST["eco_text"]);
 
-  //** defuse links
-  $eco_text = preg_replace("@(http?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?).*$)@", "", $eco_text);
+  //** defuse http/s links
+  $eco_regx = "/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/";
+  $eco_text = preg_replace($eco_regx, "<del class=\"eco_del\">$1</del>", $eco_text);
 
   //** link captcha
   $eco_csum = $_POST["eco_csum"];
