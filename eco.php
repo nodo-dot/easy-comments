@@ -21,13 +21,14 @@
 /*
  * directory index
  * comments data file
+ *
  * maximum characters allowed for comments text
- *
  * accept latin characters only
- * send notification for new comments
- *
- * mail account to receive notifications
  * default anonymous user name
+ *
+ * send notification for new comments
+ * mail account to receive notifications
+ *
  * admin prefix
  * admin suffix
  *
@@ -35,21 +36,24 @@
  */
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
+
 $eco_tmax = 1024;
-
-$eco_lato = "n";
-$eco_note = "n";
-
-$eco_nota = "info";
+$eco_lato = "y";
 $eco_anon = "anonymous";
-$eco_apfx = "supersecret";
+
+$eco_note = "y";
+$eco_nota = "info";
+
+$eco_apfx = "phc64";
 $eco_asfx = "root";
 
-$eco_rest = array ("admin",
-                   "administrator",
-                   "moderator",
-                   "root",
-                   "webmaster",);
+$eco_rest = array (
+                    "admin",
+                    "administrator",
+                    "moderator",
+                    "root",
+                    "webmaster",
+                  );
 
 
 /*
@@ -90,7 +94,7 @@ $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
-$eco_ver  = 20170213;
+$eco_ver  = 20170214;
 
 //** redirect helper
 function eco_post($url) {
