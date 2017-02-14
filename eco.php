@@ -21,32 +21,34 @@
 /*
  * directory index
  * comments data file
- *
- * maximum characters allowed for comments text
- * accept latin characters only
- * default anonymous user name
- *
- * send notification for new comments
- * mail account to receive notifications
- *
- * admin prefix
- * admin suffix
- *
- * restricted names
  */
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 
+/*
+ * maximum characters allowed for comments text
+ * accept latin characters only
+ * default anonymous user name
+ */
 $eco_tmax = 1024;
 $eco_lato = "y";
 $eco_anon = "anonymous";
 
-$eco_note = "y";
+/*
+ * send notification for new comments
+ * mail account to receive notifications
+ */
+$eco_note = "n";
 $eco_nota = "info";
 
-$eco_apfx = "phc64";
+/*
+ * admin prefix
+ * admin suffix
+ */
+$eco_apfx = "youradminprefixhere";
 $eco_asfx = "root";
 
+//** restricted names
 $eco_rest = array (
                     "admin",
                     "administrator",
@@ -68,32 +70,44 @@ $eco_rest = array (
  * current page for which comment is received
  * strip default index
  * comments data file
- * maximum characters allowed for comments text
- * mail account to receive notifications
- * try to link user's IP
- * mailto token
- * header token
- * captcha
- * user name
- * status text
- * save flag
- * script version
+ * try to link user IP
  */
 $eco_host = $_SERVER["HTTP_HOST"];
 $eco_page = $_SERVER["PHP_SELF"];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . $eco_cdat;
 $eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
+
+/*
+ * mailto address
+ * mail header
+ */
 $eco_mail = "$eco_nota@$eco_host";
 $eco_head = "From: Easy Comments <$eco_mail>";
+
+/*
+ * captcha minimum
+ * captcha maximum
+ * captche value 1
+ * captcha value 2
+ */
 $eco_cmin = 1;
 $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
 $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
+
+/*
+ * message text
+ * user name
+ * status text
+ * save flag
+ */
 $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
+
+//** script version
 $eco_ver  = 20170214;
 
 //** redirect helper
