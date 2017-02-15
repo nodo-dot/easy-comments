@@ -2,10 +2,9 @@
 /*
  * PHP Easy Comments is a free PHP comments script with minimal bloat.
  *
- * Please note that input fields carry class="input" which is NOT in
+ * Please note that input fields carry class="input" which is not in
  * eco.css, assuming you already have a similar class in your default
- * style sheet. Just replace any occurances of class="input" with the
- * proper name of your own class.
+ * style sheet. Just replace class="input" to match your own class.
  * 
  * phclaus.com/php-scripts/easy-comments
  */
@@ -31,7 +30,7 @@ $eco_cdat = "_comments.html";
  * default anonymous user name
  */
 $eco_tmax = 1024;
-$eco_lato = "y";
+$eco_lato = "n";
 $eco_anon = "anonymous";
 
 /*
@@ -45,7 +44,7 @@ $eco_nota = "info";
  * admin prefix
  * admin suffix
  */
-$eco_apfx = "youradminprefixhere";
+$eco_apfx = "youradminprefix";
 $eco_asfx = "root";
 
 //** restricted names
@@ -108,7 +107,7 @@ $eco_stat = "";
 $eco_save = "";
 
 //** script version
-$eco_ver  = 20170214;
+$eco_ver  = 20170215;
 
 //** redirect helper
 function eco_post($url) {
@@ -180,7 +179,10 @@ if (isset ($_POST["eco_post"])) {
   //** check non-latin characters
   if ($eco_lato == "y") {
 
-    if (preg_match("/[^\\p{Common}\\p{Latin}]/u", $eco_text)) {
+    $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
+
+    if ((preg_match($eco_latx, $eco_text)) || 
+        (preg_match($eco_latx, $eco_name))) {
       $eco_stat = "Only latin characters allowed!";
       $eco_save = "n";
     }
@@ -242,6 +244,7 @@ if (isset ($_POST["eco_post"])) {
 if (!isset ($eco_this)) {
 ?>
     <form action="<?php echo $van_prot . "://" . $eco_host . $eco_indx; ?>#Comments" method="POST" id="Comments">
+      <div id="eco_stat"><?php echo $eco_stat; ?></div>
 <?php
   //** print header depending whether data file exists or not
   if (is_file ($eco_data)) {
@@ -258,8 +261,7 @@ if (!isset ($eco_this)) {
 <?php
   }
 ?>
-      <div id="eco_stat"><span id="Add_Comment"><?php echo $eco_stat; ?></span></div>
-      <p>
+      <p id="Add_Comment">
         <label for="eco_name">Name</label>
       </p>
       <div>
