@@ -2,7 +2,7 @@
 /*
  * PHP Easy Comments is a free PHP comments script with minimal bloat.
  *
- * Please note that input fields carry class="input" which is not in
+ * Please note that input fields carry class="input" which is NOT in
  * eco.css, assuming you already have a similar class in your default
  * style sheet. Just replace class="input" to match your own class.
  * 
@@ -77,6 +77,7 @@ $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . $eco_cdat;
 $eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
 
+
 /*
  * mailto address
  * mail header
@@ -107,7 +108,7 @@ $eco_stat = "";
 $eco_save = "";
 
 //** script version
-$eco_ver  = 20170215;
+$eco_ver  = 20170218;
 
 //** redirect helper
 function eco_post($url) {
@@ -135,13 +136,16 @@ if ($eco_name == "") {
 
 //** form submitted
 if (isset ($_POST["eco_post"])) {
+
   //** filter name and text
   $eco_name = htmlspecialchars($_POST["eco_name"]);
   $eco_text = htmlspecialchars($_POST["eco_text"]);
 
-  //** defuse http/s links
-  $eco_regx = "/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/";
-  $eco_text = preg_replace($eco_regx, "<del class=\"eco_del\">$1</del>", $eco_text);
+  //** basic links filter
+  if (preg_match("/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/", $eco_text)) {
+    $eco_stat = "Text must not contain links!";
+    $eco_save = "n";
+  }
 
   //** link captcha
   $eco_csum = $_POST["eco_csum"];
@@ -179,10 +183,12 @@ if (isset ($_POST["eco_post"])) {
   //** check non-latin characters
   if ($eco_lato == "y") {
 
+    //** regex command
     $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
 
-    if ((preg_match($eco_latx, $eco_text)) || 
-        (preg_match($eco_latx, $eco_name))) {
+    //** check name and text
+    if ((preg_match($eco_latx, $eco_name)) || 
+        (preg_match($eco_latx, $eco_text))) {
       $eco_stat = "Only latin characters allowed!";
       $eco_save = "n";
     }
@@ -205,7 +211,9 @@ if (isset ($_POST["eco_post"])) {
   }
 
   //** valid comment
-  if ($eco_save != "n") {    
+  if ($eco_save != "n") {
+
+    //** build comments entry
     $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . gmdate('Y-m-d H:i:s') . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
 
     //** check existing data file
@@ -213,7 +221,7 @@ if (isset ($_POST["eco_post"])) {
       $eco_post .= file_get_contents($eco_data);
     }
 
-    //** save comment to data file
+    //** update data file
     file_put_contents($eco_data, $eco_post);
 
     //** check if user post
@@ -222,7 +230,7 @@ if (isset ($_POST["eco_post"])) {
       //** try to catch re-submission
       eco_post($van_prot . "://" . $eco_host . $eco_indx . "#Comments");
 
-      //** check whether to send notification
+      //** check notification flag
       if ($eco_note == "y") {
 
         //** prepare message
@@ -271,6 +279,7 @@ if (!isset ($eco_this)) {
         <label for="eco_text">Text (<small id="eco_ccnt"><?php echo $eco_tmax; ?></small>)</label>
       </p>
       <div>
+        <div class="eco_by">Text must <em>not</em> contain links!</div>
         <textarea name="eco_text" id="eco_text" rows="4" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_tmax()" onKeyDown="eco_tmax()" onKeyUp="eco_tmax()"><?php echo $eco_text; ?></textarea>
       </div>
       <p>
@@ -287,16 +296,14 @@ if (!isset ($eco_this)) {
       <p class="eco_by"><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_ver; ?></a></p>
     </form>
     <script type="text/javascript">
-    //** update character counter
+    //** character counter
     function eco_tmax() {
-      var eco_cmax = <?php echo $eco_tmax; ?>;
-      var eco_ccnt = document.getElementById("eco_ccnt").innerHTML = (eco_cmax - document.getElementById("eco_text").value.length);
+      var eco_ccnt = document.getElementById("eco_ccnt").innerHTML = (<?php echo $eco_tmax; ?> - document.getElementById("eco_text").value.length);
 
       if (eco_ccnt == 0) {
         document.getElementById("eco_ccnt").innerHTML = "You have reached the maximum characters limit!";
       } else if (eco_ccnt < 0) {
-        var eco_repi = document.getElementById("eco_ccnt").innerHTML.replace("-", "");
-        document.getElementById("eco_ccnt").innerHTML = "You are " + eco_repi + " characters over the limit!";
+        document.getElementById("eco_ccnt").innerHTML = "You are " + document.getElementById("eco_ccnt").innerHTML.replace("-", "") + " characters over the limit!";
       } else {
         document.getElementById("eco_ccnt").innerHTML = eco_ccnt;
       }
