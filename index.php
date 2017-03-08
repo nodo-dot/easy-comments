@@ -186,8 +186,12 @@ if (isset ($_POST["eco_post"])) {
 
   //** check if name is alpha
   if (preg_match("/^[a-zA-Z]+$/", $eco_name) != 1) {
-    $eco_stat = "Name contains invalid characters!";
-    $eco_save = "n";
+
+    //** exclude admin post
+    if ($eco_name != $eco_apfx . $eco_asfx) {
+      $eco_stat = "Name contains invalid characters!";
+      $eco_save = "n";
+    }
   }
 
   //** convert name to lowercase to check restricted
