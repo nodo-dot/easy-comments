@@ -2,10 +2,6 @@
 /*
  * PHP Easy Comments is a free PHP comments script with minimal bloat.
  *
- * Please note that input fields carry class="input" which is NOT in
- * eco.css, assuming you already have a similar class in your default
- * style sheet. Just replace class="input" to match your own class.
- * 
  * phclaus.com/php-scripts/easy-comments
  */
 
@@ -20,13 +16,15 @@
 /*
  * directory index
  * comments data file
+ * comments log file
  */
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
+$eco_clog = "/eco/log.html";
 
 /*
  * maximum characters allowed for comments text
- * accept latin characters only
+ * accept latin characters only (n y)
  * default anonymous user name
  */
 $eco_tmax = 1024;
@@ -34,8 +32,8 @@ $eco_lato = "n";
 $eco_anon = "anonymous";
 
 /*
- * send notification for new comments
- * mail account to receive notifications
+ * send notification for new comments (n y)
+ * account to get notified -- assuming same domain -- must exist!!
  */
 $eco_note = "n";
 $eco_nota = "info";
@@ -47,14 +45,30 @@ $eco_nota = "info";
 $eco_apfx = "youradminprefix";
 $eco_asfx = "root";
 
-//** restricted names
+/* restricted names
+ * plus typos -- use your illusion
+ * use all lowercase here -- script takes care of user case
+ */
 $eco_rest = array (
-                    "admin",
                     "administrator",
+                    "administator",
+                    "admin",
+                    "adnin",
+                    "webmaster",
+                    "webmater",
                     "moderator",
                     "root",
-                    "webmaster",
+                    "r00t",
+                    "test",
+                    "localhost",
                   );
+
+/*
+ * query string token to list log file
+ * date and time format
+ */
+$eco_list = "yourlogtoken";
+$eco_date = gmdate('Y-m-d H:i:s');
 
 
 /*
@@ -71,12 +85,11 @@ $eco_rest = array (
  * comments data file
  * try to link user IP
  */
-$eco_host = $_SERVER["HTTP_HOST"];
-$eco_page = $_SERVER["PHP_SELF"];
+$eco_host = $_SERVER['HTTP_HOST'];
+$eco_page = $_SERVER['PHP_SELF'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
-$eco_data = $_SERVER["DOCUMENT_ROOT"] . $eco_page . $eco_cdat;
-$eco_myip = gethostbyaddr($_SERVER["REMOTE_ADDR"]);
-
+$eco_data = $_SERVER['DOCUMENT_ROOT'] . $eco_page . $eco_cdat;
+$eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 
 /*
  * mailto address
@@ -86,10 +99,10 @@ $eco_mail = "$eco_nota@$eco_host";
 $eco_head = "From: Easy Comments <$eco_mail>";
 
 /*
- * captcha minimum
- * captcha maximum
- * captche value 1
- * captcha value 2
+ * captcha range min
+ * captcha range max
+ * captche value min
+ * captcha value max
  */
 $eco_cmin = 1;
 $eco_cmax = 9;
@@ -108,7 +121,7 @@ $eco_stat = "";
 $eco_save = "";
 
 //** script version
-$eco_ver  = 20170218;
+$eco_make = 20170308;
 
 //** redirect helper
 function eco_post($url) {
@@ -122,11 +135,12 @@ function eco_post($url) {
 }
 
 //** init protocol
-$van_prot = "http";
+$eco_prot = "http";
 
 //** check https
-if (isset ($_SERVER["HTTPS"]) && ("on" === $_SERVER["HTTPS"])) {
-  $van_prot .= "s";
+if ((isset ($_SERVER['HTTPS'])) && 
+    ("on" === $_SERVER['HTTPS'])) {
+  $eco_prot .= "s";
 }
 
 //** link anon user if empty name
@@ -134,12 +148,23 @@ if ($eco_name == "") {
   $eco_name = $eco_anon;
 }
 
+//** check whether to list log file
+if ($_SERVER['QUERY_STRING'] == $eco_list) {
+
+  if (is_file($_SERVER['DOCUMENT_ROOT'] . $eco_clog)) {
+    header("Location: $eco_prot://$eco_host$eco_clog");
+    exit;
+  } else {
+    $eco_stat = "Missing log file!";
+  }
+}
+
 //** form submitted
 if (isset ($_POST["eco_post"])) {
 
   //** filter name and text
-  $eco_name = htmlspecialchars($_POST["eco_name"]);
-  $eco_text = htmlspecialchars($_POST["eco_text"]);
+  $eco_name = htmlspecialchars($_POST['eco_name']);
+  $eco_text = htmlspecialchars($_POST['eco_text']);
 
   //** basic links filter
   if (preg_match("/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/", $eco_text)) {
@@ -148,18 +173,28 @@ if (isset ($_POST["eco_post"])) {
   }
 
   //** link captcha
-  $eco_csum = $_POST["eco_csum"];
-  $eco_cone = $_POST["eco_cone"];
-  $eco_ctwo = $_POST["eco_ctwo"];
+  $eco_csum = $_POST['eco_csum'];
+  $eco_cone = $_POST['eco_cone'];
+  $eco_ctwo = $_POST['eco_ctwo'];
   $eco_cval = $eco_cone + $eco_ctwo;
 
-  //** substitute missing name
-  if ($eco_name == "") {
+  //** substitute anon if name is empty or spaces only
+  if (($eco_name == "") || 
+      (preg_match("/^\s*$/", $eco_name))) {
     $eco_name = $eco_anon;
   }
 
+  //** check if name is alpha
+  if (preg_match("/^[a-zA-Z]+$/", $eco_name) != 1) {
+    $eco_stat = "Name contains invalid characters!";
+    $eco_save = "n";
+  }
+
+  //** convert name to lowercase to check restricted
+  $eco_nlow = strtolower($eco_name);
+
   //** check restricted name
-  if (in_array($eco_name, $eco_rest)) {
+  if (in_array($eco_nlow, $eco_rest)) {
     $eco_name = $eco_anon;
     $eco_stat = "Sorry, that name is restricted!";
     $eco_save = "n";
@@ -183,11 +218,11 @@ if (isset ($_POST["eco_post"])) {
   //** check non-latin characters
   if ($eco_lato == "y") {
 
-    //** regex command
+    //** regex filter
     $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
 
     //** check name and text
-    if ((preg_match($eco_latx, $eco_name)) || 
+    if ((preg_match($eco_latx, $eco_name)) ||
         (preg_match($eco_latx, $eco_text))) {
       $eco_stat = "Only latin characters allowed!";
       $eco_save = "n";
@@ -214,7 +249,7 @@ if (isset ($_POST["eco_post"])) {
   if ($eco_save != "n") {
 
     //** build comments entry
-    $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . gmdate('Y-m-d H:i:s') . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
+    $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
 
     //** check existing data file
     if (is_file($eco_data)) {
@@ -224,11 +259,23 @@ if (isset ($_POST["eco_post"])) {
     //** update data file
     file_put_contents($eco_data, $eco_post);
 
+    //** link log file and build log entry
+    $eco_clog = $_SERVER['DOCUMENT_ROOT'] . $eco_clog;
+    $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_prot . '://' . $eco_host . $eco_indx . '" title="Click here to open">' . $eco_host . $eco_indx . "</a></div>\n";
+
+    //** check existing log file
+    if (is_file($eco_clog)) {
+      $eco_ulog .= file_get_contents($eco_clog);
+    }
+
+    //** update log file
+    file_put_contents($eco_clog, $eco_ulog);
+
     //** check if user post
     if ($eco_name != $eco_asfx) {
 
       //** try to catch re-submission
-      eco_post($van_prot . "://" . $eco_host . $eco_indx . "#Comments");
+      eco_post($eco_prot . "://" . $eco_host . $eco_indx . "#Comments");
 
       //** check notification flag
       if ($eco_note == "y") {
@@ -251,7 +298,7 @@ if (isset ($_POST["eco_post"])) {
 //** check if comments enabled
 if (!isset ($eco_this)) {
 ?>
-    <form action="<?php echo $van_prot . "://" . $eco_host . $eco_indx; ?>#Comments" method="POST" id="Comments">
+    <form action="<?php echo $eco_prot . "://" . $eco_host . $eco_indx; ?>#Comments" method="POST" id="Comments">
       <div id="eco_stat"><?php echo $eco_stat; ?></div>
 <?php
   //** print header depending whether data file exists or not
@@ -270,7 +317,7 @@ if (!isset ($eco_this)) {
   }
 ?>
       <p id="Add_Comment">
-        <label for="eco_name">Name</label>
+        <label for="eco_name">Name</label> <span class="eco_by">(A-Z only)</span>
       </p>
       <div>
         <input name="eco_name" id="eco_name" value="<?php echo $eco_name; ?>" title="Please enter your name or just post anonymous" class="input">
@@ -279,7 +326,7 @@ if (!isset ($eco_this)) {
         <label for="eco_text">Text (<small id="eco_ccnt"><?php echo $eco_tmax; ?></small>)</label>
       </p>
       <div>
-        <div class="eco_by">Text must <em>not</em> contain links!</div>
+        <div class="eco_by">Text must not contain links!</div>
         <textarea name="eco_text" id="eco_text" rows="4" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_tmax()" onKeyDown="eco_tmax()" onKeyUp="eco_tmax()"><?php echo $eco_text; ?></textarea>
       </div>
       <p>
@@ -293,7 +340,7 @@ if (!isset ($eco_this)) {
         <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">
       </p>
       <p class="eco_by">All posts are monitored and subject to removal!</p>
-      <p class="eco_by"><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_ver; ?></a></p>
+      <p class="eco_by"><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_make; ?></a></p>
     </form>
     <script type="text/javascript">
     //** character counter
