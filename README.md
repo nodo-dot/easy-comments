@@ -10,10 +10,10 @@ You may want to change the log file name in `$eco_clog` and the query token in `
 
 Please note that the `class="input"` used in the form is not part of `eco.css` - assuming you already have a similar class in your default style sheet. Either change `"input"` to match your own class or add an alias to your default style sheet.
 
-A typical reference to the script would look something like `include ('/path/to/eco.php);`and goes where you want the comments to  appear. If you enabled comments for all pages but then want to exclude some files, you can do so by adding `$eco_this = 'n'` above the reference.
+A typical reference to the script would look something like `include ('/path/to/eco/index.php);`and goes where you want the comments to  appear. If you enabled comments for all pages but then want to exclude some files, you can do so by adding `$eco_this = 'n'` above the reference.
 
 You can post an admin reply by entering the values of `$eco_apfx` and `$eco_asfx` into the name field. For example, if you set `eco_apfx = john` and `eco_asfx = root` you would enter `johnroot` without space. Your reply will then appear as `root # ...` rather than `john $ ...`
 
-Basic formatting is supplied via CSS. It may be more convenient to add the contents of `eco.css` to an existing style sheet.
+Basic formatting is provided via CSS. It may be more convenient to add the contents of `eco.css` to an existing style sheet.
 
 [Script homepage](http://phclaus.com/php-scripts/easy-comments/)
