@@ -67,7 +67,7 @@ $eco_rest = array (
  * query string token to list log file
  * date and time format
  */
-$eco_list = "yourlogtoken";
+$eco_list = "phc64";
 $eco_date = gmdate('Y-m-d H:i:s');
 
 
@@ -121,7 +121,7 @@ $eco_stat = "";
 $eco_save = "";
 
 //** script version
-$eco_make = 20170308;
+$eco_make = 20170313;
 
 //** redirect helper
 function eco_post($url) {
@@ -138,10 +138,12 @@ function eco_post($url) {
 $eco_prot = "http";
 
 //** check https
-if ((isset ($_SERVER['HTTPS'])) && 
-    ("on" === $_SERVER['HTTPS'])) {
+if ((isset ($_SERVER['HTTPS'])) && ("on" === $_SERVER['HTTPS'])) {
   $eco_prot .= "s";
 }
+
+//** finalise protocol
+$eco_prot = $eco_prot . "://";
 
 //** link anon user if empty name
 if ($eco_name == "") {
@@ -152,7 +154,7 @@ if ($eco_name == "") {
 if ($_SERVER['QUERY_STRING'] == $eco_list) {
 
   if (is_file($_SERVER['DOCUMENT_ROOT'] . $eco_clog)) {
-    header("Location: $eco_prot://$eco_host$eco_clog");
+    header("Location: $eco_prot$eco_host$eco_clog");
     exit;
   } else {
     $eco_stat = "Missing log file!";
@@ -179,8 +181,7 @@ if (isset ($_POST["eco_post"])) {
   $eco_cval = $eco_cone + $eco_ctwo;
 
   //** substitute anon if name is empty or spaces only
-  if (($eco_name == "") || 
-      (preg_match("/^\s*$/", $eco_name))) {
+  if (($eco_name == "") || (preg_match("/^\s*$/", $eco_name))) {
     $eco_name = $eco_anon;
   }
 
@@ -194,7 +195,7 @@ if (isset ($_POST["eco_post"])) {
     }
   }
 
-  //** convert name to lowercase to check restricted
+  //** convert name to lowercase to simplify checking restricted
   $eco_nlow = strtolower($eco_name);
 
   //** check restricted name
@@ -226,8 +227,7 @@ if (isset ($_POST["eco_post"])) {
     $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
 
     //** check name and text
-    if ((preg_match($eco_latx, $eco_name)) ||
-        (preg_match($eco_latx, $eco_text))) {
+    if ((preg_match($eco_latx, $eco_name)) || (preg_match($eco_latx, $eco_text))) {
       $eco_stat = "Only latin characters allowed!";
       $eco_save = "n";
     }
@@ -265,7 +265,7 @@ if (isset ($_POST["eco_post"])) {
 
     //** link log file and build log entry
     $eco_clog = $_SERVER['DOCUMENT_ROOT'] . $eco_clog;
-    $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_prot . '://' . $eco_host . $eco_indx . '" title="Click here to open">' . $eco_host . $eco_indx . "</a></div>\n";
+    $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_prot . $eco_host . $eco_indx . '" title="Click here to open">' . $eco_host . $eco_indx . "</a></div>\n";
 
     //** check existing log file
     if (is_file($eco_clog)) {
@@ -278,9 +278,6 @@ if (isset ($_POST["eco_post"])) {
     //** check if user post
     if ($eco_name != $eco_asfx) {
 
-      //** try to catch re-submission
-      eco_post($eco_prot . "://" . $eco_host . $eco_indx . "#Comments");
-
       //** check notification flag
       if ($eco_note == "y") {
 
@@ -292,6 +289,10 @@ if (isset ($_POST["eco_post"])) {
         mail($eco_mail, $eco_subj, $eco_text, $eco_head);
       }
     }
+
+    //** try to catch re-submission
+    eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
+
   } else {
     //** link defaults
     $eco_name = $eco_name;
@@ -302,13 +303,13 @@ if (isset ($_POST["eco_post"])) {
 //** check if comments enabled
 if (!isset ($eco_this)) {
 ?>
-    <form action="<?php echo $eco_prot . "://" . $eco_host . $eco_indx; ?>#Comments" method="POST" id="Comments">
+    <form action="<?php echo $eco_prot . $eco_host . $eco_indx; ?>#Comments" method="POST" id="Comments">
       <div id="eco_stat"><?php echo $eco_stat; ?></div>
 <?php
   //** print header depending whether data file exists or not
   if (is_file ($eco_data)) {
 ?>
-      <p id="eco_main"><a href="<?php echo $eco_indx; ?>#Add_Comment" title="Click here to add new comment">Add Comment</a></p>
+      <p id="eco_main"><a href="<?php echo $eco_prot . $eco_host . $eco_indx; ?>#Add_Comment" title="Click here to add new comment">Add Comment</a></p>
 <?php
     //** include existing data file
     if (is_file ($eco_data)) {
