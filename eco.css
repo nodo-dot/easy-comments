@@ -3,10 +3,6 @@
   padding-top: 0.500em;
 }
 
-#eco_form {
-  padding-top: 0.500em;
-}
-
 #eco_text {
   font-size: 85%;
   word-wrap: break-word;
@@ -32,10 +28,4 @@
 
 .eco_by {
   font-size: 75%;
-}
-
-.eco_del {
-  background-color: #000;
-  color: #000;
-  font-size: 1px;
 }
