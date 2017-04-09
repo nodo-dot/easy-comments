@@ -66,7 +66,7 @@ $eco_rest = array (
 $eco_list = "your_token_here";
 $eco_date = gmdate('Y-m-d H:i:s');
 
-//** delay between posts in seconds
+//** delay between posts in seconds -- set to 0 to disable
 $eco_tdel = 60;
 
 
