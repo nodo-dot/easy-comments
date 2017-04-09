@@ -6,6 +6,9 @@
  */
 
 
+//** start session -- comment out if parent page has already set this
+//session_start();
+
 /*
  * default directory index
  * comments data file
@@ -35,7 +38,7 @@ $eco_nota = "info";
  * admin prefix
  * admin suffix
  */
-$eco_apfx = "your_admin_prefix";
+$eco_apfx = "your_token_here";
 $eco_asfx = "root";
 
 /*
@@ -60,11 +63,11 @@ $eco_rest = array (
  * query string token to list log file
  * date and time format
  */
-$eco_list = "your_list_token";
+$eco_list = "your_token_here";
 $eco_date = gmdate('Y-m-d H:i:s');
 
-//** delay between posts -- default 5 minutes
-$eco_tdel = 300;
+//** delay between posts in seconds
+$eco_tdel = 60;
 
 
 /*
@@ -116,17 +119,8 @@ $eco_name = "";
 $eco_stat = "";
 $eco_save = "";
 
-/*
- * init session
- * link session
- * link start time
- */
-session_start();
-$_SESSION['eco_tbeg'] = time();
-$eco_tbeg = $_SESSION['eco_tbeg'];
-
 //** script version
-$eco_make = 20170408;
+$eco_make = 20170409;
 
 //** redirect helper
 function eco_post($url) {
@@ -166,152 +160,148 @@ if ($_SERVER['QUERY_STRING'] == $eco_list) {
   }
 }
 
+//** link session
+$_SESSION['eco_tbeg'] = time();
+$eco_tbeg = $_SESSION['eco_tbeg'];
+
 //** form submitted
 if (isset ($_POST["eco_post"])) {
+  //** filter name and text
+  $eco_name = htmlspecialchars($_POST['eco_name']);
+  $eco_text = htmlspecialchars($_POST['eco_text']);
 
-  /*
-   * check delay status
-   * this is always reset to $eco_tdel when user forces a full page
-   * refresh and also on any subsequent pages to limit flooding
-   */
-  if ((time() - htmlspecialchars($_POST['eco_tbeg'])) <= $eco_tdel) {
-    $eco_stat = "Please wait " . ($eco_tdel - (time() - htmlspecialchars($_POST['eco_tbeg']))) . " seconds before posting again!";
+  //** basic links filter
+  if (preg_match("/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/", $eco_text)) {
+    $eco_stat = "Text must not contain links!";
     $eco_save = "n";
+  }
+
+  //** link captcha
+  $eco_csum = $_POST['eco_csum'];
+  $eco_cone = $_POST['eco_cone'];
+  $eco_ctwo = $_POST['eco_ctwo'];
+  $eco_cval = $eco_cone + $eco_ctwo;
+
+  //** substitute anon if name is empty or spaces only
+  if (($eco_name == "") || (preg_match("/^\s*$/", $eco_name))) {
+    $eco_name = $eco_anon;
+  }
+
+  //** check if name is alpha
+  if (preg_match("/^[a-zA-Z]+$/", $eco_name) != 1) {
+
+    //** exclude admin post
+    if ($eco_name != $eco_apfx . $eco_asfx) {
+      $eco_stat = "Name contains invalid characters!";
+      $eco_save = "n";
+    }
+  }
+
+  //** convert name to lowercase to simplify checking restricted
+  $eco_nlow = strtolower($eco_name);
+
+  //** check restricted name
+  if (in_array($eco_nlow, $eco_rest)) {
+    $eco_name = $eco_anon;
+    $eco_stat = "Sorry, that name is restricted!";
+    $eco_save = "n";
+  }
+
+  //** append identifier to user post or admin reply
+  if ($eco_name == $eco_apfx . $eco_asfx) {
+    $eco_name = $eco_asfx;
+    $eco_ukey = "#";
   } else {
-    //** filter name and text
-    $eco_name = htmlspecialchars($_POST['eco_name']);
-    $eco_text = htmlspecialchars($_POST['eco_text']);
+    $eco_name = $eco_name;
+    $eco_ukey = "$";
+  }
 
-    //** basic links filter
-    if (preg_match("/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/", $eco_text)) {
-      $eco_stat = "Text must not contain links!";
+  //** check missing text
+  if ($eco_text == "") {
+    $eco_stat = "Cannot post empty comment!";
+    $eco_save = "n";
+  }
+
+  //** check non-latin characters
+  if ($eco_lato == "y") {
+
+    //** regex filter
+    $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
+
+    //** check name and text
+    if ((preg_match($eco_latx, $eco_name)) || (preg_match($eco_latx, $eco_text))) {
+      $eco_stat = "Only latin characters allowed!";
       $eco_save = "n";
     }
+  }
 
-    //** link captcha
-    $eco_csum = $_POST['eco_csum'];
-    $eco_cone = $_POST['eco_cone'];
-    $eco_ctwo = $_POST['eco_ctwo'];
-    $eco_cval = $eco_cone + $eco_ctwo;
+  //** check and trim maximum characters
+  if (strlen($eco_text) > $eco_tmax) {
+    $eco_clen = strlen($eco_text);
+    $eco_cfix = ($eco_clen - $eco_tmax);
+    $eco_stat = "$eco_cfix characters have been trimmed!";
+    $eco_text = substr($eco_text, 0, $eco_tmax);
+  }
 
-    //** substitute anon if name is empty or spaces only
-    if (($eco_name == "") || (preg_match("/^\s*$/", $eco_name))) {
-      $eco_name = $eco_anon;
+  //** check captcha and regenerate
+  if ($eco_cval != $eco_csum) {
+    $eco_stat = "Invalid verification code!";
+    $eco_save = "n";
+    $eco_cone = mt_rand($eco_cmin, $eco_cmax);
+    $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
+  }
+
+  //** valid comment
+  if ($eco_save != "n") {
+
+    //** build comments entry
+    $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
+
+    //** check existing data file
+    if (is_file($eco_data)) {
+      $eco_post .= file_get_contents($eco_data);
     }
 
-    //** check if name is alpha
-    if (preg_match("/^[a-zA-Z]+$/", $eco_name) != 1) {
+    //** update data file
+    file_put_contents($eco_data, $eco_post);
 
-      //** exclude admin post
-      if ($eco_name != $eco_apfx . $eco_asfx) {
-        $eco_stat = "Name contains invalid characters!";
-        $eco_save = "n";
+    //** link log file and build log entry
+    $eco_clog = $_SERVER['DOCUMENT_ROOT'] . $eco_clog;
+    $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_prot . $eco_host . $eco_indx . '" title="Click here to open">' . $eco_host . $eco_indx . "</a></div>\n";
+
+    //** check existing log file
+    if (is_file($eco_clog)) {
+      $eco_ulog .= file_get_contents($eco_clog);
+    }
+
+    //** update log file
+    file_put_contents($eco_clog, $eco_ulog);
+
+    //** check if user post
+    if ($eco_name != $eco_asfx) {
+
+      //** check notification flag
+      if ($eco_note == "y") {
+
+        //** prepare message
+        $eco_subj = "New_Comment";
+        $eco_text = $eco_name . " regarding " . $eco_host . $eco_indx . "\n\n" . $eco_text;
+
+        // try sending -- NO VISUAL
+        mail($eco_mail, $eco_subj, $eco_text, $eco_head);
       }
     }
 
-    //** convert name to lowercase to simplify checking restricted
-    $eco_nlow = strtolower($eco_name);
+    //** link timer session
+    $_SESSION['eco_tfrm'] = htmlspecialchars($_POST['eco_tbeg']);
 
-    //** check restricted name
-    if (in_array($eco_nlow, $eco_rest)) {
-      $eco_name = $eco_anon;
-      $eco_stat = "Sorry, that name is restricted!";
-      $eco_save = "n";
-    }
+    //** try to catch re-submission
+    eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
 
-    //** append identifier to user post or admin reply
-    if ($eco_name == $eco_apfx . $eco_asfx) {
-      $eco_name = $eco_asfx;
-      $eco_ukey = "#";
-    } else {
-      $eco_name = $eco_name;
-      $eco_ukey = "$";
-    }
-
-    //** check missing text
-    if ($eco_text == "") {
-      $eco_stat = "Cannot post empty comment!";
-      $eco_save = "n";
-    }
-
-    //** check non-latin characters
-    if ($eco_lato == "y") {
-
-      //** regex filter
-      $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
-
-      //** check name and text
-      if ((preg_match($eco_latx, $eco_name)) || (preg_match($eco_latx, $eco_text))) {
-        $eco_stat = "Only latin characters allowed!";
-        $eco_save = "n";
-      }
-    }
-
-    //** check and trim maximum characters
-    if (strlen($eco_text) > $eco_tmax) {
-      $eco_clen = strlen($eco_text);
-      $eco_cfix = ($eco_clen - $eco_tmax);
-      $eco_stat = "$eco_cfix characters have been trimmed!";
-      $eco_text = substr($eco_text, 0, $eco_tmax);
-    }
-
-    //** check captcha and regenerate
-    if ($eco_cval != $eco_csum) {
-      $eco_stat = "Invalid verification code!";
-      $eco_save = "n";
-      $eco_cone = mt_rand($eco_cmin, $eco_cmax);
-      $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
-    }
-
-    //** valid comment
-    if ($eco_save != "n") {
-
-      //** build comments entry
-      $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
-
-      //** check existing data file
-      if (is_file($eco_data)) {
-        $eco_post .= file_get_contents($eco_data);
-      }
-
-      //** update data file
-      file_put_contents($eco_data, $eco_post);
-
-      //** link log file and build log entry
-      $eco_clog = $_SERVER['DOCUMENT_ROOT'] . $eco_clog;
-      $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_prot . $eco_host . $eco_indx . '" title="Click here to open">' . $eco_host . $eco_indx . "</a></div>\n";
-
-      //** check existing log file
-      if (is_file($eco_clog)) {
-        $eco_ulog .= file_get_contents($eco_clog);
-      }
-
-      //** update log file
-      file_put_contents($eco_clog, $eco_ulog);
-
-      //** check if user post
-      if ($eco_name != $eco_asfx) {
-
-        //** check notification flag
-        if ($eco_note == "y") {
-
-          //** prepare message
-          $eco_subj = "New_Comment";
-          $eco_text = $eco_name . " regarding " . $eco_host . $eco_indx . "\n\n" . $eco_text;
-
-          // try sending -- NO VISUAL
-          mail($eco_mail, $eco_subj, $eco_text, $eco_head);
-        }
-      }
-
-      //** try to catch re-submission
-      eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
-
-    } else {
-      //** avoid clearing valid fields
-      $eco_name = $eco_name;
-      $eco_text = $eco_text;
-    }
+  } else {
+    //** avoid clearing valid fields
+    $eco_name = $eco_name;
+    $eco_text = $eco_text;
   }
 }
 
@@ -355,10 +345,20 @@ if (!isset ($eco_this)) {
         <input name="eco_csum" id="eco_csum" size="4" maxlength="2" title="Please enter the verification code">
         <input name="eco_cone" type="hidden" value="<?php echo $eco_cone; ?>">
         <input name="eco_ctwo" type="hidden" value="<?php echo $eco_ctwo; ?>">
+        <input name="eco_tbeg" type="hidden" value="<?php echo $eco_tbeg; ?>">
       </p>
       <p>
-        <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">
-        <input name="eco_tbeg" type="hidden" value="<?php echo $eco_tbeg; ?>">
+<?php
+  //** link timer difference
+  $eco_tdif = ($eco_tbeg - $_SESSION['eco_tfrm']);
+
+  //** check timer status
+  if ($eco_tdif > $eco_tdel) {
+    echo '        <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">' . "\n";
+  } else {
+    echo "        Please wait " . ($eco_tdel - $eco_tdif) . " seconds before posting again!<br />\n        Refresh this page tp update the timer status.\n";
+  }
+?>
       </p>
       <p class="eco_by">All posts are monitored and subject to removal!</p>
       <p class="eco_by"><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_make; ?></a></p>
