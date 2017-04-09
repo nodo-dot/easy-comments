@@ -10,7 +10,7 @@ Please note that `class="input"` used in the form is not part of `eco.css` - ass
 
 A typical reference to the script would look something like `include ('/path/to/eco/index.php);`and goes where you want the comments to  appear. If you enabled comments for all pages but then want to exclude some files, you can do so by adding `$eco_this = 'n'` above the reference.
 
-You can post an admin reply by entering the values of `$eco_apfx` and `$eco_asfx` into the name field. For example, if you set `eco_apfx = john` and `eco_asfx = root` you would enter `johnroot` without space. Your reply will then appear as `root # ...` rather than `john $ ...` A default delay of five minutes between posts is applied to limit flooding. 
+You can post an admin reply by entering the values of `$eco_apfx` and `$eco_asfx` into the name field. For example, if you set `eco_apfx = john` and `eco_asfx = root` you would enter `johnroot` without space. Your reply will then appear as `root # ...` rather than `john $ ...` A default delay between posts is applied to limit flooding.
 
 Basic formatting is provided via CSS. You may find it convenient to add the contents of `eco.css` to your existing style sheet.
 
