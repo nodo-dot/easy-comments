@@ -21,7 +21,7 @@ $eco_clog = "/eco/log.html";
  * default anonymous user name
  */
 $eco_tmax = 1024;
-$eco_lato = "y";
+$eco_lato = "n";
 $eco_anon = "anonymous";
 
 /*
@@ -29,9 +29,9 @@ $eco_anon = "anonymous";
  * mail account to receive notifications
  * manual approval of new posts (y n) -- enabled requires notifications
  */
-$eco_note = "y";
+$eco_note = "n";
 $eco_mail = "info@" . $_SERVER['HTTP_HOST'];
-$eco_mapp = "y";
+$eco_mapp = "n";
 
 /*
  * admin prefix
