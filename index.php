@@ -219,8 +219,7 @@ if (isset ($_POST["eco_post"])) {
     $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
 
     //** check name and text
-    if (
-        preg_match($eco_latx, $eco_name) || preg_match($eco_latx, $eco_text)) {
+    if (preg_match($eco_latx, $eco_name) || preg_match($eco_latx, $eco_text)) {
       $eco_stat = "Only latin characters allowed!";
       $eco_save = "n";
     }
