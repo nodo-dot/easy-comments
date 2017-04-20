@@ -1,6 +1,6 @@
 <?php
 /*
- * PHP Easy Comments is a free PHP comments script with minimal bloat.
+ * PHP Easy Comments is a free PHP comments script with minimal bloat
  *
  * phclaus.com/php-scripts/easy-comments
  */
