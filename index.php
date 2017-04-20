@@ -13,7 +13,7 @@
  */
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
-$eco_clog = "/eco/log.html";
+$eco_clog = "/site/eco/log.html";
 
 /*
  * maximum characters allowed for comments text
@@ -37,7 +37,7 @@ $eco_mapp = "n";
  * admin prefix
  * admin suffix
  */
-$eco_apfx = "YOUR_ROOT_PREFIX";
+$eco_apfx = "YOUR_ADMIN_PREFIX";
 $eco_asfx = "root";
 
 /*
@@ -113,7 +113,7 @@ $eco_stat = "";
 $eco_save = "";
 
 //** script version
-$eco_make = 20170415;
+$eco_make = 20170420;
 
 //** redirect helper
 function eco_post($url) {
@@ -312,6 +312,12 @@ if (isset ($_POST["eco_post"])) {
       //** try to catch re-submission
       eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
     } else {
+      //** build link for manual approval post processing
+      $eco_mlnk = $eco_prot . $eco_host . '/site/eco/?eco_data=' . $eco_data . '&eco_post=' . base64_encode($eco_post);
+
+      //** merge body and param
+      $eco_text = $eco_text . "\n\n" . $eco_mlnk;
+
       //** send message
       mail($eco_mail, $eco_subj, $eco_text, $eco_head);
 
@@ -331,7 +337,7 @@ if (isset ($_POST["eco_post"])) {
 //** check if comments enabled
 if (!isset ($eco_this)) {
 
-  //** check if moderator is on but notifications are off
+  //** check conflict when moderator is on but notifications are off
   if ($eco_mapp == "y" && $eco_note == "n") {
 ?>
     <p id="eco_stat">Easy Comments Error</p>
@@ -378,16 +384,20 @@ if (!isset ($eco_this)) {
         <input name="eco_ctwo" type="hidden" value="<?php echo $eco_ctwo; ?>">
         <input name="eco_tbeg" type="hidden" value="<?php echo $eco_tbeg; ?>">
       </p>
-      <p>
+      <p id="eco_tbtn">
 <?php
-    //** link timer difference
+    //** link timer difference and mark-up
     $eco_tdif = ($eco_tbeg - $_SESSION['eco_tfrm']);
+    $eco_tbtn = '        <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">';
 
     //** check timer status
     if ($eco_tdif > $eco_tdel) {
-      echo '        <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">' . "\n";
+      echo $eco_tbtn . "\n";
     } else {
-      echo "        Please wait " . ($eco_tdel - $eco_tdif) . " seconds before posting again!<br />\n        Refresh this page to update the timer status.\n";
+?>
+      Please wait <span id="eco_tdel"><?php echo ($eco_tdel - $eco_tdif); ?></span> seconds before posting again!
+      <noscript>Refresh this page to update the timer status.</noscript>
+<?php
     }
 ?>
       </p>
@@ -415,8 +425,37 @@ if (!isset ($eco_this)) {
         document.getElementById("eco_ccnt").innerHTML = eco_ccnt;
       }
     }
+
+    var t_end = <?php echo $eco_tdel; ?>;
+    var t_obj = document.getElementById("eco_tdel");
+    var t_int = setInterval(eco_tdel, 1000);
+
+    //** delay counter
+    function eco_tdel() {
+      if (t_end == 0) {
+        document.getElementById("eco_tbtn").innerHTML = '<?php echo $eco_tbtn; ?>';
+        clearTimeout(t_int);
+      } else {
+        t_obj.innerHTML = t_end;
+        t_end --;
+      }
+    }
     </script>
 <?php
   }
+}
+
+//** process manual approvals
+if (isset ($_GET['eco_data']) && $_GET['eco_data'] != "" && isset ($_GET['eco_post']) && $_GET['eco_post'] != "") {
+  $eco_data = $_GET['eco_data'];
+  $eco_post = base64_decode($_GET['eco_post']);
+
+  //** check existing data file
+  if (is_file($eco_data)) {
+    $eco_post .= file_get_contents($eco_data);
+  }
+
+  //** update data file
+  file_put_contents($eco_data, $eco_post);
 }
 ?>
