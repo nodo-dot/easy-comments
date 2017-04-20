@@ -1,5 +1,10 @@
 <?php
-//** check restricted names
+/*
+ * check restricted names -- meaningful fragments are ok
+ *
+ * admin => admin, ADMINfoo, AdminisTraitor...
+ * webma => webma, WebMama, webMASTER...
+ */
 if (
     preg_match("/admin/i", $eco_name) ||
     preg_match("/local/i", $eco_name) ||
