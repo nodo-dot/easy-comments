@@ -43,24 +43,6 @@ $eco_apfx = "YOUR_ADMIN_PREFIX";
 $eco_asfx = "root";
 
 /*
- * restricted names plus typos -- use your illusion
- * all lowercase here -- user case handled by script
- */
-$eco_rest = array (
-                    "administrator",
-                    "administator",
-                    "admin",
-                    "adnin",
-                    "webmaster",
-                    "webmater",
-                    "moderator",
-                    "root",
-                    "r00t",
-                    "test",
-                    "localhost",
-                  );
-
-/*
  * query string to list log file
  * delay between posts in seconds -- 0 to disable
  * date and time format
@@ -212,15 +194,8 @@ if (isset ($_POST["eco_post"])) {
     }
   }
 
-  //** convert name to lowercase to simplify checking restricted
-  $eco_nlow = strtolower($eco_name);
-
-  //** check restricted name
-  if (in_array($eco_nlow, $eco_rest)) {
-    $eco_name = $eco_anon;
-    $eco_stat = "Sorry, that name is restricted!";
-    $eco_save = "n";
-  }
+  //** link restricted names
+  include ('./restricted.php');
 
   //** append identifier to user post or admin reply
   if ($eco_name == $eco_apfx . $eco_asfx) {
@@ -244,7 +219,8 @@ if (isset ($_POST["eco_post"])) {
     $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
 
     //** check name and text
-    if (preg_match($eco_latx, $eco_name) || preg_match($eco_latx, $eco_text)) {
+    if (
+        preg_match($eco_latx, $eco_name) || preg_match($eco_latx, $eco_text)) {
       $eco_stat = "Only latin characters allowed!";
       $eco_save = "n";
     }
@@ -406,7 +382,7 @@ if (!isset ($eco_this)) {
 <?php
     //** check moderator flag
     if ($eco_mapp == "y") {
-      $eco_mtxt = "New posts will be listed upon approval.";
+      $eco_mtxt = "New posts will be listed after moderator approval.";
     } else {
       $eco_mtxt = "All posts are monitored and subject to removal.";
     }
