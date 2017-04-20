@@ -7,13 +7,15 @@
 
 
 /*
+ * script folder
  * default directory index
  * comments data file -- not used with manual approval
  * comments log file -- not used whit manual approval
  */
+$eco_fold = "/eco/"
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
-$eco_clog = "/site/eco/log.html";
+$eco_clog = $eco_fold . "log.html";
 
 /*
  * maximum characters allowed for comments text
@@ -313,7 +315,7 @@ if (isset ($_POST["eco_post"])) {
       eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
     } else {
       //** build link for manual approval post processing
-      $eco_mlnk = $eco_prot . $eco_host . '/site/eco/?eco_data=' . $eco_data . '&eco_post=' . base64_encode($eco_post);
+      $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" . $eco_data . "&eco_post=" . base64_encode($eco_post);
 
       //** merge body and param
       $eco_text = $eco_text . "\n\n" . $eco_mlnk;
