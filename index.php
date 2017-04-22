@@ -19,21 +19,21 @@ $eco_clog = $eco_fold . "log.html";
 
 /*
  * maximum characters allowed for comments text
- * accept latin characters only (y n)
+ * accept latin characters only (0 1)
  * default anonymous user name
  */
 $eco_tmax = 1024;
-$eco_lato = "n";
+$eco_lato = 0;
 $eco_anon = "anonymous";
 
 /*
- * send notifications for new comments (y n)
+ * send notifications for new comments (0 1)
  * mail account to receive notifications
- * manual approval of new posts (y n) -- enabled requires notifications
+ * manual approval of new posts (0 1) -- enabled requires notifications
  */
-$eco_note = "n";
+$eco_note = 0;
 $eco_mail = "info@" . $_SERVER['HTTP_HOST'];
-$eco_mapp = "n";
+$eco_mapp = 0;
 
 /*
  * admin prefix
@@ -60,6 +60,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
 
 
 /*
+ * script version
  * host on which the script is running
  * current page to which the comment applies
  * strip default index
@@ -67,6 +68,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
+$eco_make = 20170422;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['PHP_SELF'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
@@ -85,43 +87,23 @@ $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
 $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
 
-/*
- * message text
- * user name
- * status text
- * save flag
- */
+//** init message text, user name, and status text
 $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
-$eco_save = "";
-
-//** script version
-$eco_make = 20170420;
-
-//** redirect helper
-function eco_post($url) {
-
-  if (!headers_sent()) {    
-    header("Location: $url");
-    exit;
-  } else {
-    echo "<meta http-equiv=\"refresh\" content=\"0; url=$url\">";
-  }
-}
 
 //** init protocol
 $eco_prot = "http";
 
-//** check https
+//** check protocol
 if (isset ($_SERVER['HTTPS']) && "on" === $_SERVER['HTTPS']) {
   $eco_prot .= "s";
 }
 
-//** finalise protocol
+//** set protocol
 $eco_prot = $eco_prot . "://";
 
-//** link anon user if empty name
+//** check empty user name
 if ($eco_name == "") {
   $eco_name = $eco_anon;
 }
@@ -134,6 +116,17 @@ if ($_SERVER['QUERY_STRING'] == $eco_list) {
     exit;
   } else {
     $eco_stat = "Missing log file!";
+  }
+}
+
+//** redirect helper
+function eco_post($eco_goto) {
+
+  if (!headers_sent()) {    
+    header("Location: $eco_goto");
+    exit;
+  } else {
+    echo "<meta http-equiv=\"refresh\" content=\"0; url=$eco_goto\">";
   }
 }
 
@@ -170,7 +163,6 @@ if (isset ($_POST["eco_post"])) {
   //** filter links
   if (preg_match("/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/", $eco_text)) {
     $eco_stat = "Text must not contain links!";
-    $eco_save = "n";
   }
 
   //** link captcha
@@ -190,17 +182,17 @@ if (isset ($_POST["eco_post"])) {
     //** exclude admin post
     if ($eco_name != $eco_apfx . $eco_asfx) {
       $eco_stat = "Name contains invalid characters!";
-      $eco_save = "n";
     }
   }
 
   //** link restricted names
-  include ('./restricted.php');
+  include ($_SERVER['DOCUMENT_ROOT'] . $eco_fold . "./restricted.php");
 
   //** append identifier to user post or admin reply
   if ($eco_name == $eco_apfx . $eco_asfx) {
     $eco_name = $eco_asfx;
     $eco_ukey = "#";
+    $eco_mapp = 0;
   } else {
     $eco_name = $eco_name;
     $eco_ukey = "$";
@@ -209,11 +201,10 @@ if (isset ($_POST["eco_post"])) {
   //** check missing text
   if ($eco_text == "") {
     $eco_stat = "Cannot post empty comment!";
-    $eco_save = "n";
   }
 
   //** check non-latin characters
-  if ($eco_lato == "y") {
+  if ($eco_lato == 1) {
 
     //** regex filter
     $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
@@ -221,7 +212,6 @@ if (isset ($_POST["eco_post"])) {
     //** check name and text
     if (preg_match($eco_latx, $eco_name) || preg_match($eco_latx, $eco_text)) {
       $eco_stat = "Only latin characters allowed!";
-      $eco_save = "n";
     }
   }
 
@@ -236,13 +226,12 @@ if (isset ($_POST["eco_post"])) {
   //** check captcha and regenerate
   if ($eco_cval != $eco_csum) {
     $eco_stat = "Invalid verification code!";
-    $eco_save = "n";
     $eco_cone = mt_rand($eco_cmin, $eco_cmax);
     $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
   }
 
   //** valid comment
-  if ($eco_save != "n") {
+  if ($eco_stat != "") {
 
     //** build comments entry
     $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
@@ -252,7 +241,7 @@ if (isset ($_POST["eco_post"])) {
     $eco_text = $eco_name . " regarding " . $eco_prot . $eco_host . $eco_indx . "\n\n" . $eco_post;
 
     //** check moderator flag
-    if ($eco_mapp != "y") {
+    if ($eco_mapp != 1) {
 
       //** check existing data file
       if (is_file($eco_data)) {
@@ -278,7 +267,7 @@ if (isset ($_POST["eco_post"])) {
       if ($eco_name != $eco_asfx) {
 
         //** check notification flag and send mail
-        if ($eco_note == "y") {
+        if ($eco_note == 1) {
           mail($eco_mail, $eco_subj, $eco_text, $eco_head);
         }
       }
@@ -315,7 +304,7 @@ if (isset ($_POST["eco_post"])) {
 if (!isset ($eco_this)) {
 
   //** check conflict when moderator is on but notifications are off
-  if ($eco_mapp == "y" && $eco_note == "n") {
+  if ($eco_mapp == 1 && $eco_note == 0) {
 ?>
     <p id="eco_stat">Easy Comments Error</p>
     <p>The moderator flag is set but notifications are disabled! Please edit the script's configuration to enable notifications.</p>
@@ -380,7 +369,7 @@ if (!isset ($eco_this)) {
       </p>
 <?php
     //** check moderator flag
-    if ($eco_mapp == "y") {
+    if ($eco_mapp == 1) {
       $eco_mtxt = "New posts will be listed after moderator approval.";
     } else {
       $eco_mtxt = "All posts are monitored and subject to removal.";
