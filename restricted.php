@@ -13,7 +13,12 @@ if (
     preg_match("/test/i", $eco_name) ||
     preg_match("/webma/i", $eco_name)
    ) {
-  $eco_name = $eco_anon;
-  $eco_stat = "Sorry, at least part of the selected name is restricted!";
-  $eco_save = "n";
+
+  //** check if admin post
+  if ($eco_name == $eco_apfx . $eco_asfx) {
+    $eco_name = $eco_apfx . $eco_asfx;
+  } else {
+    $eco_name = $eco_anon;
+    $eco_stat = "Sorry, at least part of the selected name is restricted!";
+  }
 }
