@@ -231,7 +231,7 @@ if (isset ($_POST["eco_post"])) {
   }
 
   //** valid comment
-  if ($eco_stat != "") {
+  if ($eco_stat == "") {
 
     //** build comments entry
     $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
