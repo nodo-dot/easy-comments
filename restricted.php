@@ -3,7 +3,7 @@
  * check restricted names -- meaningful fragments are ok
  *
  * admin => admin, ADMINfoo, AdminisTraitor...
- * webma => webma, WebMama, webMASTER...
+ * webma => webma, YourWebMama, MyWebMASTER...
  */
 if (
     preg_match("/admin/i", $eco_name) ||
@@ -19,6 +19,6 @@ if (
     $eco_name = $eco_apfx . $eco_asfx;
   } else {
     $eco_name = $eco_anon;
-    $eco_stat = "Sorry, at least part of the selected name is restricted!";
+    $eco_stat = "Part or all of selected name is restricted!";
   }
 }
