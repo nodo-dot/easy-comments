@@ -65,14 +65,16 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * current page to which the comment applies
  * strip default index
  * comments data file
+ * restricted names data file
  * try to link user IP
  * mail header
  */
-$eco_make = 20170422;
+$eco_make = 20170425;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['PHP_SELF'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $_SERVER['DOCUMENT_ROOT'] . $eco_page . $eco_cdat;
+$eco_rest = $_SERVER['DOCUMENT_ROOT'] . $eco_fold . "./restricted.php";
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 $eco_head = "From: Easy Comments <$eco_mail>";
 
@@ -87,10 +89,11 @@ $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
 $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
 
-//** init message text, user name, and status text
+//** init text, name, status, and latin only label
 $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
+$eco_latb = "";
 
 //** init protocol
 $eco_prot = "http";
@@ -106,6 +109,11 @@ $eco_prot = $eco_prot . "://";
 //** check empty user name
 if ($eco_name == "") {
   $eco_name = $eco_anon;
+}
+
+//** set latin only label
+if ($eco_lato == 1) {
+  $eco_latb = "Latin ";
 }
 
 //** check whether to list log file
@@ -176,7 +184,7 @@ if (isset ($_POST["eco_post"])) {
     $eco_name = $eco_anon;
   }
 
-  //** check if name is alpha
+  //** check if name is alpha only
   if (preg_match("/^[a-zA-Z]+$/", $eco_name) != 1) {
 
     //** exclude admin post
@@ -186,7 +194,9 @@ if (isset ($_POST["eco_post"])) {
   }
 
   //** link restricted names
-  include ($_SERVER['DOCUMENT_ROOT'] . $eco_fold . "./restricted.php");
+  if (is_file($eco_rest)) {
+    include ($eco_rest);
+  }
 
   //** append identifier to user post or admin reply
   if ($eco_name == $eco_apfx . $eco_asfx) {
@@ -294,7 +304,7 @@ if (isset ($_POST["eco_post"])) {
       eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
     }
   } else {
-    //** avoid clearing existing input
+    //** reassign existing input
     $eco_name = $eco_name;
     $eco_text = $eco_text;
   }
@@ -330,7 +340,7 @@ if (!isset ($eco_this)) {
     }
 ?>
       <p id="Add_Comment">
-        <label for="eco_name">Name</label> <span class="eco_by">(A-Z only)</span>
+        <label for="eco_name">Name</label> <span class="eco_by">(A-Z <?php echo $eco_latb; ?>only)</span>
       </p>
       <div>
         <input name="eco_name" id="eco_name" value="<?php echo $eco_name; ?>" title="Please enter your name or just post anonymous" class="input">
@@ -344,8 +354,7 @@ if (!isset ($eco_this)) {
       </div>
       <p>
         <label for="eco_csum">Code</label> 
-        <?php echo $eco_cone . " + " . $eco_ctwo . " = "; ?>
-        <input name="eco_csum" id="eco_csum" size="4" maxlength="2" title="Please enter the verification code">
+        <?php echo $eco_cone . " + " . $eco_ctwo . " = "; ?><input name="eco_csum" id="eco_csum" size="4" maxlength="2" title="Please enter the verification code">
         <input name="eco_cone" type="hidden" value="<?php echo $eco_cone; ?>">
         <input name="eco_ctwo" type="hidden" value="<?php echo $eco_ctwo; ?>">
         <input name="eco_tbeg" type="hidden" value="<?php echo $eco_tbeg; ?>">
@@ -367,15 +376,16 @@ if (!isset ($eco_this)) {
     }
 ?>
       </p>
+      <p class="eco_by">
 <?php
     //** check moderator flag
     if ($eco_mapp == 1) {
-      $eco_mtxt = "New posts will be listed after moderator approval.";
+      echo "New posts will be listed after moderator approval.";
     } else {
-      $eco_mtxt = "All posts are monitored and subject to removal.";
+      echo "All posts are monitored and subject to removal.";
     }
 ?>
-      <p class="eco_by"><?php echo $eco_mtxt; ?></p>
+      </p>
       <p class="eco_by"><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_make; ?></a></p>
     </form>
     <script type="text/javascript">
@@ -392,11 +402,12 @@ if (!isset ($eco_this)) {
       }
     }
 
+    //** set timer
     var t_end = <?php echo $eco_tdel; ?>;
     var t_obj = document.getElementById("eco_tdel");
     var t_int = setInterval(eco_tdel, 1000);
 
-    //** delay counter
+    //** timer delay counter
     function eco_tdel() {
       if (t_end == 0) {
         document.getElementById("eco_tbtn").innerHTML = '<?php echo $eco_tbtn; ?>';
@@ -411,17 +422,15 @@ if (!isset ($eco_this)) {
   }
 }
 
-//** process manual approvals
+//** process manual approvals -- gets values from moderator mail link
 if (isset ($_GET['eco_data']) && $_GET['eco_data'] != "" && isset ($_GET['eco_post']) && $_GET['eco_post'] != "") {
   $eco_data = $_GET['eco_data'];
   $eco_post = base64_decode($_GET['eco_post']);
 
-  //** check existing data file
   if (is_file($eco_data)) {
     $eco_post .= file_get_contents($eco_data);
   }
 
-  //** update data file
   file_put_contents($eco_data, $eco_post);
 }
 ?>
