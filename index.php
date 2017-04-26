@@ -69,7 +69,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
-$eco_make = 20170425;
+$eco_make = 20170426;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['PHP_SELF'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
@@ -289,7 +289,7 @@ if (isset ($_POST["eco_post"])) {
       eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
     } else {
       //** build link for manual approval post processing
-      $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" . $eco_data . "&eco_post=" . base64_encode($eco_post);
+      $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" . $eco_data . "&eco_post=" . bin2hex($eco_post);
 
       //** merge body and param
       $eco_text = $eco_text . "\n\n" . $eco_mlnk;
@@ -425,7 +425,7 @@ if (!isset ($eco_this)) {
 //** process manual approvals -- gets values from moderator mail link
 if (isset ($_GET['eco_data']) && $_GET['eco_data'] != "" && isset ($_GET['eco_post']) && $_GET['eco_post'] != "") {
   $eco_data = $_GET['eco_data'];
-  $eco_post = base64_decode($_GET['eco_post']);
+  $eco_post = hex2bin($_GET['eco_post']);
 
   if (is_file($eco_data)) {
     $eco_post .= file_get_contents($eco_data);
