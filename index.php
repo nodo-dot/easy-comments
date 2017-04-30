@@ -12,7 +12,7 @@
  * comments data file -- not used with manual approval
  * comments log file -- not used whit manual approval
  */
-$eco_fold = "/eco/";
+$eco_fold = "/site/eco/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -23,7 +23,7 @@ $eco_clog = $eco_fold . "log.html";
  * default anonymous user name
  */
 $eco_tmax = 1024;
-$eco_lato = 0;
+$eco_lato = 1;
 $eco_anon = "anonymous";
 
 /*
@@ -31,9 +31,9 @@ $eco_anon = "anonymous";
  * mail account to receive notifications
  * manual approval of new posts (0 1) -- enabled requires notifications
  */
-$eco_note = 0;
+$eco_note = 1;
 $eco_mail = "info@" . $_SERVER['HTTP_HOST'];
-$eco_mapp = 0;
+$eco_mapp = 1;
 
 /*
  * admin prefix
@@ -69,12 +69,12 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
-$eco_make = 20170426;
+$eco_make = 20170425;
 $eco_host = $_SERVER['HTTP_HOST'];
-$eco_page = $_SERVER['PHP_SELF'];
+$eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $_SERVER['DOCUMENT_ROOT'] . $eco_page . $eco_cdat;
-$eco_rest = $_SERVER['DOCUMENT_ROOT'] . $eco_fold . "./restricted.php";
+$eco_rest = $_SERVER['DOCUMENT_ROOT'] . $eco_fold . "restricted.php";
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 $eco_head = "From: Easy Comments <$eco_mail>";
 
@@ -371,7 +371,7 @@ if (!isset ($eco_this)) {
     } else {
 ?>
       Please wait <span id="eco_tdel"><?php echo ($eco_tdel - $eco_tdif); ?></span> seconds before posting again!
-      <noscript><br />Refresh this page to update the timer status.</noscript>
+        <noscript><div>Refresh this page to update the timer status.</div></noscript>
 <?php
     }
 ?>
