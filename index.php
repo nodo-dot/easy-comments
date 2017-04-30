@@ -234,7 +234,7 @@ if (isset ($_POST["eco_post"])) {
   }
 
   //** check captcha and regenerate
-  if ($eco_cval != $eco_csum) {
+  if ($eco_cval !== (int)$eco_csum) {
     $eco_stat = "Invalid verification code!";
     $eco_cone = mt_rand($eco_cmin, $eco_cmax);
     $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
@@ -244,7 +244,7 @@ if (isset ($_POST["eco_post"])) {
   if ($eco_stat == "") {
 
     //** build comments entry
-    $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . '_' . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
+    $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . "_" . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
 
     //** prepare message
     $eco_subj = "New_Comment";
