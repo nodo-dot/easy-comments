@@ -107,17 +107,17 @@ if (isset ($_SERVER['HTTPS']) && "on" === $_SERVER['HTTPS']) {
 $eco_prot = $eco_prot . "://";
 
 //** check empty user name
-if ($eco_name == "") {
+if ($eco_name === "") {
   $eco_name = $eco_anon;
 }
 
 //** set latin only label
-if ($eco_lato == 1) {
+if ($eco_lato === 1) {
   $eco_latb = "Latin ";
 }
 
 //** check whether to list log file
-if ($_SERVER['QUERY_STRING'] == $eco_list) {
+if ($_SERVER['QUERY_STRING'] === $eco_list) {
 
   if (is_file($_SERVER['DOCUMENT_ROOT'] . $eco_clog)) {
     header("Location: $eco_prot$eco_host$eco_clog");
@@ -128,7 +128,7 @@ if ($_SERVER['QUERY_STRING'] == $eco_list) {
 }
 
 //** redirect helper
-function eco_post($eco_goto) {
+function eco_post(/*.string.*/ $eco_goto) {
 
   if (!headers_sent()) {    
     header("Location: $eco_goto");
@@ -138,30 +138,23 @@ function eco_post($eco_goto) {
   }
 }
 
-// check session status helper
-function is_session_started() {
+// check session
+if (version_compare(phpversion(), "5.4.0", ">=") !== FALSE) {
 
-  if (php_sapi_name() !== "cli") {
-
-    if (version_compare(phpversion(), "5.4.0", ">=")) {
-      return session_status() === PHP_SESSION_ACTIVE ? TRUE : FALSE;
-    } else {
-      return session_id() === "" ? FALSE : TRUE;
-    }
+  if (session_status() === PHP_SESSION_NONE) {
+    session_start();
   }
-
-  return FALSE;
-}
-
-//** check session status
-if (is_session_started() === FALSE) {
-  session_start();
+} else {
+  //** pre 5.4
+  if (session_id() === "") {
+    session_start();
+  }
 }
 
 //** process manual approvals -- gets values from moderator mail link
-if (isset ($_GET['eco_data']) && $_GET['eco_data'] != "" &&
-    isset ($_GET['eco_post']) && $_GET['eco_post'] != "" &&
-    isset ($_GET['eco_link']) && $_GET['eco_link'] != "") {
+if (isset ($_GET['eco_data']) && $_GET['eco_data'] !== "" &&
+    isset ($_GET['eco_post']) && $_GET['eco_post'] !== "" &&
+    isset ($_GET['eco_link']) && $_GET['eco_link'] !== "") {
   $eco_data = $_GET['eco_data'];
   $eco_post = hex2bin($_GET['eco_post']);
 
@@ -182,8 +175,8 @@ $eco_tbeg = $_SESSION['eco_tbeg'];
 if (isset ($_POST["eco_post"])) {
 
   //** filter name and text
-  $eco_name = htmlentities($_POST["eco_name"],  ENT_QUOTES,  "utf-8");
-  $eco_text = htmlentities($_POST["eco_text"],  ENT_QUOTES,  "utf-8");
+  $eco_name = htmlentities($_POST["eco_name"], ENT_QUOTES, "UTF-8");
+  $eco_text = htmlentities($_POST["eco_text"], ENT_QUOTES, "UTF-8");
 
   //** filter links
   if (preg_match("/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/", $eco_text)) {
@@ -194,18 +187,18 @@ if (isset ($_POST["eco_post"])) {
   $eco_csum = $_POST['eco_csum'];
   $eco_cone = $_POST['eco_cone'];
   $eco_ctwo = $_POST['eco_ctwo'];
-  $eco_cval = $eco_cone + $eco_ctwo;
+  $eco_cval = ($eco_cone + $eco_ctwo);
 
   //** substitute anon if name is empty or spaces only
-  if ($eco_name == "" || preg_match("/^\s*$/", $eco_name)) {
+  if ($eco_name === "" || preg_match("/^\s*$/", $eco_name)) {
     $eco_name = $eco_anon;
   }
 
   //** check if name is alpha only
-  if (preg_match("/^[a-zA-Z]+$/", $eco_name) != 1) {
+  if (preg_match("/^[a-zA-Z]+$/", $eco_name) !== 1) {
 
     //** exclude admin post
-    if ($eco_name != $eco_apfx . $eco_asfx) {
+    if ($eco_name !== $eco_apfx . $eco_asfx) {
       $eco_stat = "Name contains invalid characters!";
     }
   }
@@ -215,8 +208,8 @@ if (isset ($_POST["eco_post"])) {
     include ($eco_rest);
   }
 
-  //** append identifier to user post or admin reply
-  if ($eco_name == $eco_apfx . $eco_asfx) {
+  //** append user flag
+  if ($eco_name === $eco_apfx . $eco_asfx) {
     $eco_name = $eco_asfx;
     $eco_ukey = "#";
     $eco_mapp = 0;
@@ -225,13 +218,18 @@ if (isset ($_POST["eco_post"])) {
     $eco_ukey = "$";
   }
 
+  //** check captcha
+  if ($eco_cval !== (int)$eco_csum) {
+    $eco_stat = "Invalid verification code!";
+  }
+
   //** check missing text
-  if ($eco_text == "") {
+  if ($eco_text === "") {
     $eco_stat = "Cannot post empty comment!";
   }
 
   //** check non-latin characters
-  if ($eco_lato == 1) {
+  if ($eco_lato === 1) {
 
     //** regex filter
     $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
@@ -242,7 +240,7 @@ if (isset ($_POST["eco_post"])) {
     }
   }
 
-  //** check and trim maximum characters
+  //** check maximum characters
   if (strlen($eco_text) > $eco_tmax) {
     $eco_clen = strlen($eco_text);
     $eco_cfix = ($eco_clen - $eco_tmax);
@@ -250,15 +248,16 @@ if (isset ($_POST["eco_post"])) {
     $eco_text = substr($eco_text, 0, $eco_tmax);
   }
 
-  //** check captcha and regenerate
-  if ($eco_cval !== (int)$eco_csum) {
-    $eco_stat = "Invalid verification code!";
+  //** save existing input and regenerate captcha
+  if ($eco_stat !== "") {
+    $eco_name = $eco_name;
+    $eco_text = $eco_text;
     $eco_cone = mt_rand($eco_cmin, $eco_cmax);
     $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
   }
 
   //** valid comment
-  if ($eco_stat == "") {
+  if ($eco_stat === "") {
 
     //** build comments entry and prepare message
     $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . "_" . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
@@ -266,7 +265,7 @@ if (isset ($_POST["eco_post"])) {
     $eco_text = $eco_name . " regarding " . $eco_prot . $eco_host . $eco_indx . "\n\n" . $eco_post;
 
     //** check moderator flag
-    if ($eco_mapp != 1) {
+    if ($eco_mapp !== 1) {
 
       //** check existing data file
       if (is_file($eco_data)) {
@@ -287,16 +286,16 @@ if (isset ($_POST["eco_post"])) {
       file_put_contents($eco_clog, $eco_ulog);
 
       //** check if user post
-      if ($eco_name != $eco_asfx) {
+      if ($eco_name !== $eco_asfx) {
 
         //** check notification flag and send mail
-        if ($eco_note == 1) {
+        if ($eco_note === 1) {
           mail($eco_mail, $eco_subj, $eco_text, $eco_head);
         }
       }
 
       //** link timer session and try to catch resubmission
-      $_SESSION['eco_tfrm'] = htmlentities($_POST["eco_tbeg"], ENT_QUOTES, "utf-8");
+      $_SESSION['eco_tfrm'] = htmlentities($_POST["eco_tbeg"], ENT_QUOTES, "UTF-8");
       eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
     } else {
       /*
@@ -309,13 +308,9 @@ if (isset ($_POST["eco_post"])) {
       $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" . $eco_data . "&eco_post=" . bin2hex($eco_post) . "&eco_link=" . str_replace($_SERVER['DOCUMENT_ROOT'], "", getcwd());
       $eco_text = $eco_text . "\n\n" . $eco_mlnk;
       mail($eco_mail, $eco_subj, $eco_text, $eco_head);
-      $_SESSION['eco_tfrm'] = htmlentities($_POST["eco_tbeg"], ENT_QUOTES, "utf-8");
+      $_SESSION['eco_tfrm'] = htmlentities($_POST["eco_tbeg"], ENT_QUOTES, "UTF-8");
       eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
     }
-  } else {
-    //** save existing input
-    $eco_name = $eco_name;
-    $eco_text = $eco_text;
   }
 }
 
@@ -323,7 +318,7 @@ if (isset ($_POST["eco_post"])) {
 if (!isset ($eco_this)) {
 
   //** check conflict when moderator is on but notifications are off
-  if ($eco_mapp == 1 && $eco_note == 0) {
+  if ($eco_mapp === 1 && $eco_note === 0) {
 ?>
     <p id="eco_stat">Easy Comments Error</p>
     <p>The moderator flag is set but notifications are disabled! Please edit the script's configuration to enable notifications.</p>
@@ -388,7 +383,7 @@ if (!isset ($eco_this)) {
       <p class="eco_by">
 <?php
     //** check moderator flag
-    if ($eco_mapp == 1) {
+    if ($eco_mapp === 1) {
       echo "New posts will be listed after moderator approval.";
     } else {
       echo "All posts are monitored and subject to removal.";
