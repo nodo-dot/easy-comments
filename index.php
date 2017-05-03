@@ -12,7 +12,7 @@
  * comments data file -- not used with manual approval
  * comments log file -- not used whit manual approval
  */
-$eco_fold = "/site/eco/";
+$eco_fold = "/eco/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -69,7 +69,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
-$eco_make = 20170425;
+$eco_make = 20170503;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
@@ -89,7 +89,7 @@ $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
 $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
 
-//** init text, name, status, and latin only label
+//** init placeholders
 $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
@@ -158,15 +158,32 @@ if (is_session_started() === FALSE) {
   session_start();
 }
 
+//** process manual approvals -- gets values from moderator mail link
+if (isset ($_GET['eco_data']) && $_GET['eco_data'] != "" &&
+    isset ($_GET['eco_post']) && $_GET['eco_post'] != "" &&
+    isset ($_GET['eco_link']) && $_GET['eco_link'] != "") {
+  $eco_data = $_GET['eco_data'];
+  $eco_post = hex2bin($_GET['eco_post']);
+
+  if (is_file($eco_data)) {
+    $eco_post .= file_get_contents($eco_data);
+  }
+
+  file_put_contents($eco_data, $eco_post);
+  header("Location: " . $_GET['eco_link']);
+  exit;
+}
+
 //** link session
 $_SESSION['eco_tbeg'] = time();
 $eco_tbeg = $_SESSION['eco_tbeg'];
 
 //** form submitted
 if (isset ($_POST["eco_post"])) {
+
   //** filter name and text
-  $eco_name = htmlspecialchars($_POST['eco_name']);
-  $eco_text = htmlspecialchars($_POST['eco_text']);
+  $eco_name = htmlentities($_POST["eco_name"],  ENT_QUOTES,  "utf-8");
+  $eco_text = htmlentities($_POST["eco_text"],  ENT_QUOTES,  "utf-8");
 
   //** filter links
   if (preg_match("/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/", $eco_text)) {
@@ -243,10 +260,8 @@ if (isset ($_POST["eco_post"])) {
   //** valid comment
   if ($eco_stat == "") {
 
-    //** build comments entry
+    //** build comments entry and prepare message
     $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . "_" . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
-
-    //** prepare message
     $eco_subj = "New_Comment";
     $eco_text = $eco_name . " regarding " . $eco_prot . $eco_host . $eco_indx . "\n\n" . $eco_post;
 
@@ -258,10 +273,8 @@ if (isset ($_POST["eco_post"])) {
         $eco_post .= file_get_contents($eco_data);
       }
 
-      //** update data file
+      //** update data file, link log file, and build log entry
       file_put_contents($eco_data, $eco_post);
-
-      //** link log file and build log entry
       $eco_clog = $_SERVER['DOCUMENT_ROOT'] . $eco_clog;
       $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_prot . $eco_host . $eco_indx . '" title="Click here to open">' . $eco_host . $eco_indx . "</a></div>\n";
 
@@ -282,29 +295,25 @@ if (isset ($_POST["eco_post"])) {
         }
       }
 
-      //** link timer session
-      $_SESSION['eco_tfrm'] = htmlspecialchars($_POST['eco_tbeg']);
-
-      //** try to catch re-submission
+      //** link timer session and try to catch resubmission
+      $_SESSION['eco_tfrm'] = htmlentities($_POST["eco_tbeg"], ENT_QUOTES, "utf-8");
       eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
     } else {
-      //** build link for manual approval post processing
-      $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" . $eco_data . "&eco_post=" . bin2hex($eco_post);
-
-      //** merge body and param
+      /*
+       * build link for manual approval
+       * merge body and param
+       * send message
+       * link timer session
+       * try to catch resubmission
+       */
+      $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" . $eco_data . "&eco_post=" . bin2hex($eco_post) . "&eco_link=" . str_replace($_SERVER['DOCUMENT_ROOT'], "", getcwd());
       $eco_text = $eco_text . "\n\n" . $eco_mlnk;
-
-      //** send message
       mail($eco_mail, $eco_subj, $eco_text, $eco_head);
-
-      //** link timer session
-      $_SESSION['eco_tfrm'] = htmlspecialchars($_POST['eco_tbeg']);
-
-      //** try to catch re-submission
+      $_SESSION['eco_tfrm'] = htmlentities($_POST["eco_tbeg"], ENT_QUOTES, "utf-8");
       eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
     }
   } else {
-    //** reassign existing input
+    //** save existing input
     $eco_name = $eco_name;
     $eco_text = $eco_text;
   }
@@ -312,7 +321,16 @@ if (isset ($_POST["eco_post"])) {
 
 //** check if comments enabled
 if (!isset ($eco_this)) {
-
+?>
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Easy Comments</title>
+    <style type="text/css">#Add_Comment{clear:both;margin-top:32px;}#eco_main{font-size:95%;padding-top:8px;}#eco_text{font-size:85%;word-wrap:break-word;}.eco_item{font-size:85%;border-bottom:1px solid #ccc;white-space:pre-wrap;margin-bottom:8px;padding-bottom:2px;}.eco_item span{font-weight:bold;}#eco_stat{background-color:transparent;color:#f00;font-weight:bold;}.eco_by{font-size:75%;}</style>
+  </head>
+  <body>
+<?php
   //** check conflict when moderator is on but notifications are off
   if ($eco_mapp == 1 && $eco_note == 0) {
 ?>
@@ -343,7 +361,7 @@ if (!isset ($eco_this)) {
         <label for="eco_name">Name</label> <span class="eco_by">(A-Z <?php echo $eco_latb; ?>only)</span>
       </p>
       <div>
-        <input name="eco_name" id="eco_name" value="<?php echo $eco_name; ?>" title="Please enter your name or just post anonymous" class="input">
+        <input name="eco_name" id="eco_name" value="<?php echo $eco_name; ?>" title="Please enter your name or just post anonymous" class="input" />
       </div>
       <p>
         <label for="eco_text">Text (<small id="eco_ccnt"><?php echo $eco_tmax; ?></small>)</label>
@@ -354,16 +372,16 @@ if (!isset ($eco_this)) {
       </div>
       <p>
         <label for="eco_csum">Code</label> 
-        <?php echo $eco_cone . " + " . $eco_ctwo . " = "; ?><input name="eco_csum" id="eco_csum" size="4" maxlength="2" title="Please enter the verification code">
-        <input name="eco_cone" type="hidden" value="<?php echo $eco_cone; ?>">
-        <input name="eco_ctwo" type="hidden" value="<?php echo $eco_ctwo; ?>">
-        <input name="eco_tbeg" type="hidden" value="<?php echo $eco_tbeg; ?>">
+        <?php echo $eco_cone . " + " . $eco_ctwo . " = "; ?><input name="eco_csum" id="eco_csum" size="4" maxlength="2" title="Please enter the verification code" />
+        <input name="eco_cone" type="hidden" value="<?php echo $eco_cone; ?>" />
+        <input name="eco_ctwo" type="hidden" value="<?php echo $eco_ctwo; ?>" />
+        <input name="eco_tbeg" type="hidden" value="<?php echo $eco_tbeg; ?>" />
       </p>
       <p id="eco_tbtn">
 <?php
     //** link timer difference and mark-up
-    $eco_tdif = ($eco_tbeg - $_SESSION['eco_tfrm']);
-    $eco_tbtn = '        <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input">';
+    $eco_tdif = ($eco_tbeg-$_SESSION['eco_tfrm']);
+    $eco_tbtn = '        <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input" />';
 
     //** check timer status
     if ($eco_tdif > $eco_tdel) {
@@ -418,19 +436,9 @@ if (!isset ($eco_this)) {
       }
     }
     </script>
+  </body>
+</html>
 <?php
   }
-}
-
-//** process manual approvals -- gets values from moderator mail link
-if (isset ($_GET['eco_data']) && $_GET['eco_data'] != "" && isset ($_GET['eco_post']) && $_GET['eco_post'] != "") {
-  $eco_data = $_GET['eco_data'];
-  $eco_post = hex2bin($_GET['eco_post']);
-
-  if (is_file($eco_data)) {
-    $eco_post .= file_get_contents($eco_data);
-  }
-
-  file_put_contents($eco_data, $eco_post);
 }
 ?>
