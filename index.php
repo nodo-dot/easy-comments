@@ -321,16 +321,7 @@ if (isset ($_POST["eco_post"])) {
 
 //** check if comments enabled
 if (!isset ($eco_this)) {
-?>
-<!DOCTYPE html>
-<html lang="en-GB">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Easy Comments</title>
-    <style type="text/css">#Add_Comment{clear:both;margin-top:32px;}#eco_main{font-size:95%;padding-top:8px;}#eco_text{font-size:85%;word-wrap:break-word;}.eco_item{font-size:85%;border-bottom:1px solid #ccc;white-space:pre-wrap;margin-bottom:8px;padding-bottom:2px;}.eco_item span{font-weight:bold;}#eco_stat{background-color:transparent;color:#f00;font-weight:bold;}.eco_by{font-size:75%;}</style>
-  </head>
-  <body>
-<?php
+
   //** check conflict when moderator is on but notifications are off
   if ($eco_mapp == 1 && $eco_note == 0) {
 ?>
@@ -436,8 +427,6 @@ if (!isset ($eco_this)) {
       }
     }
     </script>
-  </body>
-</html>
 <?php
   }
 }
