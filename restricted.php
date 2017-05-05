@@ -1,23 +1,15 @@
 <?php
 /*
- * check restricted names -- meaningful fragments are ok
+ * check restricted names or fragments thereof
  *
  * admin => admin, ADMINfoo, AdminisTraitor...
  * webma => webma, myWebMama, yourWebMASTER...
  */
+$eco_nono = array ("admin", "local", "moder", "root", "test", "webma",);
 
-$eco_aray = array (
-                  "admin",
-                  "local",
-                  "moder",
-                  "root",
-                  "test",
-                  "webma",
-                 );
+foreach ($eco_nono as $eco_skip) {
 
-foreach ($eco_aray as $eco_nono) {
-
-  if (preg_match("/$eco_nono/i", $eco_name)) {
+  if (preg_match("/$eco_skip/i", $eco_name)) {
 
     //** check if admin post
     if ($eco_name === $eco_apfx . $eco_asfx) {
