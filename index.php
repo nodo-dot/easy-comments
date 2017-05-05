@@ -7,11 +7,13 @@
 
 
 /*
+ * server protocol
  * script folder
  * default directory index
  * comments data file -- not used with manual approval
  * comments log file -- not used whit manual approval
  */
+$eco_prot = "http://";
 $eco_fold = "/eco/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
@@ -69,7 +71,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
-$eco_make = 20170503;
+$eco_make = 20170505;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
@@ -94,17 +96,6 @@ $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_latb = "";
-
-//** init protocol
-$eco_prot = "http";
-
-//** check protocol
-if (isset ($_SERVER['HTTPS']) && "on" === $_SERVER['HTTPS']) {
-  $eco_prot .= "s";
-}
-
-//** set protocol
-$eco_prot = $eco_prot . "://";
 
 //** check empty user name
 if ($eco_name === "") {
