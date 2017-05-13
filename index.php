@@ -14,7 +14,6 @@
  * phclaus.com/php-scripts/easy-comments
  */
 
-
 /*
  * server protocol
  * script folder
@@ -23,7 +22,7 @@
  * comments log file -- not used whit manual approval
  */
 $eco_prot = "http://";
-$eco_fold = "/path/to/eco/";
+$eco_fold = "/site/eco/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -68,7 +67,6 @@ $eco_date = gmdate('Y-m-d H:i:s');
  *                                               NO NEED TO EDIT BELOW *
  ***********************************************************************
  */
-
 
 /*
  * script version
@@ -336,7 +334,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
   }
 ?>
       <p id=Add_Comment>
-        <label for=eco_name>Name</label> <span class=eco_by>(A-Z <?php echo $eco_latb; ?>only)</span>
+        <label for=eco_name>Name</label> <small>(A-Z <?php echo $eco_latb; ?>only)</small>
       </p>
       <div>
         <input name=eco_name id=eco_name value="<?php echo $eco_name; ?>" title="Please enter your name or just post anonymous" class=input />
@@ -345,7 +343,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
         <label for=eco_text>Text (<small id=eco_ccnt><?php echo $eco_tmax; ?></small>)</label>
       </p>
       <div>
-        <div class=eco_by>Text must not contain links!</div>
+        <div><small>Text must not contain links!</small></div>
         <textarea name=eco_text id=eco_text rows=4 cols=26 title="Please enter the text of your comment" onFocus=eco_tmax() onKeyDown=eco_tmax() onKeyUp=eco_tmax() class=input><?php echo $eco_text; ?></textarea>
       </div>
       <p>
@@ -380,9 +378,9 @@ if ($eco_mapp === 1 && $eco_note === 0) {
     $eco_mtxt = "All posts are monitored and subject to removal";
   }
     
-  echo "      <p class=eco_by>$eco_mtxt.</p>\n";
+  echo "      <p><small>$eco_mtxt.</small></p>\n";
 ?>
-      <p class=eco_by><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_make; ?></a></p>
+      <p><small><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_make; ?></a></small></p>
     </form>
     <script>
     //** character counter
