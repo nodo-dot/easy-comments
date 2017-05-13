@@ -7,11 +7,9 @@
  * comments for ALL pages.
  *
  * You are advised to update your sources and only include the script on
- * those pages for which you want to enable comments.
- *
- * Unless you haven't done so in your global header already, you'll need
- * to put session_start() at the top of pages for which you want to
- * enable comments before sending anything to the browser!
+ * pages for which you want to enable comments and, unless you haven't
+ * done so in your global header, you'll need to put session_start() at
+ * the top of those pages before sending anything to the browser!
  *
  * phclaus.com/php-scripts/easy-comments
  */
@@ -82,7 +80,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
-$eco_make = 20170509;
+$eco_make = 20170513;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
