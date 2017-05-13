@@ -1,6 +1,17 @@
 <?php
 /*
- * PHP Easy Comments is a free PHP comments script with minimal bloat
+ * Trivial comments script with minimal bloat
+ *
+ * As of v20170509 the optional flag to disable comments has been
+ * removed. Including the script in a global footer will thus enable
+ * comments for ALL pages.
+ *
+ * You are advised to update your sources and only include the script on
+ * those pages for which you want to enable comments.
+ *
+ * Unless you haven't done so in your global header already, you'll need
+ * to put session_start() at the top of pages for which you want to
+ * enable comments before sending anything to the browser!
  *
  * phclaus.com/php-scripts/easy-comments
  */
@@ -14,7 +25,7 @@
  * comments log file -- not used whit manual approval
  */
 $eco_prot = "http://";
-$eco_fold = "/eco/";
+$eco_fold = "/path/to/eco/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -71,7 +82,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
-$eco_make = 20170505;
+$eco_make = 20170509;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
@@ -80,12 +91,7 @@ $eco_rest = $_SERVER['DOCUMENT_ROOT'] . $eco_fold . "restricted.php";
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 $eco_head = "From: Easy Comments <$eco_mail>";
 
-/*
- * captcha range min
- * captcha range max
- * captche value min
- * captcha value max
- */
+//** captcha range min, max and value min, max
 $eco_cmin = 1;
 $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
@@ -163,11 +169,11 @@ $_SESSION['eco_tbeg'] = time();
 $eco_tbeg = $_SESSION['eco_tbeg'];
 
 //** form submitted
-if (isset ($_POST["eco_post"])) {
+if (isset ($_POST['eco_post'])) {
 
   //** filter name and text
-  $eco_name = htmlentities($_POST["eco_name"], ENT_QUOTES, "UTF-8");
-  $eco_text = htmlentities($_POST["eco_text"], ENT_QUOTES, "UTF-8");
+  $eco_name = htmlentities($_POST['eco_name'], ENT_QUOTES, "UTF-8");
+  $eco_text = htmlentities($_POST['eco_text'], ENT_QUOTES, "UTF-8");
 
   //** filter links
   if (preg_match("/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/", $eco_text)) {
@@ -251,7 +257,7 @@ if (isset ($_POST["eco_post"])) {
   if ($eco_stat === "") {
 
     //** build comments entry and prepare message
-    $eco_post = '      <div id="eco_' . gmdate('Ymd_His_') . $eco_myip . "_" . $eco_name . '" class="eco_item"><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
+    $eco_post = '      <div id=eco_' . gmdate('Ymd_His_') . $eco_myip . "_" . $eco_name . ' class=eco_item><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
     $eco_subj = "New_Comment";
     $eco_text = $eco_name . " regarding " . $eco_prot . $eco_host . $eco_indx . "\n\n" . $eco_post;
 
@@ -305,85 +311,82 @@ if (isset ($_POST["eco_post"])) {
   }
 }
 
-//** check if comments enabled
-if (!isset ($eco_this)) {
-
-  //** check conflict when moderator is on but notifications are off
-  if ($eco_mapp === 1 && $eco_note === 0) {
+//** check conflict when moderator is on but notifications are off
+if ($eco_mapp === 1 && $eco_note === 0) {
 ?>
-    <p id="eco_stat">Easy Comments Error</p>
+    <p id=eco_stat>Easy Comments Error</p>
     <p>The moderator flag is set but notifications are disabled! Please edit the script's configuration to enable notifications.</p>
 <?php
+} else {
+?>
+    <form action="<?php echo $eco_prot . $eco_host . $eco_indx; ?>#Comments" method=POST id=Comments>
+      <div id=eco_stat><?php echo $eco_stat; ?></div>
+<?php
+  //** print header depending whether data file exists or not
+  if (is_file($eco_data)) {
+?>
+      <p id=eco_main><a href="<?php echo $eco_prot . $eco_host . $eco_indx; ?>#Add_Comment" title="Click here to add new comment">Add Comment</a></p>
+<?php
+    //** include existing data file
+    if (is_file($eco_data)) {
+      include ($eco_data);
+    }
   } else {
 ?>
-    <form action="<?php echo $eco_prot . $eco_host . $eco_indx; ?>#Comments" method="POST" id="Comments">
-      <div id="eco_stat"><?php echo $eco_stat; ?></div>
+      <p id=eco_main>No comments yet. Be the first to share your thoughts.</p>
 <?php
-    //** print header depending whether data file exists or not
-    if (is_file($eco_data)) {
+  }
 ?>
-      <p id="eco_main"><a href="<?php echo $eco_prot . $eco_host . $eco_indx; ?>#Add_Comment" title="Click here to add new comment">Add Comment</a></p>
-<?php
-      //** include existing data file
-      if (is_file($eco_data)) {
-        include ($eco_data);
-      }
-    } else {
-?>
-      <p id="eco_main">No comments yet. Be the first to share your thoughts.</p>
-<?php
-    }
-?>
-      <p id="Add_Comment">
-        <label for="eco_name">Name</label> <span class="eco_by">(A-Z <?php echo $eco_latb; ?>only)</span>
+      <p id=Add_Comment>
+        <label for=eco_name>Name</label> <span class=eco_by>(A-Z <?php echo $eco_latb; ?>only)</span>
       </p>
       <div>
-        <input name="eco_name" id="eco_name" value="<?php echo $eco_name; ?>" title="Please enter your name or just post anonymous" class="input" />
+        <input name=eco_name id=eco_name value="<?php echo $eco_name; ?>" title="Please enter your name or just post anonymous" class=input />
       </div>
       <p>
-        <label for="eco_text">Text (<small id="eco_ccnt"><?php echo $eco_tmax; ?></small>)</label>
+        <label for=eco_text>Text (<small id=eco_ccnt><?php echo $eco_tmax; ?></small>)</label>
       </p>
       <div>
-        <div class="eco_by">Text must not contain links!</div>
-        <textarea name="eco_text" id="eco_text" rows="4" cols="26" title="Please enter the text of your comment" class="input" onFocus="eco_tmax()" onKeyDown="eco_tmax()" onKeyUp="eco_tmax()"><?php echo $eco_text; ?></textarea>
+        <div class=eco_by>Text must not contain links!</div>
+        <textarea name=eco_text id=eco_text rows=4 cols=26 title="Please enter the text of your comment" onFocus=eco_tmax() onKeyDown=eco_tmax() onKeyUp=eco_tmax() class=input><?php echo $eco_text; ?></textarea>
       </div>
       <p>
-        <label for="eco_csum">Code</label> 
-        <?php echo $eco_cone . " + " . $eco_ctwo . " = "; ?><input name="eco_csum" id="eco_csum" size="4" maxlength="2" title="Please enter the verification code" />
-        <input name="eco_cone" type="hidden" value="<?php echo $eco_cone; ?>" />
-        <input name="eco_ctwo" type="hidden" value="<?php echo $eco_ctwo; ?>" />
-        <input name="eco_tbeg" type="hidden" value="<?php echo $eco_tbeg; ?>" />
+        <label for=eco_csum>Code</label> 
+        <?php echo $eco_cone . " + " . $eco_ctwo . " = "; ?><input name=eco_csum id=eco_csum size=4 maxlength=2 title="Please enter the verification code"/>
+        <input name=eco_cone value=<?php echo $eco_cone; ?> type=hidden />
+        <input name=eco_ctwo value=<?php echo $eco_ctwo; ?> type=hidden />
+        <input name=eco_tbeg value=<?php echo $eco_tbeg; ?> type=hidden />
       </p>
-      <p id="eco_tbtn">
+      <p id=eco_tbtn>
 <?php
-    //** link timer difference and mark-up
-    $eco_tdif = ($eco_tbeg-$_SESSION['eco_tfrm']);
-    $eco_tbtn = '        <input name="eco_post" type="submit" value="Add Comment" title="Click here to post your comment" class="input" />';
+  //** link timer difference and mark-up
+  $eco_tdif = ($eco_tbeg-$_SESSION['eco_tfrm']);
+  $eco_tbtn = '        <input name=eco_post value=Post title="Click here to post your comment" type=submit class=input />';
 
-    //** check timer status
-    if ($eco_tdif > $eco_tdel) {
-      echo $eco_tbtn . "\n";
-    } else {
+  //** check timer status
+  if ($eco_tdif > $eco_tdel) {
+    echo $eco_tbtn . "\n";
+  } else {
 ?>
-      Please wait <span id="eco_tdel"><?php echo ($eco_tdel - $eco_tdif); ?></span> seconds before posting again!
+        Please wait <span id=eco_tdel><?php echo ($eco_tdel - $eco_tdif); ?></span> seconds before posting again!
         <noscript><div>Refresh this page to update the timer status.</div></noscript>
 <?php
-    }
+  }
 ?>
       </p>
-      <p class="eco_by">
 <?php
-    //** check moderator flag
-    if ($eco_mapp === 1) {
-      echo "New posts will be listed after moderator approval.";
-    } else {
-      echo "All posts are monitored and subject to removal.";
-    }
+  //** check moderator flag
+  if ($eco_mapp === 1) {
+    $eco_mtxt = "New posts will be listed after moderator approval";
+  } else {
+    $eco_mtxt = "All posts are monitored and subject to removal";
+  }
+    
+  echo "      <p class=eco_by>$eco_mtxt.</p>\n";
 ?>
-      </p>
-      <p class="eco_by"><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_make; ?></a></p>
+      <p class=eco_by><a href="http://phclaus.com/php-scripts/easy-comments/" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_make; ?></a></p>
     </form>
-    <script type="text/javascript">
+    <script>
     //** character counter
     function eco_tmax() {
       var eco_ccnt = document.getElementById("eco_ccnt").innerHTML = (<?php echo $eco_tmax; ?> - document.getElementById("eco_text").value.length);
@@ -414,6 +417,5 @@ if (!isset ($eco_this)) {
     }
     </script>
 <?php
-  }
 }
 ?>
