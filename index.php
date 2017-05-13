@@ -6,14 +6,13 @@
  * removed. Including the script in a global footer will thus enable
  * comments for ALL pages.
  *
- * You are advised to update your sources and only include the script on
- * pages for which you want to enable comments and, unless you haven't
- * done so in your global header, you'll need to put session_start() at
- * the top of those pages before sending anything to the browser!
+ * You should update your sources and include the script on pages for
+ * which you want to enable comments. Unless you haven't done so in your
+ * global header, you'll also need to put session_start() at the top of
+ * those pages before sending anything else to the browser!
  *
  * phclaus.com/php-scripts/easy-comments
  */
-
 /*
  * server protocol
  * script folder
@@ -61,13 +60,11 @@ $eco_list = "YOUR_LIST_TOKEN";
 $eco_tdel = 60;
 $eco_date = gmdate('Y-m-d H:i:s');
 
-
 /*
  ***********************************************************************
  *                                               NO NEED TO EDIT BELOW *
  ***********************************************************************
  */
-
 /*
  * script version
  * host on which the script is running
