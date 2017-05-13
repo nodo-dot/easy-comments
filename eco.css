@@ -16,10 +16,6 @@
   padding-bottom: 0.250em;
 }
 
-.eco_item span {
-  font-weight: bold;
-}
-
 #eco_stat {
   background-color: transparent;
   color: #f00;
