@@ -367,7 +367,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
   } else {
 ?>
         Please wait <span id=eco_tdel><?php echo ($eco_tdel - $eco_tdif); ?></span> seconds before posting again!
-        <noscript><div>Refresh this page to update the timer status.</div></noscript>
+        <noscript>Refresh this page to update the timer status.</noscript>
 <?php
   }
 ?>
