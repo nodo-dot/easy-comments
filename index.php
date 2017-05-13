@@ -253,7 +253,7 @@ if (isset ($_POST['eco_post'])) {
   if ($eco_stat === "") {
 
     //** build comments entry and prepare message
-    $eco_post = '      <div id=eco_' . gmdate('Ymd_His_') . $eco_myip . "_" . $eco_name . ' class=eco_item><span>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</span> " . $eco_text . "</div>\n";
+    $eco_post = '      <div id=eco_' . gmdate('Ymd_His_') . $eco_myip . "_" . $eco_name . ' class=eco_item><strong>' . $eco_date . " " . $eco_name . " " . $eco_ukey . "</strong> " . $eco_text . "</div>\n";
     $eco_subj = "New_Comment";
     $eco_text = $eco_name . " regarding " . $eco_prot . $eco_host . $eco_indx . "\n\n" . $eco_post;
 
