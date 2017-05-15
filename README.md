@@ -13,6 +13,3 @@ A default delay between posts is applied to limit flooding This can be disabled 
 A typical reference to the script would look something like `include ('/path/to/eco/index.php);`and goes where you want the comments to appear. If you had comments enabled globally for all pages but then want to exclude a certain page you can do so by adding `$eco_this = 'n'` just above the reference.
 
 Basic formatting is provided via CSS. You may find it convenient to add the contents of `eco.css` to your existing style sheet. The rules for `class="input"` used in the form are not part of `eco.css`, assuming you have a similar class in your default style sheet already.
-
-
-[Script homepage](http://phclaus.com/php-scripts/easy-comments/)
