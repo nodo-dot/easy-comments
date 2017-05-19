@@ -37,7 +37,7 @@ $eco_anon = "anonymous";
 
 /*
  * send notifications for new comments (0 1)
- * mail account to receive notifications
+ * mail account to send notifications
  * manual approval of new posts (0 1) -- enabled requires notifications
  */
 $eco_note = 1;
