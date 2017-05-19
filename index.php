@@ -13,6 +13,7 @@
  *
  * phclaus.com/php-scripts/#EasyComments
  */
+
 /*
  * server protocol
  * script folder
@@ -21,7 +22,7 @@
  * comments log file -- not used whit manual approval
  */
 $eco_prot = "http://";
-$eco_fold = "/site/eco/";
+$eco_fold = "/eco/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -37,17 +38,14 @@ $eco_anon = "anonymous";
 
 /*
  * send notifications for new comments (0 1)
- * mail account to send notifications
- * manual approval of new posts (0 1) -- enabled requires notifications
+ * mail account sending notifications
+ * manual approval of new posts (0 1) -- enabled requires $eco_note = 1
  */
 $eco_note = 1;
 $eco_mail = "info@" . $_SERVER['HTTP_HOST'];
 $eco_mapp = 1;
 
-/*
- * admin prefix
- * admin suffix
- */
+//** admin prefix and suffix
 $eco_apfx = "YOUR_ADMIN_PREFIX";
 $eco_asfx = "root";
 
@@ -65,6 +63,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  *                                               NO NEED TO EDIT BELOW *
  ***********************************************************************
  */
+
 /*
  * script version
  * host on which the script is running
@@ -75,7 +74,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
-$eco_make = 20170516;
+$eco_make = 20170519;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
