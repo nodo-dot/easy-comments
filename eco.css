@@ -1,6 +1,6 @@
 #eco_main {
   font-size: 95%;
-  padding-top: 0.500em;
+  padding-top: 8px;
 }
 
 #eco_text {
@@ -12,8 +12,8 @@
   font-size: 85%;
   border-bottom: 1px solid #ccc;
   white-space: pre-wrap;
-  margin-bottom: 0.500em;
-  padding-bottom: 0.250em;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
 }
 
 #eco_stat {
