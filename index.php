@@ -1,15 +1,16 @@
 <?php
 /*
- * Trivial comments script with minimal bloat
+ * Easy Comments is a trivial comments script with minimal bloat.
  *
  * As of v20170509 the optional flag to disable comments has been
- * removed. Including the script in a global footer will thus enable
- * comments for ALL pages.
+ * dropped. Including the script in a global footer will thus enable
+ * comments for ALL pages. You should update your sources and include
+ * the script only on pages for which you want to enable comments.
  *
- * You should update your sources and include the script on pages for
- * which you want to enable comments. Unless you haven't done so in your
- * global header, you'll also need to put session_start() at the top of
- * those pages before sending anything else to the browser!
+ * NOTE: Unless you already have session_start() at the top of your
+ * global header you'll need to add it at the top of all comment enabled
+ * pages before sending anything else to the browser! Else the script
+ * will not work!
  *
  * phclaus.com/php-scripts/#EasyComments
  */
@@ -19,7 +20,7 @@
  * script folder
  * default directory index
  * comments data file -- not used with manual approval
- * comments log file -- not used whit manual approval
+ * comments log file  -- not used whit manual approval
  */
 $eco_prot = "http://";
 $eco_fold = "/eco/";
@@ -29,7 +30,7 @@ $eco_clog = $eco_fold . "log.html";
 
 /*
  * maximum characters allowed for comments text
- * accept latin characters only (0 1)
+ * accept latin characters only -- 0 disable, 1 enable
  * default anonymous user name
  */
 $eco_tmax = 1024;
@@ -37,9 +38,9 @@ $eco_lato = 1;
 $eco_anon = "anonymous";
 
 /*
- * send notifications for new comments (0 1)
- * mail account sending notifications
- * manual approval of new posts (0 1) -- enabled requires $eco_note = 1
+ * send notifications for new comments -- 0 disable, 1 enable
+ * mail account to receive notifications -- make sure it exists
+ * manual approval of new posts -- enabled also requires $eco_note = 1
  */
 $eco_note = 1;
 $eco_mail = "info@" . $_SERVER['HTTP_HOST'];
@@ -74,7 +75,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
-$eco_make = 20170519;
+$eco_make = 20170616;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
@@ -264,7 +265,7 @@ if (isset ($_POST['eco_post'])) {
       //** update data file, link log file, and build log entry
       file_put_contents($eco_data, $eco_post);
       $eco_clog = $_SERVER['DOCUMENT_ROOT'] . $eco_clog;
-      $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_prot . $eco_host . $eco_indx . '" title="Click here to open">' . $eco_host . $eco_indx . "</a></div>\n";
+      $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_prot . $eco_host . $eco_indx . '" title="Click here to open the selected resource">' . $eco_host . $eco_indx . "</a></div>\n";
 
       //** check existing log file
       if (is_file($eco_clog)) {
@@ -288,8 +289,8 @@ if (isset ($_POST['eco_post'])) {
       eco_post($eco_prot . $eco_host . $eco_indx . "#Comments");
     } else {
       /*
-       * build link for manual approval
-       * merge body and param
+       * build manual approval link
+       * merge body and params
        * send message
        * link timer session
        * try to catch resubmission
@@ -311,7 +312,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
 <?php
 } else {
 ?>
-    <form action="<?php echo $eco_prot . $eco_host . $eco_indx; ?>#Comments" method=POST id=Comments>
+    <form action="<?php echo $eco_prot . $eco_host . $eco_indx; ?>#Comments" method=POST id=Comments accept-charset="UTF-8">
       <div id=eco_stat><?php echo $eco_stat; ?></div>
 <?php
   //** print header depending whether data file exists or not
@@ -333,18 +334,18 @@ if ($eco_mapp === 1 && $eco_note === 0) {
         <label for=eco_name>Name</label> <small>(A-Z <?php echo $eco_latb; ?>only)</small>
       </p>
       <div>
-        <input name=eco_name id=eco_name value="<?php echo $eco_name; ?>" title="Please enter your name or just post anonymous" class=input />
+        <input name=eco_name id=eco_name value="<?php echo $eco_name; ?>" title="Type here to enter your name or leave blank to post anonymous" class=input />
       </div>
       <p>
         <label for=eco_text>Text (<small id=eco_ccnt><?php echo $eco_tmax; ?></small>)</label>
       </p>
       <div>
         <div><small>Text must not contain links!</small></div>
-        <textarea name=eco_text id=eco_text rows=4 cols=26 title="Please enter the text of your comment" onFocus=eco_tmax() onKeyDown=eco_tmax() onKeyUp=eco_tmax() class=input><?php echo $eco_text; ?></textarea>
+        <textarea name=eco_text id=eco_text rows=4 cols=26 title="Type here to enter the text of your comment" onFocus=eco_tmax() onKeyDown=eco_tmax() onKeyUp=eco_tmax() class=input><?php echo $eco_text; ?></textarea>
       </div>
       <p>
         <label for=eco_csum>Code</label> 
-        <?php echo $eco_cone . " + " . $eco_ctwo . " = "; ?><input name=eco_csum id=eco_csum size=4 maxlength=2 title="Please enter the verification code"/>
+        <?php echo $eco_cone . " + " . $eco_ctwo . " = "; ?><input name=eco_csum id=eco_csum size=4 maxlength=2 title="Type here to enter the verification code"/>
         <input name=eco_cone value=<?php echo $eco_cone; ?> type=hidden />
         <input name=eco_ctwo value=<?php echo $eco_ctwo; ?> type=hidden />
         <input name=eco_tbeg value=<?php echo $eco_tbeg; ?> type=hidden />
@@ -353,14 +354,14 @@ if ($eco_mapp === 1 && $eco_note === 0) {
 <?php
   //** link timer difference and mark-up
   $eco_tdif = ($eco_tbeg-$_SESSION['eco_tfrm']);
-  $eco_tbtn = '        <input name=eco_post value=Post title="Click here to post your comment" type=submit class=input />';
+  $eco_tbtn = '        <input name=eco_post value=Post="Click here to post your comment" type=submit class=input />';
 
   //** check timer status
   if ($eco_tdif > $eco_tdel) {
     echo $eco_tbtn . "\n";
   } else {
 ?>
-        Please wait <span id=eco_tdel><?php echo ($eco_tdel - $eco_tdif); ?></span> seconds before posting again!
+        Please wait <span id=eco_tdel><?php echo ($eco_tdel-$eco_tdif); ?></span> seconds before posting again!
         <noscript>Refresh this page to update the timer status.</noscript>
 <?php
   }
@@ -400,7 +401,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
     //** timer delay counter
     function eco_tdel() {
       if (t_end == 0) {
-        document.getElementById("eco_tbtn").innerHTML = '<?php echo $eco_tbtn; ?>';
+        document.getElementById("eco_tbtn").innerHTML = "<?php echo $eco_tbtn; ?>";
         clearTimeout(t_int);
       } else {
         t_obj.innerHTML = t_end;
