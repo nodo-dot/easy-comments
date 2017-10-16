@@ -12,17 +12,16 @@
  * pages before sending anything else to the browser! Else the script
  * will not work!
  *
- * phclaus.com/php-scripts/#EasyComments
+ * github.com/phhpro/easy-comments
  */
 
+
 /*
- * server protocol
  * script folder
  * default directory index
  * comments data file -- not used with manual approval
  * comments log file  -- not used whit manual approval
  */
-$eco_prot = "http://";
 $eco_fold = "/eco/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
@@ -59,6 +58,7 @@ $eco_list = "YOUR_LIST_TOKEN";
 $eco_tdel = 60;
 $eco_date = gmdate('Y-m-d H:i:s');
 
+
 /*
  ***********************************************************************
  *                                               NO NEED TO EDIT BELOW *
@@ -75,7 +75,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * try to link user IP
  * mail header
  */
-$eco_make = 20170616;
+$eco_make = 20171016;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
@@ -106,6 +106,15 @@ if ($eco_lato === 1) {
   $eco_latb = "Latin ";
 }
 
+//** check protocol
+if (isset ($_SERVER['HTTPS']) && "on" === $_SERVER['HTTPS']) {
+  $eco_prot = "s";
+} else {
+  $eco_prot = "";
+}
+
+$eco_prot = "http" . $eco_prot . "://";
+
 //** check whether to list log file
 if ($_SERVER['QUERY_STRING'] === $eco_list) {
 
@@ -124,12 +133,12 @@ function eco_post(/*.string.*/ $eco_goto) {
     header("Location: $eco_goto");
     exit;
   } else {
-    echo "<meta http-equiv=\"refresh\" content=\"0; url=$eco_goto\">";
+    echo "<meta http-equiv=\"refresh\" content=\"0; url=$eco_goto\"/>";
   }
 }
 
 // check session
-if (version_compare(phpversion(), "5.4.0", ">=") !== FALSE) {
+if (version_compare(phpversion(), "5.4.0", ">=") !== false) {
 
   if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -231,7 +240,7 @@ if (isset ($_POST['eco_post'])) {
   }
 
   //** check maximum characters
-  if (strlen($eco_text) > $eco_tmax) {
+  if (strlen($eco_text) >$eco_tmax) {
     $eco_clen = strlen($eco_text);
     $eco_cfix = ($eco_clen - $eco_tmax);
     $eco_stat = "$eco_cfix characters have been trimmed!";
@@ -357,7 +366,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
   $eco_tbtn = '        <input name=eco_post value=Post="Click here to post your comment" type=submit class=input />';
 
   //** check timer status
-  if ($eco_tdif > $eco_tdel) {
+  if ($eco_tdif >$eco_tdel) {
     echo $eco_tbtn . "\n";
   } else {
 ?>
@@ -377,16 +386,16 @@ if ($eco_mapp === 1 && $eco_note === 0) {
     
   echo "      <p><small>$eco_mtxt.</small></p>\n";
 ?>
-      <p><small><a href="http://phclaus.com/php-scripts/#EasyComments" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_make; ?></a></small></p>
+      <p><small><a href="https://github.com/phhpro/easy-comments" title="Click here to get your own free copy of PHP Easy Comments">Powered by PHP Easy Comments v<?php echo $eco_make; ?></a></small></p>
     </form>
     <script>
     //** character counter
     function eco_tmax() {
-      var eco_ccnt = document.getElementById("eco_ccnt").innerHTML = (<?php echo $eco_tmax; ?> - document.getElementById("eco_text").value.length);
+      var eco_ccnt = document.getElementById("eco_ccnt").innerHTML = (<?php echo $eco_tmax; ?>-document.getElementById("eco_text").value.length);
 
       if (eco_ccnt == 0) {
         document.getElementById("eco_ccnt").innerHTML = "You have reached the maximum characters limit!";
-      } else if (eco_ccnt < 0) {
+      } else if (eco_ccnt <0) {
         document.getElementById("eco_ccnt").innerHTML = "You are " + document.getElementById("eco_ccnt").innerHTML.replace("-", "") + " characters over the limit!";
       } else {
         document.getElementById("eco_ccnt").innerHTML = eco_ccnt;
