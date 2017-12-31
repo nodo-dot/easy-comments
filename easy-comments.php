@@ -41,7 +41,7 @@
  * Comments data file -- not used with manual approval
  * Comments log file  -- not used whit manual approval
  */
-$eco_fold = "/demo/easy-comments/";
+$eco_fold = "/easy-comments/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -139,7 +139,7 @@ $eco_prot = "http" . $eco_prot . "://";
 if ($_SERVER['QUERY_STRING'] === $eco_list) {
 
     if (is_file($_SERVER['DOCUMENT_ROOT'] . $eco_clog)) {
-        header("Location: $eco_clog");
+        header("Location: $eco_prot$eco_host$eco_clog");
         exit;
     } else {
         $eco_stat = "Missing log file!";
@@ -183,7 +183,7 @@ if (isset($_POST['eco_post'])) {
     $eco_csum = $_POST['eco_csum'];
     $eco_cone = $_POST['eco_cone'];
     $eco_ctwo = $_POST['eco_ctwo'];
-    $eco_cval = ($eco_cone + $eco_ctwo);
+    $eco_cval = ($eco_cone+$eco_ctwo);
 
     //** Substitute anon if name is empty or invalid
     if ($eco_name === "" || preg_match("/^\s*$/", $eco_name)) {
@@ -257,14 +257,13 @@ if (isset($_POST['eco_post'])) {
     //** Valid comment
     if ($eco_stat === "") {
 
-        //** Build comments entry and prepare message
+        //** Build entry and prepare mail
         $eco_post = '            <div id=eco_' . gmdate('Ymd_His_') .
-                    $eco_myip . "_" . $eco_name . ' class=eco_item>' .
-                    $eco_date . " " . $eco_name . " " . $eco_ukey .
-                    " " . $eco_text . "</div>\n";
-
+                    $eco_myip . '_' . $eco_name . ' class=eco_item>' .
+                    $eco_date . ' ' . $eco_name . ' ' . $eco_ukey .
+                    ' ' . $eco_text . "</div>\n";
         $eco_subj = "New_Comment";
-        $eco_text = $eco_name . " regarding " . $eco_prot . $eco_host .
+        $eco_body = $eco_name . " regarding " . $eco_prot . $eco_host .
                     $eco_indx . "\n\n" . $eco_post;
 
         //** Check moderator flag
@@ -275,12 +274,11 @@ if (isset($_POST['eco_post'])) {
                 $eco_post .= file_get_contents($eco_data);
             }
 
-            //** Update data file, link log file, and build log entry
+            //** Update data file and log file
             file_put_contents($eco_data, $eco_post);
             $eco_clog = $_SERVER['DOCUMENT_ROOT'] . $eco_clog;
-
             $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_indx .
-                        '" title="Click here to open the selected resource">' .
+                        '" title="Click here to view this item">' .
                         $eco_indx . "</a></div>\n";
 
             //** Check existing log file
@@ -296,28 +294,28 @@ if (isset($_POST['eco_post'])) {
 
                 //** Check notification flag and send mail
                 if ($eco_note === 1) {
-                    mail($eco_mail, $eco_subj, $eco_text, $eco_head);
+                    mail($eco_mail, $eco_subj, $eco_body, $eco_head);
                 }
             }
 
             //** Link timer session
             $_SESSION['eco_tfrm']
-                = htmlentities($_POST["eco_tbeg"], ENT_QUOTES, "UTF-8");
+                = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
         } else {
             /**
-           * Build manual approval link
-           * Merge body and params
-           * Send message
-           * Link timer session
-           */
+             * Build manual approval link
+             * Merge body and params
+             * Send message
+             * Link timer session
+             */
             $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" .
                       $eco_data . "&eco_post=" . bin2hex($eco_post) .
                       "&eco_link=" .
                       str_replace($_SERVER['DOCUMENT_ROOT'], "", getcwd());
             $eco_text = $eco_text . "\n\n" . $eco_mlnk;
-            mail($eco_mail, $eco_subj, $eco_text, $eco_head);
+            mail($eco_mail, $eco_subj, $eco_body, $eco_head);
             $_SESSION['eco_tfrm']
-                = htmlentities($_POST["eco_tbeg"], ENT_QUOTES, "UTF-8");
+                = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
             $eco_mtxt = "Thank you. Your message is awaiting moderation.";
         }
     }
@@ -325,8 +323,8 @@ if (isset($_POST['eco_post'])) {
 
 //** Check conflict when moderator is on but notifications are off
 if ($eco_mapp === 1 && $eco_note === 0) {
-    echo '        <p id=eco_stat>Moderator flag set but notifications ' .
-         "are disabled!</p>\n";
+    echo '        <p id=eco_stat>The moderator flag is set but ' .
+         "notifications are disabled!\n";
 } else {
     echo '        <form action="' . $eco_indx . '#Comments" ' .
          'method=POST id=Comments accept-charset="UTF-8">' . "\n";
@@ -334,7 +332,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
 
     //** Print header depending whether data file exists or not
     if (is_file($eco_data)) {
-        echo '            <p id=eco_main><a href="' . $eco_indx .
+        echo '            <p id=eco_main><a href="' . $eco_indx . 
              '#Add_Comment" title="Click here to add new comment">' .
              "Add Comment</a></p>\n";
 
@@ -353,8 +351,8 @@ if ($eco_mapp === 1 && $eco_note === 0) {
     echo "            </p>\n";
     echo "            <div>\n";
     echo '                <input name=eco_name id=eco_name ' .
-         'value="' . $eco_name . '" title="Type here to enter your ' .
-         'name or leave blank to post anonymous"/>' . "\n";
+         'value="' . $eco_name . '" title="Type here to enter ' .
+         'your name or leave blank to post anonymous"/>' . "\n";
     echo "            </div>\n";
     echo "            <p>\n";
     echo '                <label for=eco_text>Text ' .
@@ -362,8 +360,8 @@ if ($eco_mapp === 1 && $eco_note === 0) {
     echo "            </p>\n";
     echo "            <div>\n";
     echo '                <textarea name=eco_text id=eco_text rows=4 ' .
-         'cols=26 maxlength=' . $eco_tmax . ' title="Type here to enter ' .
-         'the text of your comment"></textarea>' . "\n";
+         'cols=26 maxlength=' . $eco_tmax . ' title="Type here to ' .
+         'enter the text of your comment">' . $eco_text . "</textarea>\n";
     echo "            </div>\n";
     echo "            <p>\n";
     echo "                <label for=eco_csum>Code</label>\n";
@@ -385,9 +383,9 @@ if ($eco_mapp === 1 && $eco_note === 0) {
     if ($eco_tdif >$eco_tdel) {
         echo $eco_tbtn . "\n";
     } else {
-        echo '                Thank you. You can post again in <span ' .
-             'id=eco_tdel>' . ($eco_tdel-$eco_tdif) . "</span> seconds.\n";
-        echo '                <noscript>Refresh this page to manually ' .
+        echo '            You can post again in <span id=eco_tdel>' . 
+             ($eco_tdel-$eco_tdif) . "</span> seconds.\n";
+        echo '            <noscript>Refresh this page to manually ' .
              "update the timer.</noscript>\n";
     }
 
@@ -401,10 +399,9 @@ if ($eco_mapp === 1 && $eco_note === 0) {
     }
 
     echo "            <p><small>$eco_mtxt.</small></p>\n";
-    echo '            <p><small><a ' .
-         'href="https://github.com/phhpro/easy-comments" title="Click ' .
-         'here to get a free copy of PHP Easy Comments">Powered by ' .
-         'PHP Easy Comments v' . $eco_make . "</a></small></p>\n";
+    echo '            <p><small><a href="https://github.com/phhpro/easy-comments" ' .
+         'title="Click here to get a free copy of PHP Easy Comments">Powered ' .
+         'by PHP Easy Comments v' . $eco_make . "</a></small></p>\n";
     echo "        </form>\n";
 }
 ?>
@@ -432,7 +429,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
             eco_ccid.innerHTML = eco_cdif + ' characters remaining';
         }
 
-        setInterval(function() { eco_ccnt('eco_text', 'eco_ccnt') }, 55);
+        setInterval(function() {eco_ccnt('eco_text', 'eco_ccnt')}, 55);
 
         // Set timer
         var eco_tend = <?php echo $eco_tdel; ?>;
@@ -449,10 +446,5 @@ if ($eco_mapp === 1 && $eco_note === 0) {
                 eco_tobj.innerHTML = eco_tend;
                 eco_tend --;
             }
-        }
-
-        // Fake resubmission hack
-        window.onload = function() {
-            history.replaceState('', '', '');
         }
         </script>
