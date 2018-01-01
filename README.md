@@ -1,4 +1,4 @@
-#PHP Easy Comments
+# PHP Easy Comments
 
 **PHP Easy Comments** is a **free PHP comments script** to add discreet inline comments to web pages.
 
