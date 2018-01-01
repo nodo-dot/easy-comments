@@ -328,11 +328,10 @@ if (isset($_POST['eco_post'])) {
 
         /**
          * Return to referrer at current comment position
-         * Works on dev but not on live -- header already sent
-         *
-         * TODO: Possible fix via session per hidden field ???
+         * ob_end_flush required to bypass headers already sent warning
          */
-        //header("Location: " . $_SERVER['HTTP_REFERER'] . "#Comments");
+        header("Location: " . $_SERVER['HTTP_REFERER'] . "#Comments");
+        ob_end_flush();
     }
 }
 
