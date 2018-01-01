@@ -42,8 +42,8 @@
  * Comments data file -- not used with manual approval
  * Comments log file  -- not used whit manual approval
  */
-$eco_path = "/home/phc/www/localhost";
-$eco_fold = "/demo/easy-comments/";
+$eco_path = "/path/to/public_html";
+$eco_fold = "/easy-comments/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
