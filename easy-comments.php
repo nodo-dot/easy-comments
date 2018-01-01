@@ -106,7 +106,7 @@ $eco_rest = $eco_path . $eco_fold . "restricted.php";
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 $eco_head = "From: Easy Comments <$eco_mail>";
 
-//** control code range and value min, max
+//** Init control code range and value min, max
 $eco_cmin = 1;
 $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
@@ -118,14 +118,17 @@ $eco_name = "";
 $eco_stat = "";
 $eco_latb = "";
 
-//** Try to fix permissions of data file
-if (!is_writeable($eco_data)) {
-    chmod($eco_data, '0644');
+//** Check permissions and try to fix script folder, data file, log file
+if (!is_writeable($eco_path . $eco_fold)) {
+    chmod($eco_path . $eco_fold, 0755);
 }
 
-//** Try to fix permissions of log file
+if (!is_writeable($eco_data)) {
+    chmod($eco_data, 0644);
+}
+
 if (!is_writeable($eco_path . $eco_clog)) {
-    chmod($eco_path . $eco_clog, '0644');
+    chmod($eco_path . $eco_clog, 0644);
 }
 
 //** Check empty user name
