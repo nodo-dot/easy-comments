@@ -45,7 +45,7 @@ error_reporting(0);
  * Comments data file -- not used with manual approval
  * Comments log file  -- not used whit manual approval
  */
-$eco_fold = "/demo/easy-comments/";
+$eco_fold = "/easy-comments/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -328,7 +328,8 @@ if (isset($_POST['eco_post'])) {
 
         /**
          * Return to referrer at current comment position
-         * ob_end_flush required to bypass headers already sent warning
+         * Call to ob_end_flush to bypass the
+         * headers already sent warning after posting
          */
         header("Location: " . $_SERVER['HTTP_REFERER'] . "#Comments");
         ob_end_flush();
