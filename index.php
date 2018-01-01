@@ -1,6 +1,10 @@
 <?php
-//** Init session
+/**
+ * Init session and cache
+ * ob_start required to bypass headers already sent warning after posting
+ */
 session_start();
+ob_start();
 ?>
 <!DOCTYPE html>
 <html lang="en-GB">
