@@ -8,7 +8,7 @@
  * @package  PHP_Atom_Chat
  * @author   P H Claus <phhpro@gmail.com>
  * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @version  GIT: 20171231
+ * @version  GIT: 20180101
  * @link     https://github.com/phhpro/easy-comments
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,10 @@
  */
 
 
+//** Disable error reporting -- set to 1 to debug
+error_reporting(0);
+
+
 /**
  ***********************************************************************
  *                                                   BEGIN USER CONFIG *
@@ -41,7 +45,7 @@
  * Comments data file -- not used with manual approval
  * Comments log file  -- not used whit manual approval
  */
-$eco_fold = "/easy-comments/";
+$eco_fold = "/demo/easy-comments/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -52,7 +56,7 @@ $eco_clog = $eco_fold . "log.html";
  * Default anonymous user name
  */
 $eco_tmax = 1024;
-$eco_lato = 1;
+$eco_lato = 0;
 $eco_anon = "anonymous";
 
 /**
@@ -95,7 +99,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Try to link user IP
  * Mail header
  */
-$eco_make = 20171231;
+$eco_make = 20180101;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
@@ -104,7 +108,7 @@ $eco_rest = $_SERVER['DOCUMENT_ROOT'] . $eco_fold . "restricted.php";
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 $eco_head = "From: Easy Comments <$eco_mail>";
 
-//** Captcha code range and value min, max
+//** control code range and value min, max
 $eco_cmin = 1;
 $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
@@ -146,6 +150,15 @@ if ($_SERVER['QUERY_STRING'] === $eco_list) {
     }
 }
 
+//** Check conflict when moderator is on but notifications are off
+if ($eco_mapp === 1 && $eco_note === 0) {
+    $eco_stat = "\n               Moderator flag is set but notifications " .
+                "are disabled!<br/>\n" . "              Please check " .
+                "your settings to correct the error.<br/>\n" .
+                "               Comments are disabled until the error " .
+                "has been fixed.\n";
+}
+
 //** Process manual approvals -- gets values from mail link
 if (isset($_GET['eco_data']) && $_GET['eco_data'] !== "" 
     && isset($_GET['eco_post']) && $_GET['eco_post'] !== "" 
@@ -165,11 +178,10 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
 
 //** Link session
 $_SESSION['eco_tbeg'] = time();
-$eco_tbeg = $_SESSION['eco_tbeg'];
+$eco_tbeg             = $_SESSION['eco_tbeg'];
 
 //** Form submitted
 if (isset($_POST['eco_post'])) {
-
     //** Filter name, text, and common URL protocols
     $eco_name = htmlentities($_POST['eco_name'], ENT_QUOTES, "UTF-8");
     $eco_text = htmlentities($_POST['eco_text'], ENT_QUOTES, "UTF-8");
@@ -178,12 +190,6 @@ if (isset($_POST['eco_post'])) {
     foreach ($eco_urls as $eco_link) {
         $eco_text = str_replace($eco_link . "://", "", $eco_text);
     }
-
-    //** Link captcha code
-    $eco_csum = $_POST['eco_csum'];
-    $eco_cone = $_POST['eco_cone'];
-    $eco_ctwo = $_POST['eco_ctwo'];
-    $eco_cval = ($eco_cone+$eco_ctwo);
 
     //** Substitute anon if name is empty or invalid
     if ($eco_name === "" || preg_match("/^\s*$/", $eco_name)) {
@@ -214,7 +220,12 @@ if (isset($_POST['eco_post'])) {
         $eco_ukey = "$";
     }
 
-    //** Check captcha code
+    //** Link and check control code
+    $eco_csum = $_POST['eco_csum'];
+    $eco_cone = $_POST['eco_cone'];
+    $eco_ctwo = $_POST['eco_ctwo'];
+    $eco_cval = ($eco_cone+$eco_ctwo);
+
     if ($eco_cval !== (int)$eco_csum) {
         $eco_stat = "Invalid verification code!";
     }
@@ -238,20 +249,10 @@ if (isset($_POST['eco_post'])) {
         }
     }
 
-    //** Check maximum characters
-    if (strlen($eco_text) >$eco_tmax) {
-        $eco_clen = strlen($eco_text);
-        $eco_cfix = ($eco_clen-$eco_tmax);
-        $eco_stat = "$eco_cfix characters have been trimmed!";
-        $eco_text = substr($eco_text, 0, $eco_tmax);
-    }
-
-    //** Save existing input and regenerate captcha
+    //** Save existing input
     if ($eco_stat !== "") {
         $eco_name = $eco_name;
         $eco_text = $eco_text;
-        $eco_cone = mt_rand($eco_cmin, $eco_cmax);
-        $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
     }
 
     //** Valid comment
@@ -316,94 +317,102 @@ if (isset($_POST['eco_post'])) {
             mail($eco_mail, $eco_subj, $eco_body, $eco_head);
             $_SESSION['eco_tfrm']
                 = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
-            $eco_mtxt = "Thank you. Your message is awaiting moderation.";
+            $eco_mtxt = "Thank you. Your comment is awaiting moderation.";
         }
+
+        //** Reset name, text, and control code
+        $eco_name = "";
+        $eco_text = "";
+        $eco_cone = mt_rand($eco_cmin, $eco_cmax);
+        $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
+
+        /**
+         * Return to referrer at current comment position
+         * Works on dev but not on live -- header already sent
+         *
+         * TODO: Possible fix via session per hidden field ???
+         */
+        //header("Location: " . $_SERVER['HTTP_REFERER'] . "#Comments");
     }
 }
 
-//** Check conflict when moderator is on but notifications are off
-if ($eco_mapp === 1 && $eco_note === 0) {
-    echo '        <p id=eco_stat>The moderator flag is set but ' .
-         "notifications are disabled!\n";
-} else {
-    echo '        <form action="' . $eco_indx . '#Comments" ' .
-         'method=POST id=Comments accept-charset="UTF-8">' . "\n";
-    echo "            <div id=eco_stat>" . $eco_stat . "</div>\n";
+//** Build form
+echo '        <form action="' . $eco_indx . '" ' .
+     'name=eco_form id=Comments method=POST accept-charset="UTF-8">' . "\n";
+echo "            <div id=eco_stat>$eco_stat</div>\n";
 
-    //** Print header depending whether data file exists or not
+//** Print header depending whether data file exists or not
+if (is_file($eco_data)) {
+    echo '            <p><a href="' . $eco_indx . '#Add_Comment" ' .
+         'title="Click here to add a new comment">' . "Add Comment</a></p>\n";
+
+    //** Include existing data file
     if (is_file($eco_data)) {
-        echo '            <p id=eco_main><a href="' . $eco_indx . 
-             '#Add_Comment" title="Click here to add new comment">' .
-             "Add Comment</a></p>\n";
-
-        //** Include existing data file
-        if (is_file($eco_data)) {
-              include $eco_data;
-        }
-    } else {
-        echo '            <p id=eco_main>No comments yet. ' .
-             "Be the first to share your thoughts.</p>\n";
+          include $eco_data;
     }
+} else {
+    echo '            <p>No comments yet. ' .
+         "Be the first to share your thoughts.</p>\n";
+}
 
-    echo "            <p id=Add_Comment>\n";
-    echo '                <label for=eco_name>Name</label> ' .
-         "<small>(A-Z $eco_latb only)</small>\n";
-    echo "            </p>\n";
-    echo "            <div>\n";
-    echo '                <input name=eco_name id=eco_name ' .
+echo "            <p id=Add_Comment>\n";
+echo '                <label for=eco_name>Name</label> ' .
+         "<small>(A - Z $eco_latb only)</small>\n";
+echo "            </p>\n";
+echo "            <div>\n";
+echo '                <input name=eco_name id=eco_name ' .
          'value="' . $eco_name . '" title="Type here to enter ' .
          'your name or leave blank to post anonymous"/>' . "\n";
-    echo "            </div>\n";
-    echo "            <p>\n";
-    echo '                <label for=eco_text>Text ' .
+echo "            </div>\n";
+echo "            <p>\n";
+echo '                <label for=eco_text>Text ' .
          "<small id=eco_ccnt></small></label>\n";
-    echo "            </p>\n";
-    echo "            <div>\n";
-    echo '                <textarea name=eco_text id=eco_text rows=4 ' .
+echo "            </p>\n";
+echo "            <div>\n";
+echo '                <textarea name=eco_text id=eco_text rows=4 ' .
          'cols=26 maxlength=' . $eco_tmax . ' title="Type here to ' .
          'enter the text of your comment">' . $eco_text . "</textarea>\n";
-    echo "            </div>\n";
-    echo "            <p>\n";
-    echo "                <label for=eco_csum>Code</label>\n";
-    echo '                ' . $eco_cone . ' + ' . $eco_ctwo . ' = ' .
+echo "            </div>\n";
+echo "            <p>\n";
+echo "                <label for=eco_csum>Code</label>\n";
+echo '                ' . $eco_cone . ' + ' . $eco_ctwo . ' = ' .
          '<input name=eco_csum id=eco_csum size=4 maxlength=2 ' .
-         'title="Type here to enter the verification code"/>' . "\n";
-    echo "                <input type=hidden name=eco_cone value=$eco_cone />\n";
-    echo "                <input type=hidden name=eco_ctwo value=$eco_ctwo />\n";
-    echo "                <input type=hidden name=eco_tbeg value=$eco_tbeg />\n";
-    echo "            </p>\n";
-    echo "            <p id=eco_tbtn>\n";
+         'title="Type here to enter the control code"/>' . "\n";
+echo "                <input type=hidden name=eco_cone value=$eco_cone />\n";
+echo "                <input type=hidden name=eco_ctwo value=$eco_ctwo />\n";
+echo "                <input type=hidden name=eco_tbeg value=$eco_tbeg />\n";
+echo "            </p>\n";
+echo "            <p id=eco_tbtn>\n";
 
-    //** Link timer difference and mark-up
-    $eco_tdif = ($eco_tbeg-$_SESSION['eco_tfrm']);
-    $eco_tbtn = '                <input type=submit name=eco_post ' .
-                'value=Post title="Click here to post your comment"/>';
+//** Link timer difference and submit button
+$eco_tdif = ($eco_tbeg-$_SESSION['eco_tfrm']);
+$eco_tbtn = '                <input type=submit name=eco_post ' .
+            'value=Post title="Click here to post your comment"/>';
 
-    //** Check timer status
-    if ($eco_tdif >$eco_tdel) {
-        echo $eco_tbtn . "\n";
-    } else {
-        echo '            You can post again in <span id=eco_tdel>' . 
-             ($eco_tdel-$eco_tdif) . "</span> seconds.\n";
-        echo '            <noscript>Refresh this page to manually ' .
-             "update the timer.</noscript>\n";
-    }
+//** Check timer status
+if ($eco_tdif >$eco_tdel) {
+    echo $eco_tbtn . "\n";
+} else {
+    echo '            Thank you. You can post again in <span id=eco_tdel>' . 
+         ($eco_tdel-$eco_tdif) . "</span> seconds.\n";
+    echo '            <noscript>Refresh this page to manually ' .
+         "update the timer.</noscript>\n";
+}
 
-    echo "            </p>\n";
+echo "            </p>\n";
 
-    //** Check moderator flag
-    if ($eco_mapp === 1) {
-        $eco_mtxt = "New posts require moderator approval";
-    } else {
-        $eco_mtxt = "All posts are monitored and subject to removal";
-    }
+//** Check moderator flag
+if ($eco_mapp === 1) {
+    $eco_mtxt = "New posts require moderator approval";
+} else {
+    $eco_mtxt = "Be polite and refrain from bad language";
+}
 
-    echo "            <p><small>$eco_mtxt.</small></p>\n";
-    echo '            <p><small><a href="https://github.com/phhpro/easy-comments" ' .
+echo "            <p><small>$eco_mtxt.</small></p>\n";
+echo '            <p><small><a href="https://github.com/phhpro/easy-comments" ' .
          'title="Click here to get a free copy of PHP Easy Comments">Powered ' .
          'by PHP Easy Comments v' . $eco_make . "</a></small></p>\n";
-    echo "        </form>\n";
-}
+echo "        </form>\n";
 ?>
         <script>
         // Character counter
@@ -426,7 +435,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
             };
 
             var eco_cdif       = (eco_cmax-eco_ceid.value.length);
-            eco_ccid.innerHTML = eco_cdif + ' characters remaining';
+            eco_ccid.innerHTML = '(' + eco_cdif + ' characters remaining)';
         }
 
         setInterval(function() {eco_ccnt('eco_text', 'eco_ccnt')}, 55);
@@ -436,7 +445,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
         var eco_tobj = document.getElementById('eco_tdel');
         var eco_tint = setInterval(eco_tdel, 1000);
 
-        // Timer delay counter
+        // Timer delay
         function eco_tdel() {
             if (eco_tend == 0) {
                 document.getElementById('eco_tbtn').innerHTML
