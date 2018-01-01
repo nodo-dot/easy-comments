@@ -8,7 +8,7 @@
  * @package  PHP_Atom_Chat
  * @author   P H Claus <phhpro@gmail.com>
  * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @version  GIT: 20180101
+ * @version  GIT: 20180101.7
  * @link     https://github.com/phhpro/easy-comments
  *
  * This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
  * Comments log file  -- not used whit manual approval
  */
 $eco_path = $_SERVER['DOCUMENT_ROOT'];
-$eco_fold = "/easy-comments/";
+$eco_fold = "/demo/easy-comments/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -71,7 +71,7 @@ $eco_apfx = "YOUR_ADMIN_PREFIX";
 $eco_asfx = "root";
 
 /**
- * Query string to list log file
+ * Query string to list the log file
  * Delay between posts in seconds -- 0 to disable
  * Date and time format
  */
@@ -97,7 +97,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Try to link user IP
  * Mail header
  */
-$eco_make = 20180101;
+$eco_make = "20180101.7";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
@@ -106,7 +106,7 @@ $eco_rest = $eco_path . $eco_fold . "restricted.php";
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 $eco_head = "From: Easy Comments <$eco_mail>";
 
-//** Init control code range and value min, max
+//** control code range and value min, max
 $eco_cmin = 1;
 $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
@@ -118,17 +118,14 @@ $eco_name = "";
 $eco_stat = "";
 $eco_latb = "";
 
-//** Check permissions and try to fix script folder, data file, log file
-if (!is_writeable($eco_path . $eco_fold)) {
-    chmod($eco_path . $eco_fold, 0755);
-}
-
+//** Try to fix permissions of data file
 if (!is_writeable($eco_data)) {
-    chmod($eco_data, 0644);
+    chmod($eco_data, '0644');
 }
 
+//** Try to fix permissions of log file
 if (!is_writeable($eco_path . $eco_clog)) {
-    chmod($eco_path . $eco_clog, 0644);
+    chmod($eco_path . $eco_clog, '0644');
 }
 
 //** Check empty user name
