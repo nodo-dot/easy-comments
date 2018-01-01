@@ -28,10 +28,6 @@
  */
 
 
-//** Disable error reporting -- set to 1 to debug
-error_reporting(0);
-
-
 /**
  ***********************************************************************
  *                                                   BEGIN USER CONFIG *
@@ -40,12 +36,14 @@ error_reporting(0);
 
 
 /**
+ * Document root
  * Script folder
  * Default directory index
  * Comments data file -- not used with manual approval
  * Comments log file  -- not used whit manual approval
  */
-$eco_fold = "/easy-comments/";
+$eco_path = "/home/phc/www/localhost";
+$eco_fold = "/demo/easy-comments/";
 $eco_dirx = "index.php";
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -103,8 +101,8 @@ $eco_make = 20180101;
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
-$eco_data = $_SERVER['DOCUMENT_ROOT'] . $eco_page . $eco_cdat;
-$eco_rest = $_SERVER['DOCUMENT_ROOT'] . $eco_fold . "restricted.php";
+$eco_data = $eco_path . $eco_page . $eco_cdat;
+$eco_rest = $eco_path . $eco_fold . "restricted.php";
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 $eco_head = "From: Easy Comments <$eco_mail>";
 
@@ -119,6 +117,16 @@ $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_latb = "";
+
+//** Try to fix permissions of data file
+if (!is_writeable($eco_data)) {
+    chmod($eco_data, '0644');
+}
+
+//** Try to fix permissions of log file
+if (!is_writeable($eco_path . $eco_clog)) {
+    chmod($eco_path . $eco_clog, '0644');
+}
 
 //** Check empty user name
 if ($eco_name === "") {
@@ -142,7 +150,7 @@ $eco_prot = "http" . $eco_prot . "://";
 //** Check whether to list log file
 if ($_SERVER['QUERY_STRING'] === $eco_list) {
 
-    if (is_file($_SERVER['DOCUMENT_ROOT'] . $eco_clog)) {
+    if (is_file($eco_path . $eco_clog)) {
         header("Location: $eco_prot$eco_host$eco_clog");
         exit;
     } else {
@@ -178,10 +186,11 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
 
 //** Link session
 $_SESSION['eco_tbeg'] = time();
-$eco_tbeg             = $_SESSION['eco_tbeg'];
+$eco_tbeg = $_SESSION['eco_tbeg'];
 
 //** Form submitted
 if (isset($_POST['eco_post'])) {
+
     //** Filter name, text, and common URL protocols
     $eco_name = htmlentities($_POST['eco_name'], ENT_QUOTES, "UTF-8");
     $eco_text = htmlentities($_POST['eco_text'], ENT_QUOTES, "UTF-8");
@@ -190,6 +199,12 @@ if (isset($_POST['eco_post'])) {
     foreach ($eco_urls as $eco_link) {
         $eco_text = str_replace($eco_link . "://", "", $eco_text);
     }
+
+    //** Link control code
+    $eco_csum = $_POST['eco_csum'];
+    $eco_cone = $_POST['eco_cone'];
+    $eco_ctwo = $_POST['eco_ctwo'];
+    $eco_cval = ($eco_cone+$eco_ctwo);
 
     //** Substitute anon if name is empty or invalid
     if ($eco_name === "" || preg_match("/^\s*$/", $eco_name)) {
@@ -220,12 +235,7 @@ if (isset($_POST['eco_post'])) {
         $eco_ukey = "$";
     }
 
-    //** Link and check control code
-    $eco_csum = $_POST['eco_csum'];
-    $eco_cone = $_POST['eco_cone'];
-    $eco_ctwo = $_POST['eco_ctwo'];
-    $eco_cval = ($eco_cone+$eco_ctwo);
-
+    //** Check control code
     if ($eco_cval !== (int)$eco_csum) {
         $eco_stat = "Invalid verification code!";
     }
@@ -277,7 +287,7 @@ if (isset($_POST['eco_post'])) {
 
             //** Update data file and log file
             file_put_contents($eco_data, $eco_post);
-            $eco_clog = $_SERVER['DOCUMENT_ROOT'] . $eco_clog;
+            $eco_clog = $eco_path . $eco_clog;
             $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_indx .
                         '" title="Click here to view this item">' .
                         $eco_indx . "</a></div>\n";
@@ -312,7 +322,7 @@ if (isset($_POST['eco_post'])) {
             $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" .
                       $eco_data . "&eco_post=" . bin2hex($eco_post) .
                       "&eco_link=" .
-                      str_replace($_SERVER['DOCUMENT_ROOT'], "", getcwd());
+                      str_replace($eco_path, "", getcwd());
             $eco_text = $eco_text . "\n\n" . $eco_mlnk;
             mail($eco_mail, $eco_subj, $eco_body, $eco_head);
             $_SESSION['eco_tfrm']
@@ -320,25 +330,18 @@ if (isset($_POST['eco_post'])) {
             $eco_mtxt = "Thank you. Your comment is awaiting moderation.";
         }
 
-        //** Reset name, text, and control code
-        $eco_name = "";
-        $eco_text = "";
+        //** Reset control code
         $eco_cone = mt_rand($eco_cmin, $eco_cmax);
         $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
 
-        /**
-         * Return to referrer at current comment position
-         * Call to ob_end_flush to bypass the
-         * headers already sent warning after posting
-         */
+        //** Return to referrer at current comment position
         header("Location: " . $_SERVER['HTTP_REFERER'] . "#Comments");
-        ob_end_flush();
     }
 }
 
 //** Build form
 echo '        <form action="' . $eco_indx . '" ' .
-     'name=eco_form id=Comments method=POST accept-charset="UTF-8">' . "\n";
+     'method=POST id=Comments accept-charset="UTF-8">' . "\n";
 echo "            <div id=eco_stat>$eco_stat</div>\n";
 
 //** Print header depending whether data file exists or not
