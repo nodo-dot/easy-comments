@@ -1,23 +1,12 @@
-#eco_main {
-  font-size: 95%;
-  padding-top: 8px;
-}
-
-#eco_text {
-  font-size: 85%;
-  word-wrap: break-word;
-}
-
 .eco_item {
-  font-size: 85%;
-  border-bottom: 1px solid #ccc;
-  white-space: pre-wrap;
-  margin-bottom: 8px;
-  padding-bottom: 4px;
+    white-space: pre-wrap;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
 }
 
 #eco_stat {
-  background-color: transparent;
-  color: #f00;
-  font-weight: bold;
+    background-color: transparent;
+    color: #f00;
+    font-weight: bold;
 }
