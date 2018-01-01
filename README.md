@@ -10,7 +10,7 @@ You can post admin replies by entering the values of `$eco_apfx` and `$eco_asfx`
 
 A delay between posts attempts to limit flooding. This can be disabled with `$eco_tdel = 0`. Set `$eco_mapp = 1` and `$eco_note = 1` to require manual approval of new posts. Add a reference to the script where you want the comments section to appear.
 
-Make sure to have `session_start()` at the top of the page. The script may fail without this. Basic formatting is provided via CSS. You may want to add the provided rules to your existing style sheet.
+Make sure to have `session_start()` and `ob_flush()` at the top of the page. This is required to get around the `headers already sent` warning after posting. Basic formatting is provided via CSS. You may want to add the provided rules to your existing style sheet.
 
 For simple testing you can just call the script directly. However, this is *not* recommended for public use. Follow this link to try a [plain vanilla demo](http://phclaus.com/demo/easy-comments/).
 
