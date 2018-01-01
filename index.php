@@ -1,16 +1,6 @@
 <?php
-//** Check session with pre 5.4 fallback
-if (version_compare(phpversion(), "5.4.0", ">=") !== false) {
-
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-} else {
-
-    if (session_id() === "") {
-        session_start();
-    }
-}
+//** Init session
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en-GB">
