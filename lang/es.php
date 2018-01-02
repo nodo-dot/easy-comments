@@ -27,7 +27,6 @@ $eco_lang['miss_log']     = "¡El archivo log no existe!";
 $eco_lang['mod_flag']     = "¡El modo moderador está activo pero las notificaciones están deshabilitadas!";
 $eco_lang['chk_settings'] = "Por favor verifique su configuración para corregir el error.";
 $eco_lang['fix_error']    = "La secuencia de comandos se desactivará hasta que se solucione el error.";
-$eco_lang['invalid_char'] = "¡Nombre contiene caracteres inválidos!";
 $eco_lang['invalid_code'] = "¡Código de control inválido!";
 $eco_lang['miss_text']    = "No puedo publicar comentarios vacíos!";
 $eco_lang['only_latin']   = "¡Solo caracteres latinos permitidos!";

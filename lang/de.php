@@ -27,7 +27,6 @@ $eco_lang['miss_log']     = "Fehlende Logdatei!";
 $eco_lang['mod_flag']     = "Moderatormodus gewählt aber Benachrichtigungen sind deaktiv!";
 $eco_lang['chk_settings'] = "Bitte überprüfen Sie Ihre Einstellungen um den fehler zu beheben.";
 $eco_lang['fix_error']    = "Das Skript wird solange deaktiviert bis der Fehler behoben ist.";
-$eco_lang['invalid_char'] = "Name enthält ungültige Zeichen!";
 $eco_lang['invalid_code'] = "Ungültiger Kontrollwert!";
 $eco_lang['miss_text']    = "Kann keinen leeren Kommentar hinzufügen!";
 $eco_lang['only_latin']   = "Nur Lateinische Zeichen erlaubt!";
