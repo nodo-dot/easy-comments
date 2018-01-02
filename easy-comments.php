@@ -8,7 +8,7 @@
  * @package  PHP_Atom_Chat
  * @author   P H Claus <phhpro@gmail.com>
  * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @version  GIT: 20180102
+ * @version  GIT: 20180102.2
  * @link     https://github.com/phhpro/easy-comments
  *
  * This program is free software; you can redistribute it and/or modify
@@ -97,7 +97,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comment applies
  * Query string
  */
-$eco_make = "20180102";
+$eco_make = "20180102.2";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -120,7 +120,7 @@ $eco_head = "From: Easy Comments <$eco_mail>";
 
 //** Build language reference
 if (empty($eco_qstr)) {
-    $eco_lref = "lang/en-GB";
+    $eco_lref = "lang/en";
 } else {
     $eco_lref = str_replace("lang_", "lang/", $eco_qstr);
 }
@@ -385,15 +385,15 @@ if (isset($_POST['eco_post'])) {
 
 //** Language selector
 echo "        <div id=eco_lang>\n" .
-     '            <a href="?lang_en-GB" lang="en-GB" ' .
+     '            <a href="?lang_en" lang="en-GB" ' .
      'title="Click here to switch to English">' .
-     '<img src="./lang/en-GB.png" width=33 height=24 alt=""/></a>' . " \n" .
-     '            <a href="?lang_de-DE" lang="de-DE" ' .
+     '<img src="./lang/en.png" width=22 height=16 alt=EN /></a>' . " \n" .
+     '            <a href="?lang_de" lang="de-DE" ' .
      'title="Klicken Sie hier um auf Deutsch zu wechseln">' .
-     '<img src="./lang/de-DE.png" width=33 height=24 alt=""/></a>' . " \n" .
-     '            <a href="?lang_es-ES" lang="es-ES" ' .
+     '<img src="./lang/de.png" width=22 height=16 alt=DE /></a>' . " \n" .
+     '            <a href="?lang_es" lang="es-ES" ' .
      'title="Haga clic aquí para cambiar a Español">' .
-     '<img src="./lang/es-ES.png" width=33 height=24 alt=""/></a>' . " \n" .
+     '<img src="./lang/es.png" width=22 height=16 alt=ES /></a>' . " \n" .
      "        </div>\n";
 
 //** Build form
