@@ -2,13 +2,13 @@
 /**
  * PHP Version 5 and above
  *
- * Easy Comments is a trivial comments script with minimal bloat.
+ * PHP Easy Comments is a trivial comments script with minimal bloat.
  *
  * @category PHP_Chat_Scripts
  * @package  PHP_Atom_Chat
  * @author   P H Claus <phhpro@gmail.com>
  * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @version  GIT: 20180101.7
+ * @version  GIT: 20180102
  * @link     https://github.com/phhpro/easy-comments
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,18 +39,22 @@
  * Document root -- change if default returns wrong value
  * Script folder
  * Default directory index
- * Comments data file -- not used with manual approval
- * Comments log file  -- not used whit manual approval
  */
 $eco_path = $_SERVER['DOCUMENT_ROOT'];
 $eco_fold = "/demo/easy-comments/";
 $eco_dirx = "index.php";
+
+/**
+ * Comments data file
+ * Comments log file
+ * Not used when moderator approval is enabled
+ */
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
 
 /**
  * Maximum characters for comments text
- * Accept latin characters only -- 0 disable, 1 enable
+ * Accept latin characters only -- 0 = yes, 1 = no
  * Default anonymous user name
  */
 $eco_tmax = 1024;
@@ -58,9 +62,9 @@ $eco_lato = 0;
 $eco_anon = "anonymous";
 
 /**
- * Send notifications for new comments -- 0 disable, 1 enable
+ * Send notifications for new comments -- 0 = yes, 1 = no
  * Mail account to receive notifications -- make sure it exists
- * Moderator approval -- 0 disable, 1 enable (1 requires $eco_note = 1)
+ * Moderator approval -- 0 = yes, 1 = no (1 requires $eco_note = 1)
  */
 $eco_note = 0;
 $eco_mail = "info@" . $_SERVER['HTTP_HOST'];
@@ -72,7 +76,7 @@ $eco_asfx = "root";
 
 /**
  * Query string to list the log file
- * Delay between posts in seconds -- 0 to disable
+ * Delay between posts in seconds -- 0 = no delay
  * Date and time format
  */
 $eco_list = "YOUR_LIST_TOKEN";
@@ -91,22 +95,54 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Script version
  * Host on which the script is running
  * Current page to which the comment applies
+ * Query string
+ */
+$eco_make = "20180102";
+$eco_host = $_SERVER['HTTP_HOST'];
+$eco_page = $_SERVER['SCRIPT_NAME'];
+$eco_qstr = $_SERVER['QUERY_STRING'];
+
+/**
  * Strip default index
  * Comments data file
  * Restricted names data file
- * Try to link user IP
- * Mail header
  */
-$eco_make = "20180101.7";
-$eco_host = $_SERVER['HTTP_HOST'];
-$eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $eco_path . $eco_page . $eco_cdat;
 $eco_rest = $eco_path . $eco_fold . "restricted.php";
+
+/**
+ * Try to link user IP
+ * Set mail header
+ */
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 $eco_head = "From: Easy Comments <$eco_mail>";
 
-//** control code range and value min, max
+//** Build language reference
+if (empty($eco_qstr)) {
+    $eco_lref = "lang/en-GB";
+} else {
+    $eco_lref = str_replace("lang_", "lang/", $eco_qstr);
+}
+
+/**
+ * Link language data file and try to load it. Obviously the status text
+ * for this has no translation because the file has not yet been loaded.
+ */
+$eco_ldat = $eco_path . $eco_fold . $eco_lref . ".php";
+
+if (file_exists($eco_ldat)) {
+    include $eco_ldat;
+} else {
+    echo "        <p id=eco_stat>Missing language file!</p>\n" .
+         "        <p>Please check your settings to correct the " .
+         "error.</p>\n" . 
+         "        <p>The script will be disabled until the error " .
+         "is fixed.</p>\n";
+    exit;
+}
+
+//** Init control code range and value min, max
 $eco_cmin = 1;
 $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
@@ -118,14 +154,17 @@ $eco_name = "";
 $eco_stat = "";
 $eco_latb = "";
 
-//** Try to fix permissions of data file
-if (!is_writeable($eco_data)) {
-    chmod($eco_data, '0644');
+//** Check permissions and try to fix
+if (!is_writeable($eco_path . $eco_fold)) {
+    chmod($eco_path . $eco_fold, 0755);
 }
 
-//** Try to fix permissions of log file
+if (!is_writeable($eco_data)) {
+    chmod($eco_data, 0644);
+}
+
 if (!is_writeable($eco_path . $eco_clog)) {
-    chmod($eco_path . $eco_clog, '0644');
+    chmod($eco_path . $eco_clog, 0644);
 }
 
 //** Check empty user name
@@ -133,7 +172,7 @@ if ($eco_name === "") {
     $eco_name = $eco_anon;
 }
 
-//** Check latin only label
+//** Check latin only flag
 if ($eco_lato === 1) {
     $eco_latb = "Latin ";
 }
@@ -145,29 +184,29 @@ if (isset($_SERVER['HTTPS']) && "on" === $_SERVER['HTTPS']) {
     $eco_prot = "";
 }
 
+//** Link protocol
 $eco_prot = "http" . $eco_prot . "://";
 
-//** Check whether to list log file
+//** Check whether to list the master log file
 if ($_SERVER['QUERY_STRING'] === $eco_list) {
 
     if (is_file($eco_path . $eco_clog)) {
         header("Location: $eco_prot$eco_host$eco_clog");
         exit;
     } else {
-        $eco_stat = "Missing log file!";
+        $eco_stat = $eco_lang['miss_log'];
     }
 }
 
-//** Check conflict when moderator is on but notifications are off
+//** Check conflict when moderator mode is enabled without notifications
 if ($eco_mapp === 1 && $eco_note === 0) {
-    $eco_stat = "\n               Moderator flag is set but notifications " .
-                "are disabled!<br/>\n" . "              Please check " .
-                "your settings to correct the error.<br/>\n" .
-                "               Comments are disabled until the error " .
-                "has been fixed.\n";
+    echo "        <p id=eco_stat>" .$eco_lang['mod_flag'] . "</p>\n" .
+         "        <p>" . $eco_lang['chk_settings'] . "</p>\n" . 
+         "        <p>" . $eco_lang['fix_error'] . "</p>\n";
+    exit;
 }
 
-//** Process manual approvals -- gets values from mail link
+//** Process moderator approvals -- gets values from mail link
 if (isset($_GET['eco_data']) && $_GET['eco_data'] !== "" 
     && isset($_GET['eco_post']) && $_GET['eco_post'] !== "" 
     && isset($_GET['eco_link']) && $_GET['eco_link'] !== ""
@@ -184,16 +223,18 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
     exit;
 }
 
-//** Link session
+//** Link timer session
 $_SESSION['eco_tbeg'] = time();
 $eco_tbeg = $_SESSION['eco_tbeg'];
 
 //** Form submitted
 if (isset($_POST['eco_post'])) {
 
-    //** Filter name, text, and common URL protocols
+    //** Filter name and text
     $eco_name = htmlentities($_POST['eco_name'], ENT_QUOTES, "UTF-8");
     $eco_text = htmlentities($_POST['eco_text'], ENT_QUOTES, "UTF-8");
+
+    //** Filter common protocols to defuse URL's
     $eco_urls = array('http', 'https', 'ftp', 'ftps');
 
     foreach ($eco_urls as $eco_link) {
@@ -206,7 +247,7 @@ if (isset($_POST['eco_post'])) {
     $eco_ctwo = $_POST['eco_ctwo'];
     $eco_cval = ($eco_cone+$eco_ctwo);
 
-    //** Substitute anon if name is empty or invalid
+    //** Substitute anonymous if name is empty or invalid
     if ($eco_name === "" || preg_match("/^\s*$/", $eco_name)) {
         $eco_name = $eco_anon;
     }
@@ -214,9 +255,9 @@ if (isset($_POST['eco_post'])) {
     //** Check if name is alpha only
     if (preg_match("/^[a-zA-Z]+$/", $eco_name) !== 1) {
 
-        //** Exclude admin post
+        //** Skip admin post
         if ($eco_name !== $eco_apfx . $eco_asfx) {
-            $eco_stat = "Name contains invalid characters!";
+            $eco_stat = $eco_lang['invalid_char'];
         }
     }
 
@@ -237,12 +278,12 @@ if (isset($_POST['eco_post'])) {
 
     //** Check control code
     if ($eco_cval !== (int)$eco_csum) {
-        $eco_stat = "Invalid verification code!";
+        $eco_stat = $eco_lang['invalid_code'];
     }
 
     //** Check missing text
     if ($eco_text === "") {
-        $eco_stat = "Cannot post empty comment!";
+        $eco_stat = $eco_lang['miss_text'];
     }
 
     //** Check latin only
@@ -255,7 +296,7 @@ if (isset($_POST['eco_post'])) {
         if (preg_match($eco_latx, $eco_name)
             || preg_match($eco_latx, $eco_text)
         ) {
-            $eco_stat = "Only latin characters allowed!";
+            $eco_stat = $eco_lang['only_latin'];
         }
     }
 
@@ -268,13 +309,16 @@ if (isset($_POST['eco_post'])) {
     //** Valid comment
     if ($eco_stat === "") {
 
-        //** Build entry and prepare mail
+        /**
+         * Build entry and prepare mail
+         * Skip translation for compatability
+         */
         $eco_post = '            <div id=eco_' . gmdate('Ymd_His_') .
                     $eco_myip . '_' . $eco_name . ' class=eco_item>' .
                     $eco_date . ' ' . $eco_name . ' ' . $eco_ukey .
                     ' ' . $eco_text . "</div>\n";
         $eco_subj = "New_Comment";
-        $eco_body = $eco_name . " regarding " . $eco_prot . $eco_host .
+        $eco_body = $eco_name . " on " . $eco_prot . $eco_host .
                     $eco_indx . "\n\n" . $eco_post;
 
         //** Check moderator flag
@@ -289,7 +333,7 @@ if (isset($_POST['eco_post'])) {
             file_put_contents($eco_data, $eco_post);
             $eco_clog = $eco_path . $eco_clog;
             $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_indx .
-                        '" title="Click here to view this item">' .
+                        '" title="' . $eco_lang['view_item'] . '">' .
                         $eco_indx . "</a></div>\n";
 
             //** Check existing log file
@@ -314,7 +358,7 @@ if (isset($_POST['eco_post'])) {
                 = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
         } else {
             /**
-             * Build manual approval link
+             * Build moderator approval link
              * Merge body and params
              * Send message
              * Link timer session
@@ -327,7 +371,7 @@ if (isset($_POST['eco_post'])) {
             mail($eco_mail, $eco_subj, $eco_body, $eco_head);
             $_SESSION['eco_tfrm']
                 = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
-            $eco_mtxt = "Thank you. Your comment is awaiting moderation.";
+            $eco_mtxt = $eco_lang['mod_wait'];
         }
 
         //** Reset control code
@@ -339,6 +383,19 @@ if (isset($_POST['eco_post'])) {
     }
 }
 
+//** Language selector
+echo "        <div id=eco_lang>\n" .
+     '            <a href="?lang_en-GB" lang="en-GB" ' .
+     'title="Click here to switch to English">' .
+     '<img src="./lang/en-GB.png" width=33 height=24 alt=""/></a>' . " \n" .
+     '            <a href="?lang_de-DE" lang="de-DE" ' .
+     'title="Klicken Sie hier um auf Deutsch zu wechseln">' .
+     '<img src="./lang/de-DE.png" width=33 height=24 alt=""/></a>' . " \n" .
+     '            <a href="?lang_es-ES" lang="es-ES" ' .
+     'title="Haga clic aquí para cambiar a Español">' .
+     '<img src="./lang/es-ES.png" width=33 height=24 alt=""/></a>' . " \n" .
+     "        </div>\n";
+
 //** Build form
 echo '        <form action="' . $eco_indx . '" ' .
      'method=POST id=Comments accept-charset="UTF-8">' . "\n";
@@ -347,40 +404,40 @@ echo "            <div id=eco_stat>$eco_stat</div>\n";
 //** Print header depending whether data file exists or not
 if (is_file($eco_data)) {
     echo '            <p><a href="' . $eco_indx . '#Add_Comment" ' .
-         'title="Click here to add a new comment">' . "Add Comment</a></p>\n";
+         'title="' . $eco_lang['add_new'] . '">' .
+         $eco_lang['add_comment'] . "</a></p>\n";
 
     //** Include existing data file
     if (is_file($eco_data)) {
           include $eco_data;
     }
 } else {
-    echo '            <p>No comments yet. ' .
-         "Be the first to share your thoughts.</p>\n";
+    echo "            <p>" . $eco_lang['be_first'] . "</p>\n";
 }
 
 echo "            <p id=Add_Comment>\n";
-echo '                <label for=eco_name>Name</label> ' .
-         "<small>(A - Z $eco_latb only)</small>\n";
+echo '                <label for=eco_name>' . $eco_lang['name'] .
+     '</label> <small>(' . $eco_lang['az'] . ' ' . $eco_latb . ' ' .
+     $eco_lang['only'] . ')</small>' . "\n";
 echo "            </p>\n";
 echo "            <div>\n";
-echo '                <input name=eco_name id=eco_name ' .
-         'value="' . $eco_name . '" title="Type here to enter ' .
-         'your name or leave blank to post anonymous"/>' . "\n";
+echo '                <input name=eco_name id=eco_name value="' .
+     $eco_name . '" title="' . $eco_lang['type_name'] . '"/>' . "\n";
 echo "            </div>\n";
 echo "            <p>\n";
-echo '                <label for=eco_text>Text ' .
-         "<small id=eco_ccnt></small></label>\n";
+echo '                <label for=eco_text>' . $eco_lang['text'] . ' ' .
+     "<small id=eco_ccnt></small></label>\n";
 echo "            </p>\n";
 echo "            <div>\n";
 echo '                <textarea name=eco_text id=eco_text rows=4 ' .
-         'cols=26 maxlength=' . $eco_tmax . ' title="Type here to ' .
-         'enter the text of your comment">' . $eco_text . "</textarea>\n";
+     'cols=26 maxlength=' . $eco_tmax . ' title="' .
+     $eco_lang['type_text'] . '">' . $eco_text . "</textarea>\n";
 echo "            </div>\n";
 echo "            <p>\n";
-echo "                <label for=eco_csum>Code</label>\n";
+echo "                <label for=eco_csum>" . $eco_lang['code'] . "</label>\n";
 echo '                ' . $eco_cone . ' + ' . $eco_ctwo . ' = ' .
-         '<input name=eco_csum id=eco_csum size=4 maxlength=2 ' .
-         'title="Type here to enter the control code"/>' . "\n";
+     '<input name=eco_csum id=eco_csum size=4 maxlength=2 ' .
+     'title="' . $eco_lang['type_code'] . '"/>' . "\n";
 echo "                <input type=hidden name=eco_cone value=$eco_cone />\n";
 echo "                <input type=hidden name=eco_ctwo value=$eco_ctwo />\n";
 echo "                <input type=hidden name=eco_tbeg value=$eco_tbeg />\n";
@@ -389,32 +446,32 @@ echo "            <p id=eco_tbtn>\n";
 
 //** Link timer difference and submit button
 $eco_tdif = ($eco_tbeg-$_SESSION['eco_tfrm']);
-$eco_tbtn = '                <input type=submit name=eco_post ' .
-            'value=Post title="Click here to post your comment"/>';
+$eco_tbtn = '                <input type=submit name=eco_post value="' .
+            $eco_lang['post'] . '" title="' . $eco_lang['type_post'] . '"/>';
 
 //** Check timer status
 if ($eco_tdif >$eco_tdel) {
     echo $eco_tbtn . "\n";
 } else {
-    echo '            Thank you. You can post again in <span id=eco_tdel>' . 
+    echo '            ' . $eco_lang['post_again'] . ' <span id=eco_tdel>' . 
          ($eco_tdel-$eco_tdif) . "</span> seconds.\n";
-    echo '            <noscript>Refresh this page to manually ' .
-         "update the timer.</noscript>\n";
+    echo '            <noscript>' . $eco_lang['man_refresh'] . "</noscript>\n";
 }
 
 echo "            </p>\n";
 
 //** Check moderator flag
 if ($eco_mapp === 1) {
-    $eco_mtxt = "New posts require moderator approval";
+    $eco_mtxt = $eco_lang['mod_require'];
 } else {
-    $eco_mtxt = "Be polite and refrain from bad language";
+    $eco_mtxt = $eco_lang['be_polite'];
 }
 
 echo "            <p><small>$eco_mtxt.</small></p>\n";
 echo '            <p><small><a href="https://github.com/phhpro/easy-comments" ' .
-         'title="Click here to get a free copy of PHP Easy Comments">Powered ' .
-         'by PHP Easy Comments v' . $eco_make . "</a></small></p>\n";
+     'title="' . $eco_lang['get_copy'] .' PHP Easy Comments">' .
+     $eco_lang['powered_by'] . ' PHP Easy Comments v' . $eco_make .
+     "</a></small></p>\n";
 echo "        </form>\n";
 ?>
         <script>
@@ -438,7 +495,8 @@ echo "        </form>\n";
             };
 
             var eco_cdif       = (eco_cmax-eco_ceid.value.length);
-            eco_ccid.innerHTML = '(' + eco_cdif + ' characters remaining)';
+            var eco_crem       = " <?php echo $eco_lang['char_rem']; ?>";
+            eco_ccid.innerHTML = '(' + eco_cdif + eco_crem + ')';
         }
 
         setInterval(function() {eco_ccnt('eco_text', 'eco_ccnt')}, 55);

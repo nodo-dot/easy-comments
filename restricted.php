@@ -26,7 +26,7 @@ foreach ($eco_nono as $eco_skip) {
             $eco_name = $eco_apfx . $eco_asfx;
         } else {
             $eco_name = $eco_anon;
-            $eco_stat = "Part or all of the selected name is restricted!";
+            $eco_stat = $eco_lang['name_rest'];
         }
     }
 }

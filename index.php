@@ -1,7 +1,10 @@
 <?php
 /**
  * Init session and cache
- * ob_start required to bypass headers already sent warning after posting
+ *
+ * This is required to bypass the headers already sent warning after
+ * posting and must go at the very top (like here) of every page for
+ * which comments are enabled.
  */
 session_start();
 ob_start();
