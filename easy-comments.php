@@ -8,7 +8,7 @@
  * @package  PHP_Atom_Chat
  * @author   P H Claus <phhpro@gmail.com>
  * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @version  GIT: 20180102.2
+ * @version  GIT: 20180102.3
  * @link     https://github.com/phhpro/easy-comments
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ $eco_dirx = "index.php";
 /**
  * Comments data file
  * Comments log file
- * Not used when moderator approval is enabled
+ * These are not used in moderator mode
  */
 $eco_cdat = "_comments.html";
 $eco_clog = $eco_fold . "log.html";
@@ -65,10 +65,13 @@ $eco_anon = "anonymous";
  * Send notifications for new comments -- 0 = no, 1 = yes
  * Mail account to receive notifications -- make sure it exists
  * Moderator approval -- 0 = no, 1 = yes (1 requires $eco_note = 1)
+ * Control code -- 0 = no, 1 = yes
+ *                 Disabling this may well open wide the gates of evil!
  */
 $eco_note = 0;
 $eco_mail = "info@" . $_SERVER['HTTP_HOST'];
 $eco_mapp = 0;
+$eco_ctrl = 1;
 
 //** Admin prefix and suffix
 $eco_apfx = "YOUR_ADMIN_PREFIX";
@@ -94,10 +97,10 @@ $eco_date = gmdate('Y-m-d H:i:s');
 /**
  * Script version
  * Host on which the script is running
- * Current page to which the comment applies
- * Query string
+ * Current page to which the comments apply
+ * Global query string
  */
-$eco_make = "20180102.2";
+$eco_make = "20180102.3";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -112,7 +115,7 @@ $eco_data = $eco_path . $eco_page . $eco_cdat;
 $eco_rest = $eco_path . $eco_fold . "restricted.php";
 
 /**
- * Try to link user IP
+ * Try to link IP
  * Set mail header
  */
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
@@ -142,7 +145,12 @@ if (file_exists($eco_ldat)) {
     exit;
 }
 
-//** Init control code range and value min, max
+/**
+ * Control code range min
+ * Control code range max
+ * Link value #1
+ * Link value #2
+ */
 $eco_cmin = 1;
 $eco_cmax = 9;
 $eco_cone = mt_rand($eco_cmin, $eco_cmax);
@@ -154,7 +162,7 @@ $eco_name = "";
 $eco_stat = "";
 $eco_latb = "";
 
-//** Check permissions and try to fix
+//** Check permissions
 if (!is_writeable($eco_path . $eco_fold)) {
     chmod($eco_path . $eco_fold, 0755);
 }
@@ -167,7 +175,7 @@ if (!is_writeable($eco_path . $eco_clog)) {
     chmod($eco_path . $eco_clog, 0644);
 }
 
-//** Check empty user name
+//** Check empty name
 if ($eco_name === "") {
     $eco_name = $eco_anon;
 }
@@ -206,7 +214,7 @@ if ($eco_mapp === 1 && $eco_note === 0) {
     exit;
 }
 
-//** Process moderator approvals -- gets values from mail link
+//** Process moderator approval -- gets values from mail link
 if (isset($_GET['eco_data']) && $_GET['eco_data'] !== "" 
     && isset($_GET['eco_post']) && $_GET['eco_post'] !== "" 
     && isset($_GET['eco_link']) && $_GET['eco_link'] !== ""
@@ -225,7 +233,7 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
 
 //** Link timer session
 $_SESSION['eco_tbeg'] = time();
-$eco_tbeg = $_SESSION['eco_tbeg'];
+$eco_tbeg             = $_SESSION['eco_tbeg'];
 
 //** Form submitted
 if (isset($_POST['eco_post'])) {
@@ -247,7 +255,7 @@ if (isset($_POST['eco_post'])) {
     $eco_ctwo = $_POST['eco_ctwo'];
     $eco_cval = ($eco_cone+$eco_ctwo);
 
-    //** Substitute anonymous if name is empty or invalid
+    //** Substitute anonymous if name is missing or else invalid
     if ($eco_name === "" || preg_match("/^\s*$/", $eco_name)) {
         $eco_name = $eco_anon;
     }
@@ -268,8 +276,11 @@ if (isset($_POST['eco_post'])) {
     }
 
     //** Check control code
-    if ($eco_cval !== (int)$eco_csum) {
-        $eco_stat = $eco_lang['invalid_code'];
+    if ($eco_ctrl === 1) {
+
+        if ($eco_cval !== (int)$eco_csum) {
+            $eco_stat = $eco_lang['invalid_code'];
+        }
     }
 
     //** Check missing text
@@ -299,10 +310,9 @@ if (isset($_POST['eco_post'])) {
 
     //** Valid comment
     if ($eco_stat === "") {
-
         /**
          * Build entry and prepare mail
-         * Skip translation for compatability
+         * Skip translation for better compatability
          */
         $eco_post = '            <div id=eco_' . gmdate('Ymd_His_') .
                     $eco_myip . '_' . $eco_name . ' class=eco_item>' .
@@ -344,7 +354,7 @@ if (isset($_POST['eco_post'])) {
                 }
             }
 
-            //** Link timer session
+            //** Update timer session
             $_SESSION['eco_tfrm']
                 = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
         } else {
@@ -352,12 +362,11 @@ if (isset($_POST['eco_post'])) {
              * Build moderator approval link
              * Merge body and params
              * Send message
-             * Link timer session
+             * Update timer session
              */
             $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" .
                       $eco_data . "&eco_post=" . bin2hex($eco_post) .
-                      "&eco_link=" .
-                      str_replace($eco_path, "", getcwd());
+                      "&eco_link=" . str_replace($eco_path, "", getcwd());
             $eco_text = $eco_text . "\n\n" . $eco_mlnk;
             mail($eco_mail, $eco_subj, $eco_body, $eco_head);
             $_SESSION['eco_tfrm']
@@ -371,6 +380,7 @@ if (isset($_POST['eco_post'])) {
 
         //** Return to referrer at current comment position
         header("Location: " . $_SERVER['HTTP_REFERER'] . "#Comments");
+        ob_end_flush();
     }
 }
 
@@ -387,7 +397,7 @@ echo "        <div id=eco_lang>\n" .
      '<img src="./lang/es.png" width=22 height=16 alt=ES /></a>' . " \n" .
      "        </div>\n";
 
-//** Build form
+//** Form
 echo '        <form action="' . $eco_indx . '" ' .
      'method=POST id=Comments accept-charset="UTF-8">' . "\n";
 echo "            <div id=eco_stat>$eco_stat</div>\n";
@@ -406,6 +416,7 @@ if (is_file($eco_data)) {
     echo "            <p>" . $eco_lang['be_first'] . "</p>\n";
 }
 
+//** Name
 echo "            <p id=Add_Comment>\n";
 echo '                <label for=eco_name>' . $eco_lang['name'] . "</label>\n";
 echo "            </p>\n";
@@ -413,6 +424,8 @@ echo "            <div>\n";
 echo '                <input name=eco_name id=eco_name value="' .
      $eco_name . '" title="' . $eco_lang['type_name'] . '"/>' . "\n";
 echo "            </div>\n";
+
+//** Text
 echo "            <p>\n";
 echo '                <label for=eco_text>' . $eco_lang['text'] . ' ' .
      "<small id=eco_ccnt></small></label>\n";
@@ -422,17 +435,21 @@ echo '                <textarea name=eco_text id=eco_text rows=4 ' .
      'cols=26 maxlength=' . $eco_tmax . ' title="' .
      $eco_lang['type_text'] . '">' . $eco_text . "</textarea>\n";
 echo "            </div>\n";
-echo "            <p>\n";
-echo "                <label for=eco_csum>" . $eco_lang['code'] . "</label>\n";
-echo '                ' . $eco_cone . ' + ' . $eco_ctwo . ' = ' .
-     '<input name=eco_csum id=eco_csum size=4 maxlength=2 ' .
-     'title="' . $eco_lang['type_code'] . '"/>' . "\n";
-echo "                <input type=hidden name=eco_cone value=$eco_cone />\n";
-echo "                <input type=hidden name=eco_ctwo value=$eco_ctwo />\n";
-echo "                <input type=hidden name=eco_tbeg value=$eco_tbeg />\n";
-echo "            </p>\n";
-echo "            <p id=eco_tbtn>\n";
 
+//** Code
+if ($eco_ctrl === 1) {
+    echo "            <p>\n";
+    echo "                <label for=eco_csum>" . $eco_lang['code'] . "</label>\n";
+    echo '                ' . $eco_cone . ' + ' . $eco_ctwo . ' = ' .
+         '<input name=eco_csum id=eco_csum size=4 maxlength=2 ' .
+         'title="' . $eco_lang['type_code'] . '"/>' . "\n";
+    echo "                <input type=hidden name=eco_cone value=$eco_cone />\n";
+    echo "                <input type=hidden name=eco_ctwo value=$eco_ctwo />\n";
+    echo "                <input type=hidden name=eco_tbeg value=$eco_tbeg />\n";
+    echo "            </p>\n";
+}
+//** Post
+echo "            <p id=eco_tbtn>\n";
 //** Link timer difference and submit button
 $eco_tdif = ($eco_tbeg-$_SESSION['eco_tfrm']);
 $eco_tbtn = '                <input type=submit name=eco_post value="' .
