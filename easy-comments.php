@@ -8,7 +8,7 @@
  * @package  PHP_Atom_Chat
  * @author   P H Claus <phhpro@gmail.com>
  * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @version  GIT: 20180102.5
+ * @version  GIT: Latest
  * @link     https://github.com/phhpro/easy-comments
  *
  * This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180102.5";
+$eco_make = "20180103";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -116,16 +116,18 @@ $eco_rest = $eco_path . $eco_fold . "restricted.php";
 
 /**
  * Try to link IP
+ * Set mail subject
  * Set mail header
  */
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+$eco_subj = "PHP_Easy_Comments_NEW";
 $eco_head = "From: PHP Easy Comments <$eco_mail>";
 
 //** Build language reference
-if (empty($eco_qstr)) {
-    $eco_lref = "lang/en";
-} else {
+if (isset($eco_qstr) && strpos($eco_qstr, "lang_") !== false) {
     $eco_lref = str_replace("lang_", "lang/", $eco_qstr);
+} else {
+    $eco_lref = "lang/en";
 }
 
 /**
@@ -222,7 +224,7 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
     $eco_data = $_GET['eco_data'];
     $eco_post = hex2bin($_GET['eco_post']);
 
-    if (is_file($eco_data)) {
+    if (file_exists($eco_data)) {
         $eco_post .= file_get_contents($eco_data);
     }
 
@@ -318,7 +320,6 @@ if (isset($_POST['eco_post'])) {
                     $eco_myip . '_' . $eco_name . ' class=eco_item>' .
                     $eco_date . ' ' . $eco_name . ' ' . $eco_ukey .
                     ' ' . $eco_text . "</div>\n";
-        $eco_subj = "PHP_Easy_Comments_NEW";
         $eco_body = $eco_name . " on " . $eco_prot . $eco_host .
                     $eco_indx . "\n\n" . $eco_post;
 
@@ -358,17 +359,17 @@ if (isset($_POST['eco_post'])) {
             $_SESSION['eco_tfrm']
                 = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
         } else {
-            //** Build moderator approval link and message body
+            //** Build moderator mail link
             $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" .
-                      $eco_data . "&eco_post=" . bin2hex($eco_post) .
-                      "&eco_link=" . str_replace($eco_path, "", getcwd());
-            $eco_text = $eco_text . "\n\n" . $eco_mlnk;
+                        $eco_data . "&eco_post=" . bin2hex($eco_post) .
+                        "&eco_link=" . str_replace($eco_path, "", getcwd());
+            $eco_body = $eco_body . "\n\nClick the below link to approve " .
+                        "this post and publish\n\n" . $eco_mlnk;
 
             //** Send mail and update timer session
             mail($eco_mail, $eco_subj, $eco_body, $eco_head);
             $_SESSION['eco_tfrm']
                 = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
-            $eco_mtxt = $eco_lang['mod_wait'];
         }
 
         //** Reset control code
@@ -383,14 +384,16 @@ if (isset($_POST['eco_post'])) {
 
 //** Language selector
 echo "        <div id=eco_lang><small>\n" .
-     '            <a href="?lang_en" lang="en-GB" ' .
-     'title="Click here to switch to English">EN</a>' . " \n" .
-     '            <a href="?lang_de" lang="de-DE" ' .
-     'title="Klicken Sie hier um nach Deutsch zu wechseln">DE</a>' . " \n" .
-     '            <a href="?lang_es" lang="es-ES" ' .
-     'title="Haga clic aquí para cambiar a Español">ES</a>' . " \n" .
      '            <a href="?lang_ar" lang="ar-AE" ' .
      'title="انقر هنا للتبديل إلى اللغة العربية">AR</a>' . " \n" .
+     '            <a href="?lang_de" lang="de-DE" ' .
+     'title="Klicken Sie hier um nach Deutsch zu wechseln">DE</a>' . " \n" .
+     '            <a href="?lang_en" lang="en-GB" ' .
+     'title="Click here to switch to English">EN</a>' . " \n" .
+     '            <a href="?lang_es" lang="es-ES" ' .
+     'title="Haga clic aquí para cambiar a Español">ES</a>' . " \n" .
+     '            <a href="?lang_fr" lang="fr-FR" ' .
+     'title="Cliquez ici pour passer en français">FR</a>' . " \n" .
      "        </small></div>\n";
 
 //** Form
@@ -447,7 +450,7 @@ if ($eco_ctrl === 1) {
 //** Post
 echo "            <p id=eco_tbtn>\n";
 //** Link timer difference and submit button
-$eco_tdif = ($eco_tbeg-$_SESSION['eco_tfrm']);
+$eco_tdif = ((int)$eco_tbeg-(int)$_SESSION['eco_tfrm']);
 $eco_tbtn = '                <input type=submit name=eco_post value="' .
             $eco_lang['post'] . '" title="' . $eco_lang['type_post'] . '"/>';
 
