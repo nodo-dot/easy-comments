@@ -8,7 +8,7 @@
  * @package  PHP_Atom_Chat
  * @author   P H Claus <phhpro@gmail.com>
  * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @version  GIT: 20180102.3
+ * @version  GIT: 20180102.4
  * @link     https://github.com/phhpro/easy-comments
  *
  * This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180102.3";
+$eco_make = "20180102.4";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -119,7 +119,7 @@ $eco_rest = $eco_path . $eco_fold . "restricted.php";
  * Set mail header
  */
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-$eco_head = "From: Easy Comments <$eco_mail>";
+$eco_head = "From: PHP Easy Comments <$eco_mail>";
 
 //** Build language reference
 if (empty($eco_qstr)) {
@@ -318,7 +318,7 @@ if (isset($_POST['eco_post'])) {
                     $eco_myip . '_' . $eco_name . ' class=eco_item>' .
                     $eco_date . ' ' . $eco_name . ' ' . $eco_ukey .
                     ' ' . $eco_text . "</div>\n";
-        $eco_subj = "New_Comment";
+        $eco_subj = "PHP_Easy_Comments_NEW";
         $eco_body = $eco_name . " on " . $eco_prot . $eco_host .
                     $eco_indx . "\n\n" . $eco_post;
 
@@ -330,7 +330,7 @@ if (isset($_POST['eco_post'])) {
                 $eco_post .= file_get_contents($eco_data);
             }
 
-            //** Update data file and log file
+            //** Update data and log file
             file_put_contents($eco_data, $eco_post);
             $eco_clog = $eco_path . $eco_clog;
             $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_indx .
@@ -358,16 +358,13 @@ if (isset($_POST['eco_post'])) {
             $_SESSION['eco_tfrm']
                 = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
         } else {
-            /**
-             * Build moderator approval link
-             * Merge body and params
-             * Send message
-             * Update timer session
-             */
+            //** Build moderator approval link and message body
             $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" .
                       $eco_data . "&eco_post=" . bin2hex($eco_post) .
                       "&eco_link=" . str_replace($eco_path, "", getcwd());
             $eco_text = $eco_text . "\n\n" . $eco_mlnk;
+
+            //** Send mail and update timer session
             mail($eco_mail, $eco_subj, $eco_body, $eco_head);
             $_SESSION['eco_tfrm']
                 = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
@@ -388,13 +385,16 @@ if (isset($_POST['eco_post'])) {
 echo "        <div id=eco_lang>\n" .
      '            <a href="?lang_en" lang="en-GB" ' .
      'title="Click here to switch to English">' .
-     '<img src="./lang/en.png" width=22 height=16 alt=EN /></a>' . " \n" .
+     '<img src="lang/en.png" width=22 height=16 alt=EN /></a>' . " \n" .
      '            <a href="?lang_de" lang="de-DE" ' .
-     'title="Klicken Sie hier um auf Deutsch zu wechseln">' .
-     '<img src="./lang/de.png" width=22 height=16 alt=DE /></a>' . " \n" .
+     'title="Klicken Sie hier um nach Deutsch zu wechseln">' .
+     '<img src="lang/de.png" width=22 height=16 alt=DE /></a>' . " \n" .
      '            <a href="?lang_es" lang="es-ES" ' .
      'title="Haga clic aquí para cambiar a Español">' .
-     '<img src="./lang/es.png" width=22 height=16 alt=ES /></a>' . " \n" .
+     '<img src="lang/es.png" width=22 height=16 alt=ES /></a>' . " \n" .
+     '            <a href="?lang_ar" lang="ar-AE" ' .
+     'title="انقر هنا للتبديل إلى اللغة العربية">' .
+     '<img src="lang/ar.png" width=22 height=16 alt=AR /></a>' . " \n" .
      "        </div>\n";
 
 //** Form
