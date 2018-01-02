@@ -8,7 +8,7 @@
  * @package  PHP_Atom_Chat
  * @author   P H Claus <phhpro@gmail.com>
  * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @version  GIT: 20180102.4
+ * @version  GIT: 20180102.5
  * @link     https://github.com/phhpro/easy-comments
  *
  * This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180102.4";
+$eco_make = "20180102.5";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -382,20 +382,16 @@ if (isset($_POST['eco_post'])) {
 }
 
 //** Language selector
-echo "        <div id=eco_lang>\n" .
+echo "        <div id=eco_lang><small>\n" .
      '            <a href="?lang_en" lang="en-GB" ' .
-     'title="Click here to switch to English">' .
-     '<img src="lang/en.png" width=22 height=16 alt=EN /></a>' . " \n" .
+     'title="Click here to switch to English">EN</a>' . " \n" .
      '            <a href="?lang_de" lang="de-DE" ' .
-     'title="Klicken Sie hier um nach Deutsch zu wechseln">' .
-     '<img src="lang/de.png" width=22 height=16 alt=DE /></a>' . " \n" .
+     'title="Klicken Sie hier um nach Deutsch zu wechseln">DE</a>' . " \n" .
      '            <a href="?lang_es" lang="es-ES" ' .
-     'title="Haga clic aquí para cambiar a Español">' .
-     '<img src="lang/es.png" width=22 height=16 alt=ES /></a>' . " \n" .
+     'title="Haga clic aquí para cambiar a Español">ES</a>' . " \n" .
      '            <a href="?lang_ar" lang="ar-AE" ' .
-     'title="انقر هنا للتبديل إلى اللغة العربية">' .
-     '<img src="lang/ar.png" width=22 height=16 alt=AR /></a>' . " \n" .
-     "        </div>\n";
+     'title="انقر هنا للتبديل إلى اللغة العربية">AR</a>' . " \n" .
+     "        </small></div>\n";
 
 //** Form
 echo '        <form action="' . $eco_indx . '" ' .
@@ -460,7 +456,7 @@ if ($eco_tdif >$eco_tdel) {
     echo $eco_tbtn . "\n";
 } else {
     echo '            ' . $eco_lang['post_again'] . ' <span id=eco_tdel>' . 
-         ($eco_tdel-$eco_tdif) . "</span> seconds.\n";
+         ($eco_tdel-$eco_tdif) . "</span> " . $eco_lang['seconds'] . ".\n";
     echo '            <noscript>' . $eco_lang['man_refresh'] . "</noscript>\n";
 }
 
@@ -508,13 +504,13 @@ echo "        </form>\n";
         setInterval(function() {eco_ccnt('eco_text', 'eco_ccnt')}, 55);
 
         // Set timer
-        var eco_tend = <?php echo $eco_tdel; ?>;
         var eco_tobj = document.getElementById('eco_tdel');
+        var eco_tend = <?php echo $eco_tdel; ?>;
         var eco_tint = setInterval(eco_tdel, 1000);
 
         // Timer delay
         function eco_tdel() {
-            if (eco_tend == 0) {
+            if (eco_tend === 0) {
                 document.getElementById('eco_tbtn').innerHTML
                     = '<?php echo $eco_tbtn; ?>';
                 clearTimeout(eco_tint);
