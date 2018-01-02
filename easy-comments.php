@@ -54,7 +54,7 @@ $eco_clog = $eco_fold . "log.html";
 
 /**
  * Maximum characters for comments text
- * Accept latin characters only -- 0 = yes, 1 = no
+ * Accept latin text only -- 0 = no, 1 = yes
  * Default anonymous user name
  */
 $eco_tmax = 1024;
@@ -62,9 +62,9 @@ $eco_lato = 0;
 $eco_anon = "anonymous";
 
 /**
- * Send notifications for new comments -- 0 = yes, 1 = no
+ * Send notifications for new comments -- 0 = no, 1 = yes
  * Mail account to receive notifications -- make sure it exists
- * Moderator approval -- 0 = yes, 1 = no (1 requires $eco_note = 1)
+ * Moderator approval -- 0 = no, 1 = yes (1 requires $eco_note = 1)
  */
 $eco_note = 0;
 $eco_mail = "info@" . $_SERVER['HTTP_HOST'];
@@ -252,15 +252,6 @@ if (isset($_POST['eco_post'])) {
         $eco_name = $eco_anon;
     }
 
-    //** Check if name is alpha only
-    if (preg_match("/^[a-zA-Z]+$/", $eco_name) !== 1) {
-
-        //** Skip admin post
-        if ($eco_name !== $eco_apfx . $eco_asfx) {
-            $eco_stat = $eco_lang['invalid_char'];
-        }
-    }
-
     //** Link restricted names
     if (is_file($eco_rest)) {
         include $eco_rest;
@@ -416,9 +407,7 @@ if (is_file($eco_data)) {
 }
 
 echo "            <p id=Add_Comment>\n";
-echo '                <label for=eco_name>' . $eco_lang['name'] .
-     '</label> <small>(' . $eco_lang['az'] . ' ' . $eco_latb . ' ' .
-     $eco_lang['only'] . ')</small>' . "\n";
+echo '                <label for=eco_name>' . $eco_lang['name'] . "</label>\n";
 echo "            </p>\n";
 echo "            <div>\n";
 echo '                <input name=eco_name id=eco_name value="' .
