@@ -118,7 +118,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180103.2";
+$eco_make = "20180103.3";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -175,19 +175,6 @@ $eco_text = "";
 $eco_name = "";
 $eco_stat = "";
 $eco_latb = "";
-
-//** Check permissions
-if (!is_writeable($eco_path . $eco_fold)) {
-    chmod($eco_path . $eco_fold, 0755);
-}
-
-if (!is_writeable($eco_data)) {
-    chmod($eco_data, 0644);
-}
-
-if (!is_writeable($eco_path . $eco_clog)) {
-    chmod($eco_path . $eco_clog, 0644);
-}
 
 //** Check empty name
 if ($eco_name === "") {
