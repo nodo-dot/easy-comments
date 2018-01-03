@@ -11,8 +11,8 @@
  *
  * Check restricted names or fragments thereof
  *
- * Example 1: admin => admin => ADMINfoo => AdminisTraitor ...
- * Example 2: webma => webma => myWebMama => yourWebMASTER ...
+ * Example #1: admin => admin => ADMINfoo => AdminisTraitor ...
+ * Example #2: webma => webma => myWebMama => yourWebMASTER ...
  */
 $eco_nono = array("admin", "local", "moder", "root", "test", "webma");
 
@@ -25,7 +25,7 @@ foreach ($eco_nono as $eco_skip) {
             $eco_name = $eco_apfx . $eco_asfx;
         } else {
             $eco_name = $eco_anon;
-            $eco_stat = $eco_lang['name_rest'];
+            $eco_stat = $eco_lang['restricted'];
         }
     }
 }

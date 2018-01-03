@@ -120,7 +120,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180103.4";
+$eco_make = "20180103.5";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -132,7 +132,7 @@ $eco_qstr = $_SERVER['QUERY_STRING'];
  */
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $eco_path . $eco_page . $eco_cdat;
-$eco_rest = $eco_path . $eco_fold . "restricted.php";
+$eco_rest = $eco_path . $eco_fold . "easy-restricted.php";
 
 //** Link IP -- don't rely on this
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
@@ -145,8 +145,8 @@ if (isset($eco_qstr) && strpos($eco_qstr, "lang_") !== false) {
 }
 
 /**
- * Link language data file and try to load it. Obviously the status text
- * for this has no translation because the file has not yet been loaded.
+ * Link language data file and try to load it.
+ * No translation here because the file has not yet been loaded.
  */
 $eco_ldat = $eco_path . $eco_fold . $eco_lref . ".php";
 
@@ -256,7 +256,7 @@ if (isset($_POST['eco_post'])) {
     $eco_csum = $_POST['eco_csum'];
     $eco_cone = $_POST['eco_cone'];
     $eco_ctwo = $_POST['eco_ctwo'];
-    $eco_cval = ($eco_cone+$eco_ctwo);
+    $eco_cval = ((int)$eco_cone+(int)$eco_ctwo);
 
     //** Substitute anonymous if name is missing or else invalid
     if ($eco_name === "" || preg_match("/^\s*$/", $eco_name)) {
@@ -362,8 +362,8 @@ if (isset($_POST['eco_post'])) {
                         "&eco_link=" . str_replace($eco_path, "", getcwd());
 
             //** Build moderator mail body
-            $eco_body = $eco_body . "\n\nClick the below link to approve " .
-                        "this post and publish\n\n" . $eco_mlnk;
+            $eco_body = $eco_body . "\n\nClick the below link to " .
+                        "approve this post and publish\n\n" . $eco_mlnk;
 
             //** Send mail and update timer session
             mail($eco_mail, $eco_subj, $eco_body, $eco_head);
@@ -383,19 +383,8 @@ if (isset($_POST['eco_post'])) {
     }
 }
 
-//** Language selector
-echo "        <div id=eco_lang><small>\n" .
-     '            <a href="?lang_ar" lang="ar-AE" ' .
-     'title="انقر هنا للتبديل إلى اللغة العربية">AR</a>' . " \n" .
-     '            <a href="?lang_de" lang="de-DE" ' .
-     'title="Klicken Sie hier um nach Deutsch zu wechseln">DE</a>' . " \n" .
-     '            <a href="?lang_en" lang="en-GB" ' .
-     'title="Click here to switch to English">EN</a>' . " \n" .
-     '            <a href="?lang_es" lang="es-ES" ' .
-     'title="Haga clic aquí para cambiar a Español">ES</a>' . " \n" .
-     '            <a href="?lang_fr" lang="fr-FR" ' .
-     'title="Cliquez ici pour passer en français">FR</a>' . " \n" .
-     "        </small></div>\n";
+//** Load language selector
+include './lang/easy-language.php';
 
 //** Build form
 echo '        <form action="' . $eco_indx . '" ' .
@@ -476,9 +465,8 @@ if ($eco_mapp === 1) {
 //** Print footer and close form
 echo "            <p><small>$eco_mtxt.</small></p>\n";
 echo '            <p><small><a href="https://github.com/phhpro/easy-comments" ' .
-     'title="' . $eco_lang['get_copy'] .' PHP Easy Comments">' .
-     $eco_lang['powered_by'] . ' PHP Easy Comments v' . $eco_make .
-     "</a></small></p>\n";
+     'title="' . $eco_lang['get_copy'] .'">' . $eco_lang['powered_by'] .
+     ' PHP Easy Comments v' . $eco_make . "</a></small></p>\n";
 echo "            <div>\n" .
      "                <input type=hidden name=eco_tbeg value=$eco_tbeg />\n" .
      "            </div>\n";
