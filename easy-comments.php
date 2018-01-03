@@ -2,14 +2,13 @@
 /**
  * PHP Version 5 and above
  *
- * PHP Easy Comments is a trivial comments script with minimal bloat.
- *
- * @category PHP_Chat_Scripts
- * @package  PHP_Atom_Chat
- * @author   P H Claus <phhpro@gmail.com>
- * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @version  GIT: Latest
- * @link     https://github.com/phhpro/easy-comments
+ * @category  PHP_Comment_Scripts
+ * @package   PHP_Easy_Comments
+ * @author    P H Claus <phhpro@gmail.com>
+ * @copyright 2015 - 2018 P H Claus
+ * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
+ * @version   GIT: Latest
+ * @link      https://github.com/phhpro/easy-comments
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +24,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
+ *
+ *
+ * PHP Easy Comments is a trivial comments script.
  */
 
 
@@ -39,12 +41,12 @@
 
 
 /**
- * Document root -- change if default returns wrong value
+ * Document root -- path without trailing slash if SERVER has wrong value
  * Script folder
  * Default directory index
  */
 $eco_path = $_SERVER['DOCUMENT_ROOT'];
-$eco_fold = "/demo/easy-comments/";
+$eco_fold = "/easy-comments/";
 $eco_dirx = "index.php";
 
 /**
@@ -118,7 +120,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180103.3";
+$eco_make = "20180103.4";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];

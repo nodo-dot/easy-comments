@@ -2,13 +2,12 @@
 /**
  * PHP Version 5 and above
  *
- * Easy Comments is a trivial comments script with minimal bloat.
- *
- * @category PHP_Chat_Scripts
- * @package  PHP_Atom_Chat
- * @author   P H Claus <phhpro@gmail.com>
- * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @link     https://github.com/phhpro/easy-comments
+ * @category  PHP_Comment_Scripts
+ * @package   PHP_Easy_Comments
+ * @author    P H Claus <phhpro@gmail.com>
+ * @copyright 2015 - 2018 P H Claus
+ * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
+ * @link      https://github.com/phhpro/easy-comments
  *
  * You can customise this header to prepend the comments section by
  * whatever content you may want to appear above it when using the
