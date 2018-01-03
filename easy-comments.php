@@ -35,6 +35,9 @@
  */
 
 
+//** Values of 0 typically mean NO, whereas 1 equals YES
+
+
 /**
  * Document root -- change if default returns wrong value
  * Script folder
@@ -54,7 +57,7 @@ $eco_clog = $eco_fold . "log.html";
 
 /**
  * Maximum characters for comments text
- * Accept latin text only -- 0 = no, 1 = yes
+ * Accept latin text only
  * Default anonymous user name
  */
 $eco_tmax = 1024;
@@ -62,18 +65,30 @@ $eco_lato = 0;
 $eco_anon = "anonymous";
 
 /**
- * Send notifications for new comments -- 0 = no, 1 = yes
- * Mail account to receive notifications -- make sure it exists
- * Moderator approval -- 0 = no, 1 = yes (1 requires $eco_note = 1)
- * Control code -- 0 = no, 1 = yes
- *                 Disabling this may well open wide the gates of evil!
+ * Send notifications for new comments
+ * Moderator approval -- 1 also requires $eco_note = 1
+ * Control code -- 0 may well open wide the gates of evil!
  */
 $eco_note = 0;
-$eco_mail = "info@" . $_SERVER['HTTP_HOST'];
 $eco_mapp = 0;
 $eco_ctrl = 1;
 
-//** Admin prefix and suffix
+/**
+ * Mail account to receive notifications -- make sure it exists
+ * Mail subject
+ * Mail header
+ */
+$eco_mail = "info@" . $_SERVER['HTTP_HOST'];
+$eco_subj = "PHP_Easy_Comments_NEW";
+$eco_head = "From: PHP Easy Comments <$eco_mail>";
+
+/**
+ * Admin prefix
+ * Admin suffix
+ *
+ * Enter both values without spaces into the name field to post as admin
+ * E.g. YOUR_ADMIN_TOKENroot will publish your entry as root
+ */
 $eco_apfx = "YOUR_ADMIN_PREFIX";
 $eco_asfx = "root";
 
@@ -81,6 +96,9 @@ $eco_asfx = "root";
  * Query string to list the log file
  * Delay between posts in seconds -- 0 = no delay
  * Date and time format
+ *
+ * Append the value of $eco_list to the script URL to view the log file
+ * E.g. http://www.example.com/easy-comments/?YOUR_LIST_TOKEN
  */
 $eco_list = "YOUR_LIST_TOKEN";
 $eco_tdel = 60;
@@ -100,7 +118,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180103";
+$eco_make = "20180103.2";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -114,14 +132,8 @@ $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $eco_path . $eco_page . $eco_cdat;
 $eco_rest = $eco_path . $eco_fold . "restricted.php";
 
-/**
- * Try to link IP
- * Set mail subject
- * Set mail header
- */
+//** Link IP -- don't rely on this
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-$eco_subj = "PHP_Easy_Comments_NEW";
-$eco_head = "From: PHP Easy Comments <$eco_mail>";
 
 //** Build language reference
 if (isset($eco_qstr) && strpos($eco_qstr, "lang_") !== false) {
@@ -354,27 +366,27 @@ if (isset($_POST['eco_post'])) {
                     mail($eco_mail, $eco_subj, $eco_body, $eco_head);
                 }
             }
-
-            //** Update timer session
-            $_SESSION['eco_tfrm']
-                = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
         } else {
             //** Build moderator mail link
             $eco_mlnk = $eco_prot . $eco_host . $eco_fold . "?eco_data=" .
                         $eco_data . "&eco_post=" . bin2hex($eco_post) .
                         "&eco_link=" . str_replace($eco_path, "", getcwd());
+
+            //** Build moderator mail body
             $eco_body = $eco_body . "\n\nClick the below link to approve " .
                         "this post and publish\n\n" . $eco_mlnk;
 
             //** Send mail and update timer session
             mail($eco_mail, $eco_subj, $eco_body, $eco_head);
-            $_SESSION['eco_tfrm']
-                = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
         }
 
         //** Reset control code
         $eco_cone = mt_rand($eco_cmin, $eco_cmax);
         $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
+
+        //** Update timer session
+        $_SESSION['eco_tfrm']
+            = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
 
         //** Return to referrer at current comment position
         header("Location: " . $_SERVER['HTTP_REFERER'] . "#Comments");
@@ -396,7 +408,7 @@ echo "        <div id=eco_lang><small>\n" .
      'title="Cliquez ici pour passer en français">FR</a>' . " \n" .
      "        </small></div>\n";
 
-//** Form
+//** Build form
 echo '        <form action="' . $eco_indx . '" ' .
      'method=POST id=Comments accept-charset="UTF-8">' . "\n";
 echo "            <div id=eco_stat>$eco_stat</div>\n";
@@ -444,7 +456,6 @@ if ($eco_ctrl === 1) {
          'title="' . $eco_lang['type_code'] . '"/>' . "\n";
     echo "                <input type=hidden name=eco_cone value=$eco_cone />\n";
     echo "                <input type=hidden name=eco_ctwo value=$eco_ctwo />\n";
-    echo "                <input type=hidden name=eco_tbeg value=$eco_tbeg />\n";
     echo "            </p>\n";
 }
 //** Post
@@ -458,8 +469,9 @@ $eco_tbtn = '                <input type=submit name=eco_post value="' .
 if ($eco_tdif >$eco_tdel) {
     echo $eco_tbtn . "\n";
 } else {
-    echo '            ' . $eco_lang['post_again'] . ' <span id=eco_tdel>' . 
-         ($eco_tdel-$eco_tdif) . "</span> " . $eco_lang['seconds'] . ".\n";
+    echo '            ' . $eco_lang['post_again'] .
+         ' <span id=eco_tdel>' . ((int)$eco_tdel-(int)$eco_tdif) . "</span> " .
+         $eco_lang['seconds'] . ".\n";
     echo '            <noscript>' . $eco_lang['man_refresh'] . "</noscript>\n";
 }
 
@@ -472,11 +484,15 @@ if ($eco_mapp === 1) {
     $eco_mtxt = $eco_lang['be_polite'];
 }
 
+//** Print footer and close form
 echo "            <p><small>$eco_mtxt.</small></p>\n";
 echo '            <p><small><a href="https://github.com/phhpro/easy-comments" ' .
      'title="' . $eco_lang['get_copy'] .' PHP Easy Comments">' .
      $eco_lang['powered_by'] . ' PHP Easy Comments v' . $eco_make .
      "</a></small></p>\n";
+echo "            <div>\n" .
+     "                <input type=hidden name=eco_tbeg value=$eco_tbeg />\n" .
+     "            </div>\n";
 echo "        </form>\n";
 ?>
         <script>
