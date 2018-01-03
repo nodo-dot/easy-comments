@@ -2,20 +2,14 @@
 /**
  * PHP Version 5 and above
  *
- * PHP Easy Comments is a trivial comments script with minimal bloat.
- *
- * @category PHP_Chat_Scripts
- * @package  PHP_Atom_Chat
- * @author   P H Claus <phhpro@gmail.com>
- * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @link     https://github.com/phhpro/easy-comments
+ * @category  PHP_Comment_Scripts
+ * @package   PHP_Easy_Comments
+ * @author    P H Claus <phhpro@gmail.com>
+ * @copyright 2015 - 2018 P H Claus
+ * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
+ * @link      https://github.com/phhpro/easy-comments
  *
  * Language file for Spanish
- *
- * Please translate only the value of Locale_String.
- * Do not translate any Reference_ID!
- *
- * Always use a copy of the English language file as a template.
  */
 
 

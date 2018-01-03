@@ -2,20 +2,14 @@
 /**
  * PHP Version 5 and above
  *
- * PHP Easy Comments is a trivial comments script with minimal bloat.
- *
- * @category PHP_Chat_Scripts
- * @package  PHP_Atom_Chat
- * @author   P H Claus <phhpro@gmail.com>
- * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @link     https://github.com/phhpro/easy-comments
+ * @category  PHP_Comment_Scripts
+ * @package   PHP_Easy_Comments
+ * @author    P H Claus <phhpro@gmail.com>
+ * @copyright 2015 - 2018 P H Claus
+ * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
+ * @link      https://github.com/phhpro/easy-comments
  *
  * Language file for German
- *
- * Please translate only the value of Locale_String.
- * Do not translate any Reference_ID!
- *
- * Always use a copy of the English language file as a template.
  */
 
 
@@ -40,15 +34,15 @@ $eco_lang['type_name']    = "Tippen Sie hier Ihren Namen oder lassen Sie das Fel
 $eco_lang['text']         = "Text";
 $eco_lang['type_text']    = "Tippen Sie hier Ihren Kommentartext";
 $eco_lang['code']         = "Wert";
-$eco_lang['type_code']    = "Tippen Sie hier um den Kontrollwert einzugeben";
+$eco_lang['type_code']    = "Tippen Sie hier den Kontrollwert";
 $eco_lang['post']         = "Senden";
 $eco_lang['type_post']    = "Klicken Sie hier um Ihren Kommentar abzusenden";
 $eco_lang['post_again']   = "Danke. Sie können einen neuen Kommentar schreiben in";
-$eco_lang['seconds']      = "Sekunden einen neuen Kommentar schreiben";
+$eco_lang['seconds']      = "Sekunden";
 $eco_lang['man_refresh']  = "Laden Sie diese Seite manuell nach um den Zähler zu aktualisieren.";
-$eco_lang['mod_require']  = "Neue Kommentare benötigen Moderatorenerlaubnis";
+$eco_lang['mod_require']  = "Neue Kommentare benötigen Moderatorerlaubnis";
 $eco_lang['be_polite']    = "Seien Sie nett und vermeiden Sie unhöfliche Sprache";
 $eco_lang['get_copy']     = "Klicken Sie hier für eine kostenlose Kopie von";
 $eco_lang['powered_by']   = "Angetrieben von";
 $eco_lang['char_rem']     = "verbleibende Zeichen";
-$eco_lang['name_rest']    = "Teile oder alles des gewählten Names sing nicht erlaubt!";
+$eco_lang['name_rest']    = "Teile oder alles des gewählten Names nicht erlaubt!";

@@ -2,20 +2,14 @@
 /**
  * PHP Version 5 and above
  *
- * PHP Easy Comments is a trivial comments script with minimal bloat.
- *
- * @category PHP_Chat_Scripts
- * @package  PHP_Atom_Chat
- * @author   P H Claus <phhpro@gmail.com>
- * @license  https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
- * @link     https://github.com/phhpro/easy-comments
+ * @category  PHP_Comment_Scripts
+ * @package   PHP_Easy_Comments
+ * @author    P H Claus <phhpro@gmail.com>
+ * @copyright 2015 - 2018 P H Claus
+ * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
+ * @link      https://github.com/phhpro/easy-comments
  *
  * Language file for Arabic
- *
- * Please translate only the value of Locale_String.
- * Do not translate any Reference_ID!
- *
- * Always use a copy of the English language file as a template.
  */
 
 
@@ -27,7 +21,6 @@ $eco_lang['miss_log']     = "ملف سجل مفقود!";
 $eco_lang['mod_flag']     = "وضع المشرف هو نشط ولكن يتم تعطيل الإخطارات!";
 $eco_lang['chk_settings'] = "يرجى التحقق من الإعدادات لتصحيح الخطأ.";
 $eco_lang['fix_error']    = "سيتم تعطيل النص البرمجي حتى يتم إصلاح الخطأ.";
-$eco_lang['invalid_char'] = "اسم يحتوي على أحرف غير صالحة!";
 $eco_lang['invalid_code'] = "رمز التحكم غير صالح!";
 $eco_lang['miss_text']    = "لا يمكن نشر تعليق فارغ!";
 $eco_lang['only_latin']   = "الأحرف اللاتينية فقط المسموح بها!";
