@@ -53,7 +53,7 @@ $eco_dirx = "index.php";
  * These are not used in moderator mode
  */
 $eco_cdat = "_comments.html";
-$eco_clog = $eco_fold . "log.html";
+$eco_clog = $eco_fold . "easy-log.html";
 
 /**
  * Maximum characters for comments text
