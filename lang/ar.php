@@ -9,7 +9,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  * @link      https://github.com/phhpro/easy-comments
  *
- * Language file for Arabic
+ * Language file Arabic
  */
 
 

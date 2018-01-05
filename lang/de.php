@@ -9,7 +9,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  * @link      https://github.com/phhpro/easy-comments
  *
- * Language file for German
+ * Language file German
  */
 
 
@@ -40,7 +40,7 @@ $eco_lang['post_again']   = "Danke. Sie können einen neuen Kommentar schreiben 
 $eco_lang['seconds']      = "Sekunden";
 $eco_lang['man_refresh']  = "Laden Sie diese Seite manuell nach um den Zähler zu aktualisieren.";
 $eco_lang['mod_require']  = "Neue Kommentare benötigen Moderatorerlaubnis";
-$eco_lang['be_polite']    = "Seien Sie nett und vermeiden Sie unhöfliche Sprache";
+$eco_lang['be_polite']    = "Seien Sie höflich und vermeiden Sie unhöfliche Sprache";
 $eco_lang['get_copy']     = "Klicken Sie hier um eine kostenlose Kopie dieses Skriptes zu erhalten";
 $eco_lang['powered_by']   = "Angetrieben von";
 $eco_lang['char_rem']     = "verbleibende Zeichen";
