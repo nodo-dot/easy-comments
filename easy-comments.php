@@ -46,7 +46,7 @@
  * Default directory index
  */
 $eco_path = $_SERVER['DOCUMENT_ROOT'];
-$eco_fold = "/easy-comments/";
+$eco_fold = "/demo/easy-comments/";
 $eco_dirx = "index.php";
 
 /**
@@ -103,7 +103,7 @@ $eco_asfx = "root";
  * E.g. http://www.example.com/easy-comments/?YOUR_LIST_TOKEN
  */
 $eco_list = "YOUR_LIST_TOKEN";
-$eco_tdel = 60;
+$ecoDlay = 60;
 $eco_date = gmdate('Y-m-d H:i:s');
 
 
@@ -120,7 +120,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180103.5";
+$eco_make = "20180105";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -313,14 +313,18 @@ if (isset($_POST['eco_post'])) {
 
     //** Valid comment
     if ($eco_stat === "") {
-        /**
-         * Build entry and prepare mail
-         * Skip translation for better compatability
-         */
-        $eco_post = '            <div id=eco_' . gmdate('Ymd_His_') .
-                    $eco_myip . '_' . $eco_name . ' class=eco_item>' .
-                    $eco_date . ' ' . $eco_name . ' ' . $eco_ukey .
-                    ' ' . $eco_text . "</div>\n";
+        //** Generate permalink ID
+        $eco_perm = md5(gmdate('YmdHis') . $eco_myip . $eco_name);
+
+        //** Build post entry
+        $eco_post = '            <div id="' . $eco_perm . '" ' .
+                    'class=eco_item>' . $eco_date . ' ' . $eco_name .
+                    ' ' . $eco_ukey . ' ' . $eco_text . ' <a href="' .
+                    $eco_prot . $eco_host . $eco_page . '#' . $eco_perm .
+                    '" title="Permalink" class=eco_perm>ID: ' .
+                    $eco_perm . '</a>' . "</div>\n";
+
+        //** Build mail body
         $eco_body = $eco_name . " on " . $eco_prot . $eco_host .
                     $eco_indx . "\n\n" . $eco_post;
 
@@ -444,11 +448,11 @@ $eco_tbtn = '                <input type=submit name=eco_post value="' .
             $eco_lang['post'] . '" title="' . $eco_lang['type_post'] . '"/>';
 
 //** Check timer status
-if ($eco_tdif >$eco_tdel) {
+if ($eco_tdif >$ecoDlay) {
     echo $eco_tbtn . "\n";
 } else {
     echo '            ' . $eco_lang['post_again'] .
-         ' <span id=eco_tdel>' . ((int)$eco_tdel-(int)$eco_tdif) . "</span> " .
+         ' <span id=ecoDlay>' . ((int)$ecoDlay-(int)$eco_tdif) . "</span> " .
          $eco_lang['seconds'] . ".\n";
     echo '            <noscript>' . $eco_lang['man_refresh'] . "</noscript>\n";
 }
@@ -500,12 +504,12 @@ echo "        </form>\n";
         setInterval(function() {eco_ccnt('eco_text', 'eco_ccnt')}, 55);
 
         // Set timer
-        var eco_tobj = document.getElementById('eco_tdel');
-        var eco_tend = <?php echo $eco_tdel; ?>;
-        var eco_tint = setInterval(eco_tdel, 1000);
+        var eco_tobj = document.getElementById('ecoDlay');
+        var eco_tend = <?php echo $ecoDlay; ?>;
+        var eco_tint = setInterval(ecoDlay, 1000);
 
         // Timer delay
-        function eco_tdel() {
+        function ecoDlay() {
             if (eco_tend === 0) {
                 document.getElementById('eco_tbtn').innerHTML
                     = '<?php echo $eco_tbtn; ?>';

@@ -14,3 +14,8 @@
 #eco_lang {
     text-align: right;
 }
+
+a.eco_perm {
+    font-size: 85%;
+    float: right;
+}
