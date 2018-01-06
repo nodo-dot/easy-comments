@@ -1,16 +1,14 @@
 # PHP Easy Comments
 
-**PHP Easy Comments** is a **free PHP comments script** to add discreet inline comments to web pages.
+**PHP Easy Comments** is a **free PHP comments script**
 
-Comments are stored in flat ASCII data files in the same folder with the file to which the comments apply. No database is required. The script can send notification mails whenever new comments are posted. This feature is disabled by default. You may have to change the format of `$eco_head` if you fail to receive the notification.
+It can be used as stand-alone discussions page or per include to provide inline page comments.
 
-In addition to individual data files, a master log file keeps a complete history of all posts. You can change the query token to view the list in `$eco_list`. The log file is not used when moderator approval is enabled.
+Comments are stored in flat ASCII data files in the same folder of the file to which they apply. Hence, no database is required. New posts can be published instantly or require moderator approval. The script comes with permalink and multi-language support and can send notifications for new comments. You may have to change the format of `$eco_head` if you fail to receive the mail.
 
-You can post admin replies by entering the values of `$eco_apfx` and `$eco_asfx` into the name field. If you set `eco_apfx = mySecret` and `eco_asfx = root` you would enter `mySecretroot`. Change the value of `$eco_tmax` to set the maximum characters allowed per post and `$eco_lato = 1` if you want to allow latin characters only.
+In addition to individual data files, a master log file keeps a complete history of all posts and thus provides a full index, which may serve as a vavigation aid. However, the log file is currently not used in moderator mode and doesn't save titles. This may come in a later version.
 
-A delay between posts attempts to limit flooding. This can be disabled with `$eco_tdel = 0`. Set `$eco_mapp = 1` and `$eco_note = 1` to require manual approval of new posts. Add a reference to the script where you want the comments section to appear.
+You can post admin replies by entering the values of `$eco_apfx` and `$eco_asfx` without spaces into the name field, e.g. if `eco_apfx = HelloWorld` and `eco_asfx = root` you would enter `HelloWorldroot`. The value of `$eco_tmax` sets the maximum characters allowed per post. If you want to allow Latin characters only, set `$eco_lato = 1` Make sure to have `session_start()` and `ob_start()` at the top of the page. The script is likely to fail without.
 
-Make sure to have `session_start()` at the top of the page. The script may fail without this. Basic formatting is provided via CSS. You may want to add the provided rules to your existing style sheet.
-
-For simple testing you can just call the script directly. However, this is *not* recommended for public use. Follow this link to try a [plain vanilla demo](http://phclaus.com/demo/easy-comments/).
+Follow this link to try a [simple demo](http://phclaus.com/demo/easy-comments/).
 
