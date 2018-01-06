@@ -2,7 +2,7 @@
 
 **PHP Easy Comments** is a **free PHP comments script**
 
-It can be used as stand-alone discussions page or per include to provide inline page comments.
+It can be used as a stand-alone discussions page or per include to provide inline page comments.
 
 Comments are stored in flat ASCII data files in the same folder of the file to which they apply. Hence, no database is required. New posts can be published instantly or require moderator approval. The script comes with permalink and multi-language support and can send notifications for new comments. You may have to change the format of `$eco_head` if you fail to receive the mail.
 
