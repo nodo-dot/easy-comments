@@ -96,14 +96,14 @@ $eco_asfx = "root";
 
 /**
  * Query string to list the log file
- * Delay between posts in seconds -- 0 = no delay
+ * Enable permalinks
  * Date and time format
  *
  * Append the value of $eco_list to the script URL to view the log file
- * E.g. http://www.example.com/easy-comments/?YOUR_LIST_TOKEN
+ * e.g. http://www.example.com/easy-comments/?YOUR_LIST_TOKEN
  */
 $eco_list = "YOUR_LIST_TOKEN";
-$ecoDlay = 60;
+$eco_perm = 1;
 $eco_date = gmdate('Y-m-d H:i:s');
 
 
@@ -120,7 +120,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180105";
+$eco_make = "20180106";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -155,9 +155,8 @@ if (file_exists($eco_ldat)) {
 } else {
     echo "        <p id=eco_stat>Missing language file!</p>\n" .
          "        <p>Please check your settings to correct the " .
-         "error.</p>\n" . 
-         "        <p>The script will be disabled until the error " .
-         "is fixed.</p>\n";
+         "error.</p>\n        <p>The script will be disabled until " .
+         "the error is fixed.</p>\n";
     exit;
 }
 
@@ -205,14 +204,14 @@ if ($_SERVER['QUERY_STRING'] === $eco_list) {
         header("Location: $eco_prot$eco_host$eco_clog");
         exit;
     } else {
-        $eco_stat = $eco_lang['miss_log'];
+        $eco_stat = $eco_lang['fail_log'];
     }
 }
 
 //** Check conflict when moderator mode is enabled without notifications
 if ($eco_mapp === 1 && $eco_note === 0) {
     echo "        <p id=eco_stat>" .$eco_lang['mod_flag'] . "</p>\n" .
-         "        <p>" . $eco_lang['chk_settings'] . "</p>\n" . 
+         "        <p>" . $eco_lang['check_set'] . "</p>\n" . 
          "        <p>" . $eco_lang['fix_error'] . "</p>\n";
     exit;
 }
@@ -233,10 +232,6 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
     header("Location: " . $_GET['eco_link']);
     exit;
 }
-
-//** Link timer session
-$_SESSION['eco_tbeg'] = time();
-$eco_tbeg             = $_SESSION['eco_tbeg'];
 
 //** Form submitted
 if (isset($_POST['eco_post'])) {
@@ -281,14 +276,14 @@ if (isset($_POST['eco_post'])) {
     //** Check control code
     if ($eco_ctrl === 1) {
 
-        if ($eco_cval !== (int)$eco_csum) {
-            $eco_stat = $eco_lang['invalid_code'];
+        if ((int)$eco_cval !== (int)$eco_csum) {
+            $eco_stat = $eco_lang['fail_code'];
         }
     }
 
     //** Check missing text
     if ($eco_text === "") {
-        $eco_stat = $eco_lang['miss_text'];
+        $eco_stat = $eco_lang['fail_text'];
     }
 
     //** Check latin only
@@ -301,7 +296,7 @@ if (isset($_POST['eco_post'])) {
         if (preg_match($eco_latx, $eco_name)
             || preg_match($eco_latx, $eco_text)
         ) {
-            $eco_stat = $eco_lang['only_latin'];
+            $eco_stat = $eco_lang['latin'];
         }
     }
 
@@ -314,15 +309,22 @@ if (isset($_POST['eco_post'])) {
     //** Valid comment
     if ($eco_stat === "") {
         //** Generate permalink ID
-        $eco_perm = md5(gmdate('YmdHis') . $eco_myip . $eco_name);
+        $eco_peid = md5(gmdate('YmdHis') . $eco_myip . $eco_name);
 
         //** Build post entry
-        $eco_post = '            <div id="' . $eco_perm . '" ' .
-                    'class=eco_item>' . $eco_date . ' ' . $eco_name .
-                    ' ' . $eco_ukey . ' ' . $eco_text . ' <a href="' .
-                    $eco_prot . $eco_host . $eco_page . '#' . $eco_perm .
-                    '" title="Permalink" class=eco_perm>ID: ' .
-                    $eco_perm . '</a>' . "</div>\n";
+        $eco_post = '            <div id="' . $eco_peid . '" ' .
+                    "class=eco_item>" . $eco_date . " " . $eco_name .
+                    " " . $eco_ukey . " " . $eco_text;
+
+        //** Check if permalinks are enabled
+        if ($eco_perm === 1) {
+            $eco_post .= ' <div class=eco_perm><a href="' .
+                         $eco_prot . $eco_host . $eco_page . "#" .
+                         $eco_peid . '" title=Permalink>' .
+                         "ID: $eco_peid</a></div>";
+        }
+
+        $eco_post .= "</div>\n";
 
         //** Build mail body
         $eco_body = $eco_name . " on " . $eco_prot . $eco_host .
@@ -339,9 +341,10 @@ if (isset($_POST['eco_post'])) {
             //** Update data and log file
             file_put_contents($eco_data, $eco_post);
             $eco_clog = $eco_path . $eco_clog;
-            $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_indx .
-                        '" title="' . $eco_lang['view_item'] . '">' .
-                        $eco_indx . "</a></div>\n";
+            $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_page .
+                        '#' . $eco_peid . '" title="' .
+                        $eco_lang['view'] . '">' .
+                        "$eco_indx</a></div>\n";
 
             //** Check existing log file
             if (is_file($eco_clog)) {
@@ -367,7 +370,9 @@ if (isset($_POST['eco_post'])) {
 
             //** Build moderator mail body
             $eco_body = $eco_body . "\n\nClick the below link to " .
-                        "approve this post and publish\n\n" . $eco_mlnk;
+                        "approve the post and publish or just " .
+                        "delete this mail to dismiss the post " .
+                        "without publishing.\n\n" . $eco_mlnk;
 
             //** Send mail and update timer session
             mail($eco_mail, $eco_subj, $eco_body, $eco_head);
@@ -376,10 +381,6 @@ if (isset($_POST['eco_post'])) {
         //** Reset control code
         $eco_cone = mt_rand($eco_cmin, $eco_cmax);
         $eco_ctwo = mt_rand($eco_cmin, $eco_cmax);
-
-        //** Update timer session
-        $_SESSION['eco_tfrm']
-            = htmlentities($_POST['eco_tbeg'], ENT_QUOTES, "UTF-8");
 
         //** Return to referrer at current comment position
         header("Location: " . $_SERVER['HTTP_REFERER'] . "#Comments");
@@ -391,9 +392,9 @@ if (isset($_POST['eco_post'])) {
 include './lang/easy-language.php';
 
 //** Build form
-echo '        <form action="' . $eco_indx . '" ' .
-     'method=POST id=Comments accept-charset="UTF-8">' . "\n";
-echo "            <div id=eco_stat>$eco_stat</div>\n";
+echo '        <form action="' . $eco_indx . '" method=POST ' .
+     'id=Comments accept-charset="UTF-8">' . "\n            " .
+     "<div id=eco_stat>$eco_stat</div>\n";
 
 //** Print header depending whether data file exists or not
 if (is_file($eco_data)) {
@@ -403,78 +404,54 @@ if (is_file($eco_data)) {
 
     //** Include existing data file
     if (is_file($eco_data)) {
-          include $eco_data;
+        include $eco_data;
     }
 } else {
-    echo "            <p>" . $eco_lang['be_first'] . "</p>\n";
+    echo "            <p>" . $eco_lang['first'] . "</p>\n";
 }
 
 //** Name
-echo "            <p id=Add_Comment>\n";
-echo '                <label for=eco_name>' . $eco_lang['name'] . "</label>\n";
-echo "            </p>\n";
-echo "            <div>\n";
-echo '                <input name=eco_name id=eco_name value="' .
-     $eco_name . '" title="' . $eco_lang['type_name'] . '"/>' . "\n";
-echo "            </div>\n";
+echo "            <p id=Add_Comment>\n                <label for=" .
+     'eco_name>' . $eco_lang['name'] . "</label>\n            </p>\n" .
+     "            <div>\n                <input name=eco_name " .
+     'id=eco_name value="' . $eco_name . '" title="' .
+     $eco_lang['text_name'] . '"/>' . "\n            </div>\n";
 
 //** Text
-echo "            <p>\n";
-echo '                <label for=eco_text>' . $eco_lang['text'] . ' ' .
-     "<small id=eco_ccnt></small></label>\n";
-echo "            </p>\n";
-echo "            <div>\n";
-echo '                <textarea name=eco_text id=eco_text rows=4 ' .
-     'cols=26 maxlength=' . $eco_tmax . ' title="' .
-     $eco_lang['type_text'] . '">' . $eco_text . "</textarea>\n";
-echo "            </div>\n";
+echo "            <p>\n                <label for=eco_text>" .
+     $eco_lang['text'] . " <small id=eco_ccnt></small></label>\n" .
+     "            </p>\n            <div>\n                <textarea " .
+     "name=eco_text id=eco_text rows=4 cols=26 maxlength=$eco_tmax " .
+     'title="' . $eco_lang['text_text'] . '">' . $eco_text .
+     "</textarea>\n            </div>\n";
 
 //** Code
 if ($eco_ctrl === 1) {
-    echo "            <p>\n";
-    echo "                <label for=eco_csum>" . $eco_lang['code'] . "</label>\n";
-    echo '                ' . $eco_cone . ' + ' . $eco_ctwo . ' = ' .
-         '<input name=eco_csum id=eco_csum size=4 maxlength=2 ' .
-         'title="' . $eco_lang['type_code'] . '"/>' . "\n";
-    echo "                <input type=hidden name=eco_cone value=$eco_cone />\n";
-    echo "                <input type=hidden name=eco_ctwo value=$eco_ctwo />\n";
-    echo "            </p>\n";
+    echo "            <p>\n                <label for=eco_csum>" .
+         $eco_lang['code'] . "</label>\n                $eco_cone" .
+         " + $eco_ctwo  = <input name=eco_csum id=eco_csum " .
+         'size=4 maxlength=2 title="' . $eco_lang['text_code'] . '"/>' .
+         "\n                <input type=hidden name=eco_cone " .
+         "value=$eco_cone />\n                <input type=hidden " .
+         "name=eco_ctwo value=$eco_ctwo />\n            </p>\n";
 }
 //** Post
-echo "            <p id=eco_tbtn>\n";
-//** Link timer difference and submit button
-$eco_tdif = ((int)$eco_tbeg-(int)$_SESSION['eco_tfrm']);
-$eco_tbtn = '                <input type=submit name=eco_post value="' .
-            $eco_lang['post'] . '" title="' . $eco_lang['type_post'] . '"/>';
-
-//** Check timer status
-if ($eco_tdif >$ecoDlay) {
-    echo $eco_tbtn . "\n";
-} else {
-    echo '            ' . $eco_lang['post_again'] .
-         ' <span id=ecoDlay>' . ((int)$ecoDlay-(int)$eco_tdif) . "</span> " .
-         $eco_lang['seconds'] . ".\n";
-    echo '            <noscript>' . $eco_lang['man_refresh'] . "</noscript>\n";
-}
-
-echo "            </p>\n";
+echo "            <p id=eco_tbtn>\n                <input type=submit " .
+     'name=eco_post value="' . $eco_lang['post'] . '" title="' .
+     $eco_lang['text_post'] . '"/>' . "            </p>\n";
 
 //** Check moderator flag
 if ($eco_mapp === 1) {
     $eco_mtxt = $eco_lang['mod_require'];
 } else {
-    $eco_mtxt = $eco_lang['be_polite'];
+    $eco_mtxt = $eco_lang['polite'];
 }
 
 //** Print footer and close form
-echo "            <p><small>$eco_mtxt.</small></p>\n";
-echo '            <p><small><a href="https://github.com/phhpro/easy-comments" ' .
-     'title="' . $eco_lang['get_copy'] .'">' . $eco_lang['powered_by'] .
-     ' PHP Easy Comments v' . $eco_make . "</a></small></p>\n";
-echo "            <div>\n" .
-     "                <input type=hidden name=eco_tbeg value=$eco_tbeg />\n" .
-     "            </div>\n";
-echo "        </form>\n";
+echo "            <p><small>$eco_mtxt.</small></p>\n'            " .
+     '<p><small><a href="https://github.com/phhpro/easy-comments" ' .
+     'title="' . $eco_lang['get_copy'] .'">' . $eco_lang['power'] .
+     " PHP Easy Comments v$eco_make</a></small></p>\n        </form>\n";
 ?>
         <script>
         // Character counter
@@ -497,26 +474,7 @@ echo "        </form>\n";
             };
 
             var eco_cdif       = (eco_cmax-eco_ceid.value.length);
-            var eco_crem       = " <?php echo $eco_lang['char_rem']; ?>";
+            var eco_crem       = " <?php echo $eco_lang['char_count']; ?>";
             eco_ccid.innerHTML = '(' + eco_cdif + eco_crem + ')';
-        }
-
-        setInterval(function() {eco_ccnt('eco_text', 'eco_ccnt')}, 55);
-
-        // Set timer
-        var eco_tobj = document.getElementById('ecoDlay');
-        var eco_tend = <?php echo $ecoDlay; ?>;
-        var eco_tint = setInterval(ecoDlay, 1000);
-
-        // Timer delay
-        function ecoDlay() {
-            if (eco_tend === 0) {
-                document.getElementById('eco_tbtn').innerHTML
-                    = '<?php echo $eco_tbtn; ?>';
-                clearTimeout(eco_tint);
-            } else {
-                eco_tobj.innerHTML = eco_tend;
-                eco_tend --;
-            }
         }
         </script>

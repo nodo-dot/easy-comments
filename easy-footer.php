@@ -15,8 +15,10 @@
  * when using the script inline.
  */
 ?>
+        <hr/>
         <footer>
-            Hm, it would seem you've successfully reached the very bottom of this page.
+            <p>Use your illusion.</p>
+            <p>omnibus ex nihilo ducendis sufficit unum</p>
         </footer>
     </body>
 </html>

@@ -9,12 +9,17 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  * @link      https://github.com/phhpro/easy-comments
  *
- * Check restricted names or fragments thereof
+ * Check restricted names or fragments thereof.
  *
  * Example #1: admin => admin => ADMINfoo => AdminisTraitor ...
  * Example #2: webma => webma => myWebMama => yourWebMASTER ...
  */
-$eco_nono = array("admin", "local", "moder", "root", "test", "webma");
+$eco_nono = array("admin",
+                  "local",
+                  "moder",
+                  "root",
+                  "test",
+                  "webma");
 
 foreach ($eco_nono as $eco_skip) {
 

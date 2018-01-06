@@ -30,5 +30,13 @@
     <body>
         <header>
             <h1>PHP Easy Comments Demo</h1>
-            <div>A trivial comments script with minimal bloat and no database required</div>
+            <ul>
+                <li>A simple PHP comments script with minimal requirements.</li>
+                <li>SEO friendly permalinks and multi-language support.</li>
+                <li>Works as a stand-alone discussions page or inline page comments.</li>
+                <li>Can send notifications for new posts.</li>
+                <li>Allows instant posting or require moderator approval.</li>
+                <li>No database required.</li>
+            </ul>
         </header>
+        <hr/>
