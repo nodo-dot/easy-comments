@@ -9,15 +9,13 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  * @link      https://github.com/phhpro/easy-comments
  *
- * You can customise this footer to append the comments section by
- * whatever content you may want to appear below it when using the
- * script in stand-alone mode. You probably don't want this file
- * when using the script inline.
+ * You can customise this file to add extra content below the
+ * comments section when running the script in stand-alone mode.
+ * You probably don't want this file with inline mode.
  */
 ?>
         <hr/>
         <footer>
-            <p>Use your illusion.</p>
             <p>omnibus ex nihilo ducendis sufficit unum</p>
         </footer>
     </body>

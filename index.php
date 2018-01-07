@@ -1,5 +1,5 @@
 <?php
-include './easy-init.php';
-include './easy-header.php';
-include './easy-comments.php';
-include './easy-footer.php';
+include './init.php';
+include './header.php';
+include './comments.php';
+include './footer.php';

@@ -9,9 +9,8 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  * @link      https://github.com/phhpro/easy-comments
  *
- * The content of this file MUST go at the very top of every page for
+ * The content of this file must go at the very top of every page for
  * which you want to enable comments. ob_start() is required to bypass
  * the "headers already sent" warning after posting.
  */
-session_start();
 ob_start();

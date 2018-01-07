@@ -9,7 +9,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  * @link      https://github.com/phhpro/easy-comments
  *
- * Check restricted names or fragments thereof.
+ * Check restricted names and/or fragments thereof
  *
  * Example #1: admin => admin => ADMINfoo => AdminisTraitor ...
  * Example #2: webma => webma => myWebMama => yourWebMASTER ...
@@ -25,11 +25,11 @@ foreach ($eco_nono as $eco_skip) {
 
     if (preg_match("/$eco_skip/i", $eco_name)) {
 
-        //** check if admin post
+        //** Check if admin post
         if ($eco_name === $eco_apfx . $eco_asfx) {
             $eco_name = $eco_apfx . $eco_asfx;
         } else {
-            $eco_name = $eco_anon;
+            $eco_name = $eco_user;
             $eco_stat = $eco_lang['restricted'];
         }
     }

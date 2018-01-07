@@ -24,9 +24,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
- *
- *
- * PHP Easy Comments is a trivial comments script.
  */
 
 
@@ -37,73 +34,88 @@
  */
 
 
-//** Values of 0 typically mean NO, whereas 1 equals YES
+//** Values of 0 mean NO -- 1 equals YES
 
 
 /**
- * Document root -- path without trailing slash if SERVER has wrong value
+ * Document root -- "path" without slash if SERVER has wrong value
  * Script folder
  * Default directory index
  */
 $eco_path = $_SERVER['DOCUMENT_ROOT'];
-$eco_fold = "/demo/easy-comments/";
+$eco_fold = "/easy-comments/";
 $eco_dirx = "index.php";
 
 /**
- * Comments data file
- * Comments log file
- * These are not used in moderator mode
+ * Maximum characters allowed per post
+ * Delay between posts -- in seconds, 0 to disable
+ * Accept Latin characters only
+ * Enable permalinks
+ * Default user name
+ *
+ * Beginning with v20180107 the delay management has been changed from
+ * session cookie to Javascript. While this takes out the requirement
+ * for session_start() it also means the delay will be ineffective on
+ * devices not supporting Javascript. In this case a fallback is
+ * provided to render the submit button regardless of settings.
  */
-$eco_cdat = "_comments.html";
-$eco_clog = $eco_fold . "easy-log.html";
-
-/**
- * Maximum characters for comments text
- * Accept latin text only
- * Default anonymous user name
- */
-$eco_tmax = 1024;
-$eco_lato = 0;
-$eco_anon = "anonymous";
+$eco_pmax = 1024;
+$eco_pdel = 10;
+$eco_plat = 0;
+$eco_perm = 1;
+$eco_user = "anonymous";
 
 /**
  * Send notifications for new comments
- * Moderator approval -- 1 also requires $eco_note = 1
- * Control code -- 0 may well open wide the gates of evil!
+ * Require moderator approval -- 1 relies on $eco_note = 1
+ * Require control code, aka CAPTCHA
  */
 $eco_note = 0;
-$eco_mapp = 0;
+$eco_moda = 0;
 $eco_ctrl = 1;
 
 /**
- * Mail account to receive notifications -- make sure it exists
- * Mail subject
- * Mail header
+ * Mail account to send notifications
+ * Mail account to receive notifications
+ * Notification subject
+ *
+ * The mail sender must exist on the same host running the script.
+ * The recipient can be any valid mail address. Default is sender.
  */
-$eco_mail = "info@" . $_SERVER['HTTP_HOST'];
-$eco_subj = "PHP_Easy_Comments_NEW";
-$eco_head = "From: PHP Easy Comments <$eco_mail>";
+$eco_mafr = "info@" . $_SERVER['HTTP_HOST'];
+$eco_mato = $eco_mafr;
+$eco_msub = "PHP_Easy_Comments_NEW";
+
+/**
+ * Mail header
+ *
+ * The default "from" field is in standard ISO notation and should
+ * be good to go. However, some hosts may require modification.
+ */
+$eco_mhdr = "From: PHP_Easy_Comments <$eco_mafr>";
 
 /**
  * Admin prefix
  * Admin suffix
  *
- * Enter both values without spaces into the name field to post as admin
- * E.g. YOUR_ADMIN_TOKENroot will publish your entry as root
+ * Enter both values without spaces into the name field to post as
+ * admin, e.g. MY_ADMIN_PREFIXroot will publish your entry as root
  */
-$eco_apfx = "YOUR_ADMIN_PREFIX";
+$eco_apfx = "MY_ADMIN_PREFIX";
 $eco_asfx = "root";
 
 /**
  * Query string to list the log file
- * Enable permalinks
  * Date and time format
  *
- * Append the value of $eco_list to the script URL to view the log file
- * e.g. http://www.example.com/easy-comments/?YOUR_LIST_TOKEN
+ * The log records every post ever made anywhere on the site running
+ * the script, including those added per moderator approval and may
+ * be used as a simple navigation index.
+ *
+ * The value of $eco_list configures the query string required to
+ * view the file, e.g. http://example.com/easy-comments/?MY_LIST_QUERY
  */
-$eco_list = "YOUR_LIST_TOKEN";
-$eco_perm = 1;
+$eco_list = "MY_LIST_QUERY";
 $eco_date = gmdate('Y-m-d H:i:s');
 
 
@@ -120,10 +132,18 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180106";
+$eco_make = "20180107";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
+
+/**
+ * Comments data file
+ * Comments log file
+ * These are not used in moderator mode
+ */
+$eco_cdat = "_comments.html";
+$eco_clog = $eco_fold . "log.html";
 
 /**
  * Strip default index
@@ -132,24 +152,23 @@ $eco_qstr = $_SERVER['QUERY_STRING'];
  */
 $eco_indx = str_replace($eco_dirx, "", $eco_page);
 $eco_data = $eco_path . $eco_page . $eco_cdat;
-$eco_rest = $eco_path . $eco_fold . "easy-restricted.php";
+$eco_rest = $eco_path . $eco_fold . "restricted.php";
 
-//** Link IP -- don't rely on this
+//** Link the user's IP -- don't rely on this
 $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 
 //** Build language reference
 if (isset($eco_qstr) && strpos($eco_qstr, "lang_") !== false) {
     $eco_lref = str_replace("lang_", "lang/", $eco_qstr);
 } else {
+    //** Try fallback if selected locale is missing
     $eco_lref = "lang/en";
 }
 
-/**
- * Link language data file and try to load it.
- * No translation here because the file has not yet been loaded.
- */
+//** Link language file
 $eco_ldat = $eco_path . $eco_fold . $eco_lref . ".php";
 
+//** Load language file -- no translation because none is available
 if (file_exists($eco_ldat)) {
     include $eco_ldat;
 } else {
@@ -179,11 +198,11 @@ $eco_latb = "";
 
 //** Check empty name
 if ($eco_name === "") {
-    $eco_name = $eco_anon;
+    $eco_name = $eco_user;
 }
 
-//** Check latin only flag
-if ($eco_lato === 1) {
+//** Check if Latin only is enabled
+if ($eco_plat === 1) {
     $eco_latb = "Latin ";
 }
 
@@ -197,7 +216,7 @@ if (isset($_SERVER['HTTPS']) && "on" === $_SERVER['HTTPS']) {
 //** Link protocol
 $eco_prot = "http" . $eco_prot . "://";
 
-//** Check whether to list the master log file
+//** Check listing the log
 if ($_SERVER['QUERY_STRING'] === $eco_list) {
 
     if (is_file($eco_path . $eco_clog)) {
@@ -208,8 +227,8 @@ if ($_SERVER['QUERY_STRING'] === $eco_list) {
     }
 }
 
-//** Check conflict when moderator mode is enabled without notifications
-if ($eco_mapp === 1 && $eco_note === 0) {
+//** Check moderator mode without notifications
+if ($eco_moda === 1 && $eco_note === 0) {
     echo "        <p id=eco_stat>" .$eco_lang['mod_flag'] . "</p>\n" .
          "        <p>" . $eco_lang['check_set'] . "</p>\n" . 
          "        <p>" . $eco_lang['fix_error'] . "</p>\n";
@@ -229,6 +248,22 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
     }
 
     file_put_contents($eco_data, $eco_post);
+
+    //** Build log file entry
+    $eco_clog = $eco_path . $eco_clog;
+    $eco_ulog = '<div><a href="' . $eco_page . '#' . $eco_peid .
+                '" title="' . $eco_lang['view'] . '">' .
+                "$eco_date =&gt; $eco_page =&gt; $eco_peid</a></div>\n";
+
+    //** Check existing log file
+    if (is_file($eco_clog)) {
+        $eco_ulog .= file_get_contents($eco_clog);
+    }
+
+    //** Update log file
+    file_put_contents($eco_clog, $eco_ulog);
+
+    //** Check particular page to verify the post is good
     header("Location: " . $_GET['eco_link']);
     exit;
 }
@@ -253,9 +288,9 @@ if (isset($_POST['eco_post'])) {
     $eco_ctwo = $_POST['eco_ctwo'];
     $eco_cval = ((int)$eco_cone+(int)$eco_ctwo);
 
-    //** Substitute anonymous if name is missing or else invalid
+    //** Substitute anonymous if name is missing or invalid
     if ($eco_name === "" || preg_match("/^\s*$/", $eco_name)) {
-        $eco_name = $eco_anon;
+        $eco_name = $eco_user;
     }
 
     //** Link restricted names
@@ -267,7 +302,7 @@ if (isset($_POST['eco_post'])) {
     if ($eco_name === $eco_apfx . $eco_asfx) {
         $eco_name = $eco_asfx;
         $eco_ukey = "#";
-        $eco_mapp = 0;
+        $eco_moda = 0;
     } else {
         $eco_name = $eco_name;
         $eco_ukey = "$";
@@ -286,10 +321,10 @@ if (isset($_POST['eco_post'])) {
         $eco_stat = $eco_lang['fail_text'];
     }
 
-    //** Check latin only
-    if ($eco_lato === 1) {
+    //** Check Latin only
+    if ($eco_plat === 1) {
 
-        //** Filter latin only
+        //** Filter Latin only
         $eco_latx = "/[^\\p{Common}\\p{Latin}]/u";
 
         //** Check name and text
@@ -327,39 +362,38 @@ if (isset($_POST['eco_post'])) {
         $eco_post .= "</div>\n";
 
         //** Build mail body
-        $eco_body = $eco_name . " on " . $eco_prot . $eco_host .
+        $eco_mbod = $eco_name . " on " . $eco_prot . $eco_host .
                     $eco_indx . "\n\n" . $eco_post;
 
-        //** Check moderator flag
-        if ($eco_mapp !== 1) {
+        //** Check if moderator mode is enabled
+        if ($eco_moda !== 1) {
 
             //** Check existing data file
             if (is_file($eco_data)) {
                 $eco_post .= file_get_contents($eco_data);
             }
 
-            //** Update data and log file
+            //** Update data file and log
             file_put_contents($eco_data, $eco_post);
             $eco_clog = $eco_path . $eco_clog;
-            $eco_ulog = '<div>' . $eco_date . ' <a href="' . $eco_page .
-                        '#' . $eco_peid . '" title="' .
-                        $eco_lang['view'] . '">' .
-                        "$eco_indx</a></div>\n";
+            $eco_ulog = '<div><a href="' . $eco_page . '#' . $eco_peid .
+                        '" title="' . $eco_lang['view'] . '">' .
+                        "$eco_date =&gt; $eco_page =&gt; $eco_peid</a></div>\n";
 
-            //** Check existing log file
+            //** Check existing log
             if (is_file($eco_clog)) {
                 $eco_ulog .= file_get_contents($eco_clog);
             }
 
-            //** Update log file
+            //** Update log
             file_put_contents($eco_clog, $eco_ulog);
 
             //** Check if user post
             if ($eco_name !== $eco_asfx) {
 
-                //** Check notification flag and send mail
+                //** Check if notifications are enabled
                 if ($eco_note === 1) {
-                    mail($eco_mail, $eco_subj, $eco_body, $eco_head);
+                    mail($eco_mato, $eco_msub, $eco_mbod, $eco_mhdr);
                 }
             }
         } else {
@@ -369,13 +403,13 @@ if (isset($_POST['eco_post'])) {
                         "&eco_link=" . str_replace($eco_path, "", getcwd());
 
             //** Build moderator mail body
-            $eco_body = $eco_body . "\n\nClick the below link to " .
+            $eco_mbod = $eco_mbod . "\n\nClick the below link to " .
                         "approve the post and publish or just " .
-                        "delete this mail to dismiss the post " .
+                        "ignore this mail to dismiss the post " .
                         "without publishing.\n\n" . $eco_mlnk;
 
-            //** Send mail and update timer session
-            mail($eco_mail, $eco_subj, $eco_body, $eco_head);
+            //** Send mail
+            mail($eco_mato, $eco_msub, $eco_mbod, $eco_mhdr);
         }
 
         //** Reset control code
@@ -384,19 +418,19 @@ if (isset($_POST['eco_post'])) {
 
         //** Return to referrer at current comment position
         header("Location: " . $_SERVER['HTTP_REFERER'] . "#Comments");
-        ob_end_flush();
+        exit;
     }
 }
 
 //** Load language selector
-include './lang/easy-language.php';
+include './lang/__config.php';
 
 //** Build form
 echo '        <form action="' . $eco_indx . '" method=POST ' .
-     'id=Comments accept-charset="UTF-8">' . "\n            " .
-     "<div id=eco_stat>$eco_stat</div>\n";
+     'name=eco_form id=Comments accept-charset="UTF-8">' .
+     "\n            <div id=eco_stat>$eco_stat</div>\n";
 
-//** Print header depending whether data file exists or not
+//** Print header depending data file exists or not
 if (is_file($eco_data)) {
     echo '            <p><a href="' . $eco_indx . '#Add_Comment" ' .
          'title="' . $eco_lang['add_new'] . '">' .
@@ -421,7 +455,7 @@ echo "            <p id=Add_Comment>\n                <label for=" .
 echo "            <p>\n                <label for=eco_text>" .
      $eco_lang['text'] . " <small id=eco_ccnt></small></label>\n" .
      "            </p>\n            <div>\n                <textarea " .
-     "name=eco_text id=eco_text rows=4 cols=26 maxlength=$eco_tmax " .
+     "name=eco_text id=eco_text rows=4 cols=26 maxlength=$eco_pmax " .
      'title="' . $eco_lang['text_text'] . '">' . $eco_text .
      "</textarea>\n            </div>\n";
 
@@ -436,25 +470,32 @@ if ($eco_ctrl === 1) {
          "name=eco_ctwo value=$eco_ctwo />\n            </p>\n";
 }
 //** Post
-echo "            <p id=eco_tbtn>\n                <input type=submit " .
-     'name=eco_post value="' . $eco_lang['post'] . '" title="' .
-     $eco_lang['text_post'] . '"/>' . "            </p>\n";
+echo "            <p id=eco_tbtn>\n";
+
+//** Build submit button
+$eco_tbtn = '                <input type=submit name=eco_post value="' .
+            $eco_lang['post'] . '" title="' . $eco_lang['text_post'] . '"/>';
+
+//** Fallback to print the button when Javascript is disabled
+echo "                <noscript>\n$eco_tbtn\n                </noscript>\n" .
+     "            </p>\n";
 
 //** Check moderator flag
-if ($eco_mapp === 1) {
+if ($eco_moda === 1) {
     $eco_mtxt = $eco_lang['mod_require'];
 } else {
     $eco_mtxt = $eco_lang['polite'];
 }
 
 //** Print footer and close form
-echo "            <p><small>$eco_mtxt.</small></p>\n'            " .
+echo "            <p><small>$eco_mtxt.</small></p>\n            " .
      '<p><small><a href="https://github.com/phhpro/easy-comments" ' .
      'title="' . $eco_lang['get_copy'] .'">' . $eco_lang['power'] .
      " PHP Easy Comments v$eco_make</a></small></p>\n        </form>\n";
+
+//** Javscript below for character counter and post delay timer
 ?>
         <script>
-        // Character counter
         eco_ccnt = function(eid, cid) {
             var eco_ceid = document.getElementById(eid);
             var eco_ccid = document.getElementById(cid);
@@ -477,4 +518,45 @@ echo "            <p><small>$eco_mtxt.</small></p>\n'            " .
             var eco_crem       = " <?php echo $eco_lang['char_count']; ?>";
             eco_ccid.innerHTML = '(' + eco_cdif + eco_crem + ')';
         }
+
+<?php
+/**
+ * Post delay timer
+ * 
+ * This is kept out of scope until the condition is met.
+ *
+ * The timer is triggered as soon as the page is loaded and reset on
+ * every reload. This means, if the user manually refreshes the page
+ * the timer will start again.
+ *
+ * If you don't want this you'll need to add a separate condition
+ * to handle eco_ptin.
+ *
+ *
+ * eco_pdel = post delay time
+ * eco_pbtn = post element where to render output
+ * eco_ptin = post timer interval
+ */
+if ($eco_pdel !== 0) {
+?>
+        var eco_pdel = <?php echo $eco_pdel; ?>;
+        var eco_pbtn = document.getElementById('eco_tbtn');
+        var eco_ptin = setInterval(ecoPdel, 1000);
+
+        function ecoPdel() {
+
+            if (eco_pdel == 0) {
+                clearTimeout(eco_ptin);
+                document.getElementById('eco_tbtn').innerHTML
+                    = '            <?php echo $eco_tbtn; ?>';
+            } else {
+                eco_pbtn.innerHTML
+                    = "            <?php echo $eco_lang['post_wait']; ?> " +
+                    eco_pdel + " <?php echo $eco_lang['seconds']; ?>" + "...";
+                eco_pdel--;
+            }
+        }
+<?php
+}
+?>
         </script>
