@@ -9,9 +9,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  * @link      https://github.com/phhpro/easy-comments
  *
- * You can customise this file to add extra content below the
- * comments section when running the script in stand-alone mode.
- * You probably don't want this file with inline mode.
+ * This file sets the content below the comments section.
  */
 ?>
         <hr/>

@@ -56,8 +56,8 @@ $eco_dirx = "index.php";
  * Beginning with v20180107 the delay management has been changed from
  * session cookie to Javascript. While this takes out the requirement
  * for session_start() it also means the delay will be ineffective on
- * devices not supporting Javascript. In this case a fallback is
- * provided to render the submit button regardless of settings.
+ * devices not supporting Javascript. In this case the submit button is
+ * rendered regardless of settings.
  */
 $eco_pmax = 1024;
 $eco_pdel = 10;
@@ -73,6 +73,14 @@ $eco_user = "anonymous";
 $eco_note = 0;
 $eco_moda = 0;
 $eco_ctrl = 1;
+
+/**
+ * Add new comments
+ *
+ * Setting this to 0 disables adding new comments. Existing
+ * data files containing previous comments will still be shown.
+ */
+$eco_anew = 1;
 
 /**
  * Mail account to send notifications
@@ -132,7 +140,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180107";
+$eco_make = "20180116";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -176,7 +184,6 @@ if (file_exists($eco_ldat)) {
          "        <p>Please check your settings to correct the " .
          "error.</p>\n        <p>The script will be disabled until " .
          "the error is fixed.</p>\n";
-    exit;
 }
 
 /**
@@ -219,7 +226,7 @@ $eco_prot = "http" . $eco_prot . "://";
 //** Check listing the log
 if ($_SERVER['QUERY_STRING'] === $eco_list) {
 
-    if (is_file($eco_path . $eco_clog)) {
+    if (file_exists($eco_path . $eco_clog)) {
         header("Location: $eco_prot$eco_host$eco_clog");
         exit;
     } else {
@@ -256,7 +263,7 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
                 "$eco_date =&gt; $eco_page =&gt; $eco_peid</a></div>\n";
 
     //** Check existing log file
-    if (is_file($eco_clog)) {
+    if (file_exists($eco_clog)) {
         $eco_ulog .= file_get_contents($eco_clog);
     }
 
@@ -294,7 +301,7 @@ if (isset($_POST['eco_post'])) {
     }
 
     //** Link restricted names
-    if (is_file($eco_rest)) {
+    if (file_exists($eco_rest)) {
         include $eco_rest;
     }
 
@@ -369,7 +376,7 @@ if (isset($_POST['eco_post'])) {
         if ($eco_moda !== 1) {
 
             //** Check existing data file
-            if (is_file($eco_data)) {
+            if (file_exists($eco_data)) {
                 $eco_post .= file_get_contents($eco_data);
             }
 
@@ -381,7 +388,7 @@ if (isset($_POST['eco_post'])) {
                         "$eco_date =&gt; $eco_page =&gt; $eco_peid</a></div>\n";
 
             //** Check existing log
-            if (is_file($eco_clog)) {
+            if (file_exists($eco_clog)) {
                 $eco_ulog .= file_get_contents($eco_clog);
             }
 
@@ -422,63 +429,76 @@ if (isset($_POST['eco_post'])) {
     }
 }
 
-//** Load language selector
-include './lang/__config.php';
-
-//** Build form
-echo '        <form action="' . $eco_indx . '" method=POST ' .
-     'name=eco_form id=Comments accept-charset="UTF-8">' .
-     "\n            <div id=eco_stat>$eco_stat</div>\n";
-
-//** Print header depending data file exists or not
-if (is_file($eco_data)) {
-    echo '            <p><a href="' . $eco_indx . '#Add_Comment" ' .
-         'title="' . $eco_lang['add_new'] . '">' .
-         $eco_lang['add_comment'] . "</a></p>\n";
+//** Check add new comments
+if ($eco_anew === 0) {
+    //** Clear post delay if set
+    $eco_pdel = 0;
 
     //** Include existing data file
-    if (is_file($eco_data)) {
+    if (file_exists($eco_data)) {
         include $eco_data;
     }
 } else {
-    echo "            <p>" . $eco_lang['first'] . "</p>\n";
+    //** Load language selector
+    include './lang/__config.php';
+
+    //** Build form
+    echo '        <form action="' . $eco_indx . '" method=POST ' .
+         'name=eco_form id=Comments accept-charset="UTF-8">' .
+         "\n            <div id=eco_stat>$eco_stat</div>\n";
+
+    //** Print header depending data file exists or not
+    if (file_exists($eco_data)) {
+        echo '            <p><a href="' . $eco_indx . '#Add_Comment" ' .
+             'title="' . $eco_lang['add_new'] . '">' .
+             $eco_lang['add_comment'] . "</a></p>\n";
+
+        //** Include existing data file
+        if (file_exists($eco_data)) {
+            include $eco_data;
+        }
+    } else {
+        echo "            <p>" . $eco_lang['first'] . "</p>\n";
+    }
+
+    //** Name
+    echo "            <p id=Add_Comment>\n                <label for=" .
+         'eco_name>' . $eco_lang['name'] . "</label>\n            </p>\n" .
+         "            <div>\n                <input name=eco_name " .
+         'id=eco_name value="' . $eco_name . '" title="' .
+         $eco_lang['text_name'] . '"/>' . "\n            </div>\n";
+
+    //** Text
+    echo "            <p>\n                <label for=eco_text>" .
+         $eco_lang['text'] . " <small id=eco_ccnt></small></label>\n" .
+         "            </p>\n            <div>\n                " .
+         "<textarea name=eco_text id=eco_text rows=4 cols=26 " .
+         "maxlength=$eco_pmax " . 'title="' . $eco_lang['text_text'] .
+         '">' . $eco_text . "</textarea>\n            </div>\n";
+
+    //** Code
+    if ($eco_ctrl === 1) {
+        echo "            <p>\n                <label for=eco_csum>" .
+             $eco_lang['code'] . "</label>\n                $eco_cone" .
+             " + $eco_ctwo  = <input name=eco_csum id=eco_csum " .
+             'size=4 maxlength=2 title="' . $eco_lang['text_code'] . '"/>' .
+             "\n                <input type=hidden name=eco_cone " .
+             "value=$eco_cone />\n                <input type=hidden " .
+             "name=eco_ctwo value=$eco_ctwo />\n            </p>\n";
+    }
+
+    //** Post
+    echo "            <p id=eco_tbtn>\n";
+
+    //** Build submit button
+    $eco_tbtn = '                <input type=submit name=eco_post ' .
+                'value="' . $eco_lang['post'] . '" title="' .
+                $eco_lang['text_post'] . '"/>';
+
+    //** Fallback to print submit button when Javascript is disabled
+    echo "                <noscript>\n$eco_tbtn\n                " .
+         "</noscript>\n            </p>\n";
 }
-
-//** Name
-echo "            <p id=Add_Comment>\n                <label for=" .
-     'eco_name>' . $eco_lang['name'] . "</label>\n            </p>\n" .
-     "            <div>\n                <input name=eco_name " .
-     'id=eco_name value="' . $eco_name . '" title="' .
-     $eco_lang['text_name'] . '"/>' . "\n            </div>\n";
-
-//** Text
-echo "            <p>\n                <label for=eco_text>" .
-     $eco_lang['text'] . " <small id=eco_ccnt></small></label>\n" .
-     "            </p>\n            <div>\n                <textarea " .
-     "name=eco_text id=eco_text rows=4 cols=26 maxlength=$eco_pmax " .
-     'title="' . $eco_lang['text_text'] . '">' . $eco_text .
-     "</textarea>\n            </div>\n";
-
-//** Code
-if ($eco_ctrl === 1) {
-    echo "            <p>\n                <label for=eco_csum>" .
-         $eco_lang['code'] . "</label>\n                $eco_cone" .
-         " + $eco_ctwo  = <input name=eco_csum id=eco_csum " .
-         'size=4 maxlength=2 title="' . $eco_lang['text_code'] . '"/>' .
-         "\n                <input type=hidden name=eco_cone " .
-         "value=$eco_cone />\n                <input type=hidden " .
-         "name=eco_ctwo value=$eco_ctwo />\n            </p>\n";
-}
-//** Post
-echo "            <p id=eco_tbtn>\n";
-
-//** Build submit button
-$eco_tbtn = '                <input type=submit name=eco_post value="' .
-            $eco_lang['post'] . '" title="' . $eco_lang['text_post'] . '"/>';
-
-//** Fallback to print the button when Javascript is disabled
-echo "                <noscript>\n$eco_tbtn\n                </noscript>\n" .
-     "            </p>\n";
 
 //** Check moderator flag
 if ($eco_moda === 1) {
@@ -487,13 +507,23 @@ if ($eco_moda === 1) {
     $eco_mtxt = $eco_lang['polite'];
 }
 
-//** Print footer and close form
-echo "            <p><small>$eco_mtxt.</small></p>\n            " .
-     '<p><small><a href="https://github.com/phhpro/easy-comments" ' .
-     'title="' . $eco_lang['get_copy'] .'">' . $eco_lang['power'] .
-     " PHP Easy Comments v$eco_make</a></small></p>\n        </form>\n";
 
-//** Javscript below for character counter and post delay timer
+//** Check add new comments
+if ($eco_anew !== 0) {
+    echo "            <p><small>$eco_mtxt.</small></p>\n";
+}
+
+//** Print footer and close form
+echo '        <p><small><a href="https://github.com/phhpro/easy-comments" ' .
+     'title="' . $eco_lang['get_copy'] .'">' . $eco_lang['power'] .
+     " PHP Easy Comments v$eco_make</a></small></p>\n";
+
+//** Check add new comments
+if ($eco_anew !== 0) {
+    echo "        </form>\n";
+}
+
+//** Javascript for character counter and post delay timer
 ?>
         <script>
         eco_ccnt = function(eid, cid) {
