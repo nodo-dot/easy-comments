@@ -24,6 +24,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
+ *
+ *
+ * Main script and configuration
  */
 
 
@@ -140,7 +143,7 @@ $eco_date = gmdate('Y-m-d H:i:s');
  * Current page to which the comments apply
  * Global query string
  */
-$eco_make = "20180116";
+$eco_make = "20180129";
 $eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -526,28 +529,30 @@ if ($eco_anew !== 0) {
 //** Javascript for character counter and post delay timer
 ?>
         <script>
-        eco_ccnt = function(eid, cid) {
-            var eco_ceid = document.getElementById(eid);
-            var eco_ccid = document.getElementById(cid);
+        eco_char = function(eid, cid) {
+            var eco_text = document.getElementById(eid);
+            var eco_ccnt = document.getElementById(cid);
 
-            if (!eco_ceid || !eco_ccid) {
+            if (!eco_text || !eco_ccnt) {
                 return false
             };
 
-            var eco_cmax = eco_ceid.maxLengh;
+            var eco_cmax = eco_text.maxLength;
 
             if (!eco_cmax) {
-                eco_cmax = eco_ceid.getAttribute('maxlength');
+                eco_cmax = eco_text.getAttribute('maxlength');
             };
 
             if (!eco_cmax) {
                 return false
             };
 
-            var eco_cdif       = (eco_cmax-eco_ceid.value.length);
+            var eco_cdif       = (eco_cmax-eco_text.value.length);
             var eco_crem       = " <?php echo $eco_lang['char_count']; ?>";
-            eco_ccid.innerHTML = '(' + eco_cdif + eco_crem + ')';
+            eco_ccnt.innerHTML = '(' + eco_cdif + eco_crem + ')';
         }
+
+        setInterval(function() { eco_char('eco_text', 'eco_ccnt') }, 55);
 
 <?php
 /**
