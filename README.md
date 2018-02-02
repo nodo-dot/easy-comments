@@ -12,4 +12,4 @@ An optional delay before and between posts plus a basic text CAPTCHA try to limi
 
 Make sure to have `ob_start()` at the top of the page. This is required to bypass the *headers already send* warning after posting. The script may well break without this.
 
-Follow this link to try a [simple demo](http://phclaus.com/demo/easy-comments/).
+Follow this link to [try the demo](http://phclaus.com/easy-comments/).
