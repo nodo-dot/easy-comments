@@ -12,6 +12,7 @@
 }
 
 #eco_lang {
+    font-size: 85%;
     text-align: right;
 }
 
@@ -19,4 +20,17 @@
     font-size: 85%;
     text-align: right;
     margin-top: 4px;
+}
+
+.eco_text {
+    width: 280px;
+}
+
+.eco_area {
+    width: 296px;
+}
+
+.eco_post {
+    font-weight: bold;
+    padding: 2px;
 }
