@@ -68,4 +68,27 @@ $eco_lang['stop_fix']   = "Das Skript wird solange deaktiviert bis der Fehler be
 $eco_lang['text']       = "Text";
 $eco_lang['text_title'] = "Tippen Sie hier Ihren Kommentartext";
 
+$eco_lang['up_allow']   = "Erlaubte Datei Typen";
+$eco_lang['up_byte']    = "Bytes";
+$eco_lang['up_close']   = "Schließen";
+$eco_lang['up_close_t'] = "Klicken Sie hier um diese Seite zu schließen";
+$eco_lang['up_exceed']  = "Datei übersteigt Maximalgröße!";
+$eco_lang['up_exist']   = "Datei existiert schon!";
+$eco_lang['up_fail']    = "Ladefehler:";
+$eco_lang['up_info']    = "Lade Info";
+$eco_lang['up_info_t']  = "Klicken Sie hier um Lade Info anzuzeigen";
+$eco_lang['up_is_arc']  = "Archiv";
+$eco_lang['up_is_doc']  = "Dokument";
+$eco_lang['up_is_img']  = "Grafik";
+$eco_lang['up_is_snd']  = "Audio";
+$eco_lang['up_is_vid']  = "Video";
+$eco_lang['up_link']    = "Benutzerinhalt:";
+$eco_lang['up_noimg']   = "Ungültige Grafik!";
+$eco_lang['up_nofold']  = "Kann Verzeichnis nicht erstellen!";
+$eco_lang['up_nomove']  = "Schreibfehler!";
+$eco_lang['up_notype']  = "Ungültiger oder fehlender Dateityp!";
+$eco_lang['up_max']     = "Maximal erlaubte Dateigröße in Bytes:";
+$eco_lang['up_open']    = "Klicken Sie hier um diese Datei zu öffnen";
+$eco_lang['up_select']  = "Klicken Sie hier um eine Datei zu wählen";
+
 $eco_lang['view']       = "Klicken Sie hier um diesen Artikel zu sehen";

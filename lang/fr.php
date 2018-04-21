@@ -68,4 +68,27 @@ $eco_lang['stop_fix']   = "Le script sera désactivé jusqu'à ce que l'erreur s
 $eco_lang['text']       = "Texte";
 $eco_lang['text_title'] = "Tapez ici pour entrer le texte de votre commentaire";
 
+$eco_lang['up_allow']   = "Types de fichiers autorisés";
+$eco_lang['up_byte']    = "bytes";
+$eco_lang['up_close']   = "octets";
+$eco_lang['up_close_t'] = "Cliquez ici pour fermer cette page";
+$eco_lang['up_exceed']  = "Le fichier dépasse la taille maximale!";
+$eco_lang['up_exist']   = "Le fichier existe déjà!";
+$eco_lang['up_fail']    = "Le téléchargement a échoué:";
+$eco_lang['up_info']    = "Info De Télécharger";
+$eco_lang['up_info_t']  = "Cliquez ici pour voir les informations de téléchargement";
+$eco_lang['up_is_arc']  = "Archiver";
+$eco_lang['up_is_doc']  = "Document";
+$eco_lang['up_is_img']  = "Image";
+$eco_lang['up_is_snd']  = "Son";
+$eco_lang['up_is_vid']  = "Vidéo";
+$eco_lang['up_link']    = "Télécharger:";
+$eco_lang['up_noimg']   = "Image invalide!";
+$eco_lang['up_nofold']  = "Impossible d'écrire le dossier de téléchargement!";
+$eco_lang['up_nomove']  = "Erreur d'écriture!";
+$eco_lang['up_notype']  = "Type invalide ou manquant!";
+$eco_lang['up_max']     = "Taille maximale du fichier en octets:";
+$eco_lang['up_open']    = "Cliquez ici pour ouvrir ce fichier";
+$eco_lang['up_select']  = "Cliquez ici pour sélectionner le fichier à télécharger";
+
 $eco_lang['view']       = "Cliquez ici pour voir cet article";

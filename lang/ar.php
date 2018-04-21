@@ -68,4 +68,27 @@ $eco_lang['stop_fix']   = "سيتم تعطيل النص البرمجي حتى ي
 $eco_lang['text']       = "نص";
 $eco_lang['text_title'] = "اكتب هنا لإدخال نص تعليقك";
 
+$eco_lang['up_allow']   = "مسموح أنواع الملفات";
+$eco_lang['up_byte']    = "بايت";
+$eco_lang['up_close']   = "قريب";
+$eco_lang['up_close_t'] = "انقر هنا لإغلاق هذه الصفحة";
+$eco_lang['up_exceed']  = "الملف يتجاوز الحجم الأقصى!";
+$eco_lang['up_exist']   = "الملف موجود بالفعل!";
+$eco_lang['up_fail']    = "التحميل فشل:";
+$eco_lang['up_info']    = "تحميل المعلومات";
+$eco_lang['up_info_t']  = "انقر هنا لعرض معلومات التحميل";
+$eco_lang['up_is_arc']  = "أرشيف";
+$eco_lang['up_is_doc']  = "وثيقة";
+$eco_lang['up_is_img']  = "صورة";
+$eco_lang['up_is_snd']  = "صوت";
+$eco_lang['up_is_vid']  = "فيديو";
+$eco_lang['up_link']    = "محتوى المستخدم:";
+$eco_lang['up_noimg']   = "صورة غير صالحة!";
+$eco_lang['up_nofold']  = "لا يمكن كتابة مجلد التحميلات!";
+$eco_lang['up_nomove']  = "خطأ الكتابة!";
+$eco_lang['up_notype']  = "نوع غير صالح أو مفقود!";
+$eco_lang['up_max']     = "الحد الأقصى لحجم الملف بالبايت:";
+$eco_lang['up_open']    = "انقر هنا لفتح هذا الملف";
+$eco_lang['up_select']  = "انقر هنا لتحديد الملف للتحميل";
+
 $eco_lang['view']       = "انقر هنا لعرض هذا البند";

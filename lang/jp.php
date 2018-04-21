@@ -68,4 +68,27 @@ $eco_lang['stop_fix']   = "スクリプトは、エラーが修正されるま�
 $eco_lang['text']       = "テキスト";
 $eco_lang['text_title'] = "あなたのコメントのテキストを入力するにはここに入力してください";
 
+$eco_lang['up_allow']   = "許可されるファイルの種類";
+$eco_lang['up_byte']    = "バイト";
+$eco_lang['up_close']   = "閉じる";
+$eco_lang['up_close_t'] = "このページを閉じるにはここをクリック";
+$eco_lang['up_exceed']  = "ファイルが最大サイズを超えています。";
+$eco_lang['up_exist']   = "ファイルが既に存在します！";
+$eco_lang['up_fail']    = "アップロードに失敗しました：";
+$eco_lang['up_info']    = "情報をアップロードする";
+$eco_lang['up_info_t']  = "アップロード情報を表示するにはここをクリック";
+$eco_lang['up_is_arc']  = "アーカイブ";
+$eco_lang['up_is_doc']  = "資料";
+$eco_lang['up_is_img']  = "画像";
+$eco_lang['up_is_snd']  = "音";
+$eco_lang['up_is_vid']  = "ビデオ";
+$eco_lang['up_link']    = "アップロード：";
+$eco_lang['up_noimg']   = "無効な画像です！";
+$eco_lang['up_nofold']  = "アップロードフォルダを書き込めません！";
+$eco_lang['up_nomove']  = "書き込みエラー！";
+$eco_lang['up_notype']  = "無効なタイプまたは欠落しているタイプです！";
+$eco_lang['up_max']     = "最大ファイルサイズ（バイト）：";
+$eco_lang['up_open']    = "このファイルを開くにはここをクリックしてください";
+$eco_lang['up_select']  = "ファイルを選択するにはここをクリック";
+
 $eco_lang['view']       = "このアイテムを表示するにはここをクリック";

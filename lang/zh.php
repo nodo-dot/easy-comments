@@ -68,4 +68,27 @@ $eco_lang['stop_fix']   = "该脚本将被禁用，直到错误被修复。";
 $eco_lang['text']       = "文本";
 $eco_lang['text_title'] = "在此输入您的评论的文字";
 
+$eco_lang['up_allow']   = "允许的文件类型";
+$eco_lang['up_byte']    = "字节";
+$eco_lang['up_close']   = "关";
+$eco_lang['up_close_t'] = "点击此处关闭此页面";
+$eco_lang['up_exceed']  = "文件超过最大尺寸！";
+$eco_lang['up_exist']   = "文件已存在！";
+$eco_lang['up_fail']    = "上传失败：";
+$eco_lang['up_info']    = "上传信息";
+$eco_lang['up_info_t']  = "点击此处查看上传信息";
+$eco_lang['up_is_arc']  = "档案";
+$eco_lang['up_is_doc']  = "文件";
+$eco_lang['up_is_img']  = "图片";
+$eco_lang['up_is_snd']  = "声音";
+$eco_lang['up_is_vid']  = "视频";
+$eco_lang['up_link']    = "上传：";
+$eco_lang['up_noimg']   = "无效的图片！";
+$eco_lang['up_nofold']  = "无法写入上传文件夹！";
+$eco_lang['up_nomove']  = "写错误！";
+$eco_lang['up_notype']  = "无效或缺少类型！";
+$eco_lang['up_max']     = "最大文件大小（字节）：";
+$eco_lang['up_open']    = "点击这里打开这个文件";
+$eco_lang['up_select']  = "点击此处选择文件";
+
 $eco_lang['view']       = "点击这里查看这个项目";

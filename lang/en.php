@@ -68,4 +68,27 @@ $eco_lang['stop_fix']   = "Script disabled until error is fixed.";
 $eco_lang['text']       = "Text";
 $eco_lang['text_title'] = "Type here to enter the text of your comment";
 
+$eco_lang['up_allow']   = "Allowed File Types";
+$eco_lang['up_byte']    = "bytes";
+$eco_lang['up_close']   = "Close";
+$eco_lang['up_close_t'] = "Click here to close this page";
+$eco_lang['up_exceed']  = "File exceeds maximum size!";
+$eco_lang['up_exist']   = "File already exists!";
+$eco_lang['up_fail']    = "Upload failed:";
+$eco_lang['up_info']    = "Upload Info";
+$eco_lang['up_info_t']  = "Click here to view upload info";
+$eco_lang['up_is_arc']  = "Archive";
+$eco_lang['up_is_doc']  = "Document";
+$eco_lang['up_is_img']  = "Image";
+$eco_lang['up_is_snd']  = "Sound";
+$eco_lang['up_is_vid']  = "Video";
+$eco_lang['up_link']    = "User content:";
+$eco_lang['up_noimg']   = "Invalid image!";
+$eco_lang['up_nofold']  = "Cannot write uploads folder!";
+$eco_lang['up_nomove']  = "Write error!";
+$eco_lang['up_notype']  = "Invalid or missing type!";
+$eco_lang['up_max']     = "Maximum allowed file size in bytes:";
+$eco_lang['up_open']    = "Click here to open this file";
+$eco_lang['up_select']  = "Click here to select a file";
+
 $eco_lang['view']       = "Click here to view this item";

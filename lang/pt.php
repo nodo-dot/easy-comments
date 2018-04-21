@@ -68,4 +68,27 @@ $eco_lang['stop_fix']   = "O script será desativado até o erro ser corrigido."
 $eco_lang['text']       = "Texto";
 $eco_lang['text_title'] = "Digite aqui para inserir o texto do seu comentário";
 
+$eco_lang['up_allow']   = "Tipos de arquivos permitidos";
+$eco_lang['up_byte']    = "bytes";
+$eco_lang['up_close']   = "Fechar";
+$eco_lang['up_close_t'] = "Clique aqui para fechar esta página";
+$eco_lang['up_exceed']  = "Arquivo excede o tamanho máximo!";
+$eco_lang['up_exist']   = "O arquivo já existe!";
+$eco_lang['up_fail']    = "Envio falhou:";
+$eco_lang['up_info']    = "Info Do Envio";
+$eco_lang['up_info_t']  = "Clique aqui para ver as informações do envio";
+$eco_lang['up_is_arc']  = "Arquivo";
+$eco_lang['up_is_doc']  = "Documento";
+$eco_lang['up_is_img']  = "Imagem";
+$eco_lang['up_is_snd']  = "Som";
+$eco_lang['up_is_vid']  = "Vídeo";
+$eco_lang['up_link']    = "Envio:";
+$eco_lang['up_noimg']   = "Imagem inválida!";
+$eco_lang['up_nofold']  = "Não é possível escrever a pasta de envios!";
+$eco_lang['up_nomove']  = "Escrever erro!";
+$eco_lang['up_notype']  = "Tipo inválido ou ausente!";
+$eco_lang['up_max']     = "Tamanho máximo do arquivo em bytes:";
+$eco_lang['up_open']    = "Clique aqui para abrir este arquivo";
+$eco_lang['up_select']  = "Clique aqui para selecionar um arquivo";
+
 $eco_lang['view']       = "Clique aqui para ver este item";

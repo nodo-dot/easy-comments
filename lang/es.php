@@ -68,4 +68,27 @@ $eco_lang['stop_fix']   = "La secuencia de comandos se desactivará hasta que se
 $eco_lang['text']       = "Texto";
 $eco_lang['text_title'] = "Escribe aquí para ingresar el texto de tu comentario";
 
+$eco_lang['up_allow']   = "Tipos de archivos permitidos";
+$eco_lang['up_byte']    = "bytes";
+$eco_lang['up_close']   = "Cerrar";
+$eco_lang['up_close_t'] = "Haga clic aquí para cerrar esta página";
+$eco_lang['up_exceed']  = "¡El archivo excede el tamaño máximo!";
+$eco_lang['up_exist']   = "¡El archivo ya existe!";
+$eco_lang['up_fail']    = "Subida fallida:";
+$eco_lang['up_info']    = "Información de carga";
+$eco_lang['up_info_t']  = "Haga clic aquí para ver la información de carga";
+$eco_lang['up_is_arc']  = "Archivo";
+$eco_lang['up_is_doc']  = "Documento";
+$eco_lang['up_is_img']  = "Imagen";
+$eco_lang['up_is_snd']  = "Sonido";
+$eco_lang['up_is_vid']  = "Vídeo";
+$eco_lang['up_link']    = "Subir:";
+$eco_lang['up_noimg']   = "¡Imagen inválida!";
+$eco_lang['up_nofold']  = "No se puede escribir la carpeta de cargas";
+$eco_lang['up_nomove']  = "Escribir error!";
+$eco_lang['up_notype']  = "¡Tipo inválido o faltante!";
+$eco_lang['up_max']     = "Tamaño máximo de archivo en bytes:";
+$eco_lang['up_open']    = "Haga clic aquí para abrir este archivo";
+$eco_lang['up_select']  = "Haga clic aquí para seleccionar un archivo";
+
 $eco_lang['view']       = "Haga clic aquí para ver este elemento";
