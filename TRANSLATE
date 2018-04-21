@@ -1,7 +1,7 @@
-If you want to help with translations:
+To help with translations:
 
-Make a copy of en.php and save it as xx.php, xx being the
-language identifier, e.g. fr for French, it for Italian, etc.
+Make a copy of en.php and save it as xx.php, where xx is the
+language ID, e.g. fr for French, it for Italian, etc.
 
 Visit https://www.loc.gov/standards/iso639-2/php/code_list.php
 to lookup your language ID if you don't already know it.

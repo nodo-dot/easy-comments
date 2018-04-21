@@ -32,13 +32,11 @@
 /**
  * Script version
  * Default user
- * Host running the script
  * Page to which comments apply
  * Query string
  */
-$eco_make = 20180417;
+$eco_make = 20180421;
 $eco_user = "anonymous";
-$eco_host = $_SERVER['HTTP_HOST'];
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
 
@@ -108,7 +106,7 @@ if ($eco_plat === 1) {
     $eco_latb = "Latin ";
 }
 
-//** Check and link protocol
+//** Check and link protocol and host
 if (isset($_SERVER['HTTPS']) && "on" === $_SERVER['HTTPS']) {
     $eco_prot = "s";
 } else {
@@ -116,19 +114,33 @@ if (isset($_SERVER['HTTPS']) && "on" === $_SERVER['HTTPS']) {
 }
 
 $eco_prot = "http" . $eco_prot . "://";
+$eco_host = $eco_prot . $_SERVER['HTTP_HOST'];
+
+//** Check upload folder
+if ($eco_up === 1) {
+    $eco_up_fold = $eco_path . $eco_fold . "uploads";
+
+    if (!is_dir($eco_up_fold)) {
+
+        if (mkdir($eco_up_fold) === false) {
+            echo $eco_lang['up_nofold'];
+            exit;
+        }
+    }
+}
 
 //** Check whether to list the log
 if ($_SERVER['QUERY_STRING'] === $eco_list) {
 
     if (file_exists($eco_path . $eco_clog)) {
-        header("Location: $eco_prot$eco_host$eco_clog");
+        header("Location: $eco_host$eco_clog");
         exit;
     } else {
         $eco_stat = $eco_lang['log_err'];
     }
 }
 
-//** Check if moderator mode but missing notifications
+//** Check missing notifications in moderator mode
 if ($eco_moda === 1 && $eco_note === 0) {
     echo "        <p id=eco_stat>" .$eco_lang['mod_err'] . "</p>\n" .
          "        <p>" . $eco_lang['stop_check'] . "</p>\n" . 
@@ -170,13 +182,32 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
     exit;
 }
 
+//** Check upload
+if ($eco_up === 1) {
+
+    //** Link file
+    $eco_up_file
+        = $eco_up_fold . "/" . basename($_FILES['eco_file']['name']);
+
+    //** Link type
+    $eco_up_type
+        = strtolower(pathinfo($eco_up_file, PATHINFO_EXTENSION));
+
+    //** Link URL
+    $eco_up_open
+        = $eco_host . str_replace($eco_path, "", $eco_up_file);
+
+    //** Init error status
+    $eco_up_fail = 1;
+}
+
 //** Form submitted
 if (isset($_POST['eco_post'])) {
 
-    //** Filter name, text, and common protocols to defuse URL's
+    //** Filter name and text, and defuse common protocols
     $eco_name = htmlentities($_POST['eco_name'], ENT_QUOTES, "UTF-8");
     $eco_text = htmlentities($_POST['eco_text'], ENT_QUOTES, "UTF-8");
-    $eco_urls = array('http', 'https', 'ftp', 'ftps');
+    $eco_urls = array("http", "https", "ftp", "ftps");
 
     //** Strip protocol
     foreach ($eco_urls as $eco_link) {
@@ -213,12 +244,13 @@ if (isset($_POST['eco_post'])) {
     if ($eco_ctrl === 1) {
 
         if ((int)$eco_cval !== (int)$eco_csum) {
+            $eco_code = 0;
             $eco_stat = $eco_lang['code_err'];
         }
     }
 
     //** Check missing text
-    if ($eco_text === "") {
+    if ($eco_text === "" && $eco_up !== 1) {
         $eco_stat = $eco_lang['post_err'];
     }
 
@@ -239,8 +271,99 @@ if (isset($_POST['eco_post'])) {
         $eco_text = $eco_text;
     }
 
+    //** Check upload
+    if ($eco_up === 1) {
+
+        //** Check selection
+        if (!empty($_FILES['eco_file']['name'])) {
+
+            //** Link file
+            $eco_up_mime
+                = getimagesize($_FILES['eco_file']['tmp_name']);
+
+            //** Check if file exists
+            if (file_exists($eco_up_file)) {
+                $eco_stat    = $eco_lang['up_exist'];
+                $eco_up_fail = 0;
+            }
+
+            //** Check size
+            if ($_FILES['eco_file']['size'] >$eco_up_max) {
+                $eco_stat    = $eco_lang['up_exceed'];
+                $eco_up_fail = 0;
+            }
+
+            //** Check type
+            if (in_array($eco_up_type, $eco_up_img)) {
+
+                //** Check valid image and build entry
+                if ($eco_up_mime !== false) {
+                    $eco_up_link = $eco_lang['up_link'] . ' <a href="' .
+                                   $eco_up_open . '" title="' .
+                                   $eco_lang['up_open'] . '">' .
+                                   basename($eco_up_file) . " (" .
+                                   $_FILES['eco_file']['size'] . " " .
+                                   $eco_lang['up_byte'] . ")</a><br/>" . 
+                                   '<a href="' . $eco_up_open . '" ' .
+                                   'title="' . $eco_lang['up_open'] .
+                                   '"><img src="' . $eco_up_open .
+                                   '" width=' . $eco_up_tnw . ' ' .
+                                   'height=' . $eco_up_tnh . ' ' .
+                                   'alt=""/></a>';
+                } else {
+                    $eco_stat    = $eco_lang['up_noimg'];
+                    $eco_up_fail = 0;
+                }
+            } elseif (
+                in_array($eco_up_type, $eco_up_doc)
+                || in_array($eco_up_type, $eco_up_snd)
+                || in_array($eco_up_type, $eco_up_vid)
+                || in_array($eco_up_type, $eco_up_arc)
+            ) {
+                $eco_up_link = $eco_lang['up_link'] . ' <a href="' .
+                               $eco_up_open . '" ' .
+                               'title="' . $eco_lang['up_open'] . '">' .
+                               basename($eco_up_file) . " (" .
+                               $_FILES['eco_file']['size'] . " " .
+                               $eco_lang['up_byte'] . ")</a>";
+            } else {
+                $eco_stat    = $eco_lang['up_notype'];
+                $eco_up_fail = 0;
+            }
+
+            //** Check error status
+            if ($eco_up_fail === 0) {
+                $eco_stat = $eco_lang['up_fail'] . " " . $eco_stat;
+            } else {
+
+
+                if ($eco_code !== 0) {
+
+                    //** Finalise upload
+                    if (
+                        move_uploaded_file(
+                            $_FILES['eco_file']['tmp_name'],
+                            $eco_up_file
+                        )
+                    ) {
+                        $eco_up_text = $eco_up_link;
+                    } else {
+                        $eco_stat = $eco_lang['up_nomove'];
+                    }
+                }
+            }
+        }
+    }
+
     //** Valid comment
     if ($eco_stat === "") {
+
+        //** Check upload
+        if ($eco_up === 1 && $eco_up_text !== "") {
+            $eco_text = "$eco_text<br/>$eco_up_text";
+        } else {
+            $eco_text = $eco_text;
+        }
 
         //** Generate permalink and build entry
         $eco_peid = md5(gmdate('YmdHis') . $eco_myip . $eco_name);
@@ -250,15 +373,15 @@ if (isset($_POST['eco_post'])) {
 
         //** Check whether to print permalink
         if ($eco_perm === 1) {
-            $eco_post .= ' <div class=eco_perm><a href="' . $eco_prot .
-                         $eco_host . $eco_page . "#" . $eco_peid . '" ' .
+            $eco_post .= ' <div class=eco_perm><a href="' . $eco_host .
+                         $eco_page . "#" . $eco_peid . '" ' .
                          "title=Permalink>ID: $eco_peid</a></div>";
         }
 
         $eco_post .= "</div>\n";
 
         //** Build mail body
-        $eco_mbod = $eco_name . " on " . $eco_prot . $eco_host .
+        $eco_mbod = $eco_name . " on " . $eco_host .
                     $eco_indx . "\n\n" . $eco_post;
 
         //** Check moderator mode
@@ -296,9 +419,10 @@ if (isset($_POST['eco_post'])) {
             }
         } else {
             //** Build moderator mail link
-            $eco_mlnk = $eco_prot . $eco_host . $eco_fold .
-                        "?eco_data=" . $eco_data . "&eco_post=" .
-                        bin2hex($eco_post) . "&eco_link=" .
+            $eco_mlnk = $eco_host . $eco_fold .
+                        "?eco_data=" . $eco_data .
+                        "&eco_post=" . bin2hex($eco_post) .
+                        "&eco_link=" .
                         str_replace($eco_path, "", getcwd());
 
             //** Build moderator mail body
@@ -321,6 +445,96 @@ if (isset($_POST['eco_post'])) {
     }
 }
 
+//** Check whether to list allowed file types
+if ($eco_qstr === $eco_up_inf) {
+
+    //** Summary
+    echo "        <h2>" . $eco_lang['up_info'] . "</h2>\n" .
+         "        <p>" . $eco_lang['up_max'] . " " .
+         $eco_up_max . "</p>\n" .
+         "        <h3>" . $eco_lang['up_allow'] . "</h3>\n" .
+
+         //** Document
+         "        <ul>\n" .
+         "            <li><strong>" .
+         $eco_lang['up_is_doc'] . "</strong>\n" .
+         "                <ul>\n";
+
+    foreach ($eco_up_doc as $eco_up_doc_item) {
+        echo "                    <li>$eco_up_doc_item</li>\n";
+    }
+
+    unset($eco_up_doc_item);
+    echo "                </ul>\n" .
+         "            </li>\n" .
+         "        </ul>\n" .
+
+         //** Image
+         "        <ul>\n" .
+         "            <li><strong>" .
+         $eco_lang['up_is_img'] . "</strong>\n" .
+         "                <ul>\n";
+
+    foreach ($eco_up_img as $eco_up_img_item) {
+        echo "                    <li>$eco_up_img_item</li>\n";
+    }
+
+    unset($eco_up_img_item);
+    echo "                </ul>\n" .
+         "            </li>\n" .
+         "        </ul>\n" .
+
+         //** Sound
+         "        <ul>\n" .
+         "            <li><strong>" .
+         $eco_lang['up_is_snd'] . "</strong>\n" .
+         "                <ul>\n";
+
+    foreach ($eco_up_snd as $eco_up_snd_item) {
+        echo "                    <li>$eco_up_snd_item</li>\n";
+    }
+
+    unset($eco_up_snd_item);
+    echo "                </ul>\n" .
+         "            </li>\n" .
+         "        </ul>\n" .
+
+         //** Video
+         "        <ul>\n" .
+         "            <li><strong>" .
+         $eco_lang['up_is_vid'] . "</strong>\n" .
+         "                <ul>\n";
+
+    foreach ($eco_up_vid as $eco_up_vid_item) {
+        echo "                    <li>$eco_up_vid_item</li>\n";
+    }
+
+    unset($eco_up_vid_item);
+    echo "                </ul>\n" .
+         "            </li>\n" .
+         "        </ul>\n" .
+
+         //** Archive
+         "        <ul>\n" .
+         "            <li><strong>" .
+         $eco_lang['up_is_arc'] . "</strong>\n" .
+         "                <ul>\n";
+
+    foreach ($eco_up_arc as $eco_up_arc_item) {
+        echo "                    <li>$eco_up_arc_item</li>\n";
+    }
+
+    unset($eco_up_arc_item);
+    echo "                </ul>\n" .
+         "            </li>\n" .
+         "        </ul>\n" .
+
+         //** Close list
+         '        <p><a href="' . $eco_indx . '" ' .
+         'title="' . $eco_lang['up_close_t'] . '">' .
+         $eco_lang['up_close'] . '</a></p>' . "\n";
+}
+
 //** Check whether to allow new comments
 if ($eco_anew === 0) {
 
@@ -333,7 +547,8 @@ if ($eco_anew === 0) {
 } else {
     //** Language selector
     echo '        <form action="' . $eco_indx . '" method=POST ' .
-         'id=Comments accept-charset="UTF-8">' . "\n" .
+         'id=Comments accept-charset="UTF-8" ' .
+         'enctype="multipart/form-data">' . "\n" .
          "            <div id=eco_lang>\n" .
          "                <select name=eco_lang " .
          'title="' . $eco_lang['lang_title'] . '">' . "\n" .
@@ -353,13 +568,10 @@ if ($eco_anew === 0) {
         $eco_lang_line = file($eco_lang_item);
 
         /**
-         * Lines $eco_lang_line[20] and $eco_lang_line[21]
-         * given below refer to lines
+         * Line $eco_lang_line[20] => #21 $eco_lang['__name__']
+         * Line $eco_lang_line[21] => #22 $eco_lang[__text__]
          *
-         * #21 $eco_lang['__name__'] and #22 $eco_lang[__text__]
-         * in the language file.
-         *
-         * Moving those lines __WILL__ break things !!
+         * Moving those lines in language file __WILL__ break things !!
          */
 
         //** Trim name
@@ -434,6 +646,18 @@ if ($eco_anew === 0) {
          "            </div>\n" .
          "            <p>\n";
 
+    //** Upload
+    if ($eco_up === 1) {
+        echo "                <p>\n" .
+             "                    <input type=file name=eco_file " .
+             'title="' . $eco_lang['up_select'] . '"/>' . "\n" .
+             "                    <div><small>" .
+             '<a href="' . $eco_fold . '?' . $eco_up_inf . '" ' .
+             'title="' . $eco_lang['up_info_t'] . '">' .
+             $eco_lang['up_info'] . "</a></small></div>\n" .
+             "                </p>\n";
+    }
+
     //** Control code
     if ($eco_ctrl === 1) {
         echo "                <label for=eco_csum>" .
@@ -469,7 +693,7 @@ if ($eco_anew === 0) {
          'title="' . $eco_lang['get'] .'">' . $eco_lang['by'] .
          " PHP Easy Comments v$eco_make</a></small></p>\n" .
 
-     //** Javascript character counter
+    //** Javascript character counter
          "        <script>\n" .
          "        eco_char = function(eid, cid) {\n" .
          "            var eco_text\n" .

@@ -33,7 +33,7 @@ $eco_nono = array(
 
 /**
  ***********************************************************************
- *       YOU'LL PROBABALY DON'T WANT TO TOUCH ANYTHING BELOW THIS LINE *
+ *          YOU PROBABALY DON'T WANT TO TOUCH ANYTHING BELOW THIS LINE *
  ***********************************************************************
  */
 foreach ($eco_nono as $eco_skip) {

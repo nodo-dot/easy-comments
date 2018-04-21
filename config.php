@@ -172,5 +172,109 @@ $eco_anew = 1;
 
 
 /**
- * That's all folks. Happy commenting.
+ ***********************************************************************
+ * UPLOADS                                            USE WITH CAUTION *
+ *                                                                     *
+ * For your own benefit: You should only enable this with $eco_up = 1; *
+ * when you are fully aware of the implied security risks!             *
+ *                                                                     *
+ * This feature is rudimentary at best. Don't come crying because some *
+ * smartass sent a fake exec hijacking your box. You have been warned! *
+ ***********************************************************************
+ */
+
+
+/**
+ * Enable uploads
+ */
+$eco_up     = 1;
+
+
+/**
+ * Maximum upload size -- bytes
+ */
+$eco_up_max = 2048000;
+
+
+/**
+ * Thumbnail width and height -- pixel
+ */
+$eco_up_tnw = 64;
+$eco_up_tnh = 64;
+
+
+/**
+ * Allowed file types
+ *
+ * Be adviced that the current script does not perform particular MIME
+ * checks on non-image types. Hence, there is a chance someone could
+ * upload a seemingly harmless text file, e.g. "foo.txt", when in fact
+ * the contents of that file are executable source.
+ *
+ * As a minimal precaution you should never explicitely allow anything
+ * directly executable on the server, like *. html, *.php, *.js, etc.
+ */
+
+
+//** Document
+$eco_up_doc = array(
+    "doc",
+    "docx",
+    "odt",
+    "pdf",
+    "txt"
+);
+
+
+//** Image
+$eco_up_img = array(
+    "bmp",
+    "gif",
+    "jpeg",
+    "jpg",
+    "png"
+);
+
+
+//** Sound
+$eco_up_snd = array(
+    "m4a",
+    "mid",
+    "mp3",
+    "oga",
+    "ogg",
+    "wav"
+);
+
+
+//** Video
+$eco_up_vid = array(
+    "avi",
+    "m4v",
+    "mp4",
+    "mpeg",
+    "mpg",
+    "ogg",
+    "ogv",
+    "qt"
+);
+
+
+//** Archives
+$eco_up_arc = array(
+    "bz2",
+    "gz",
+    "rar",
+    "tgz",
+    "xz",
+    "zip"
+);
+
+
+//** Query string to show upload info
+$eco_up_inf = "UPLOAD_INFO";
+
+
+/**
+ * That's all folks. Comments away.
  */
