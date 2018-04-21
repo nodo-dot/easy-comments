@@ -185,9 +185,10 @@ if (isset($_GET['eco_data']) && $_GET['eco_data'] !== ""
 //** Check upload
 if ($eco_up === 1) {
 
-    //** Link file
-    $eco_up_file
-        = $eco_up_fold . "/" . basename($_FILES['eco_file']['name']);
+    //** Get size, trim name, and link file
+    $eco_up_size = $_FILES['eco_file']['size'];
+    $eco_up_base = basename($_FILES['eco_file']['name']);
+    $eco_up_file = $eco_up_fold . "/" . $eco_up_base;
 
     //** Link type
     $eco_up_type
@@ -215,9 +216,9 @@ if (isset($_POST['eco_post'])) {
     }
 
     //** Link control code
-    $eco_csum = $_POST['eco_csum'];
-    $eco_cone = $_POST['eco_cone'];
-    $eco_ctwo = $_POST['eco_ctwo'];
+    $eco_csum = htmlentities($_POST['eco_csum'], ENT_QUOTES, "UTF-8");
+    $eco_cone = htmlentities($_POST['eco_cone'], ENT_QUOTES, "UTF-8");
+    $eco_ctwo = htmlentities($_POST['eco_ctwo'], ENT_QUOTES, "UTF-8");
     $eco_cval = ((int)$eco_cone+(int)$eco_ctwo);
 
     //** Substitute anonymous if name is missing or invalid
@@ -288,21 +289,21 @@ if (isset($_POST['eco_post'])) {
             }
 
             //** Check size
-            if ($_FILES['eco_file']['size'] >$eco_up_max) {
+            if ($eco_up_size >$eco_up_max) {
                 $eco_stat    = $eco_lang['up_exceed'];
                 $eco_up_fail = 0;
             }
 
-            //** Check type
+            //** Check image type
             if (in_array($eco_up_type, $eco_up_img)) {
 
                 //** Check valid image and build entry
                 if ($eco_up_mime !== false) {
-                    $eco_up_link = $eco_lang['up_link'] . ' <a href="' .
-                                   $eco_up_open . '" title="' .
-                                   $eco_lang['up_open'] . '">' .
-                                   basename($eco_up_file) . " (" .
-                                   $_FILES['eco_file']['size'] . " " .
+                    $eco_up_link = $eco_lang['up_link'] .
+                                   ' <a href="' . $eco_up_open . '" ' .
+                                   'title="' . $eco_lang['up_open'] .
+                                   '">' . $eco_up_base . " (" .
+                                   $eco_up_size . " " .
                                    $eco_lang['up_byte'] . ")</a><br/>" . 
                                    '<a href="' . $eco_up_open . '" ' .
                                    'title="' . $eco_lang['up_open'] .
@@ -315,28 +316,29 @@ if (isset($_POST['eco_post'])) {
                     $eco_up_fail = 0;
                 }
             } elseif (
-                in_array($eco_up_type, $eco_up_doc)
+                //** Check non-image types and build entry
+                in_array($eco_up_type, $eco_up_arc)
+                || in_array($eco_up_type, $eco_up_doc)
                 || in_array($eco_up_type, $eco_up_snd)
                 || in_array($eco_up_type, $eco_up_vid)
-                || in_array($eco_up_type, $eco_up_arc)
             ) {
-                $eco_up_link = $eco_lang['up_link'] . ' <a href="' .
-                               $eco_up_open . '" ' .
+                $eco_up_link = $eco_lang['up_link'] .
+                               ' <a href="' . $eco_up_open . '" ' .
                                'title="' . $eco_lang['up_open'] . '">' .
-                               basename($eco_up_file) . " (" .
-                               $_FILES['eco_file']['size'] . " " .
+                               $eco_up_base . " (" .
+                               $eco_up_size . " " .
                                $eco_lang['up_byte'] . ")</a>";
             } else {
                 $eco_stat    = $eco_lang['up_notype'];
                 $eco_up_fail = 0;
             }
 
-            //** Check error status
+            //** Update error status
             if ($eco_up_fail === 0) {
                 $eco_stat = $eco_lang['up_fail'] . " " . $eco_stat;
             } else {
 
-
+                //** Check control code
                 if ($eco_code !== 0) {
 
                     //** Finalise upload
@@ -346,7 +348,9 @@ if (isset($_POST['eco_post'])) {
                             $eco_up_file
                         )
                     ) {
+                        //** Link reference and clear temp file
                         $eco_up_text = $eco_up_link;
+                        unlink($eco_up_base);
                     } else {
                         $eco_stat = $eco_lang['up_nomove'];
                     }
