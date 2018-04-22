@@ -35,7 +35,7 @@
  * Page to which comments apply
  * Query string
  */
-$eco_make = 20180421;
+$eco_make = 20180422;
 $eco_user = "anonymous";
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -60,7 +60,7 @@ $eco_myip = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 
 //** Link language file and session
 if (isset($_POST['eco_lang_apply']) && $_POST['eco_lang'] !== "none") {
-    $eco_lref = $_POST['eco_lang'];
+    $eco_lref = htmlentities($_POST['eco_lang'], ENT_QUOTES, "UTF-8");
 } else {
     $eco_lref = "en";
 }
