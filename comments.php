@@ -35,7 +35,7 @@
  * Page to which comments apply
  * Query string
  */
-$eco_make = 20180422;
+$eco_make = 20180424;
 $eco_user = "anonymous";
 $eco_page = $_SERVER['SCRIPT_NAME'];
 $eco_qstr = $_SERVER['QUERY_STRING'];
@@ -118,7 +118,7 @@ $eco_host = $eco_prot . $_SERVER['HTTP_HOST'];
 
 //** Check upload folder
 if ($eco_up === 1) {
-    $eco_up_fold = $eco_path . $eco_fold . "uploads";
+    $eco_up_fold = $eco_path . $eco_fold . $eco_up_fold;
 
     if (!is_dir($eco_up_fold)) {
 

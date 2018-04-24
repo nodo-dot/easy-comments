@@ -34,9 +34,9 @@
  * Script folder
  * Default directory index
  */
-$eco_path = $_SERVER['DOCUMENT_ROOT'];
-$eco_fold = "/easy-comments/";
-$eco_dirx = "index.php";
+$eco_path       = $_SERVER['DOCUMENT_ROOT'];
+$eco_fold       = "/easy-comments/";
+$eco_dirx       = "index.php";
 
 
 /**
@@ -48,10 +48,10 @@ $eco_dirx = "index.php";
  * The mail sender must exist on the same host running the script.
  * The recipient can be any valid mail address. Default is sender.
  */
-$eco_mafr = "info@" . $_SERVER['HTTP_HOST'];
-$eco_mato = $eco_mafr;
-$eco_msub = "PHP_Easy_Comments_NEW";
-$eco_mhdr = "From: PHP_Easy_Comments &lt;$eco_mafr&gt;";
+$eco_mafr       = "info@" . $_SERVER['HTTP_HOST'];
+$eco_mato       = $eco_mafr;
+$eco_msub       = "PHP_Easy_Comments_NEW";
+$eco_mhdr       = "From: PHP_Easy_Comments &lt;$eco_mafr&gt;";
 
 
 /**
@@ -63,8 +63,8 @@ $eco_mhdr = "From: PHP_Easy_Comments &lt;$eco_mafr&gt;";
  * Note that "admin" by itself is per defaut blocked to restrain
  * impersonators. Refer to restricted.php for more info.
  */
-$eco_apfx = "magic";
-$eco_asfx = "admin";
+$eco_apfx       = "magic";
+$eco_asfx       = "admin";
 
 
 /**
@@ -75,8 +75,8 @@ $eco_asfx = "admin";
  * You can view it by appending the value of $eco_list
  * to the script's URL, e.g. /easy-comments/?list
  */
-$eco_list = "list";
-$eco_date = date('Y-m-d H:i:s');
+$eco_list       = "list";
+$eco_date       = date('r');
 
 
 /**
@@ -110,7 +110,7 @@ $eco_date = date('Y-m-d H:i:s');
  *
  * You'll probably want to reduce the default rather than increase it.
  */
-$eco_pmax = 1024;
+$eco_pmax       = 1024;
 
 
 /**
@@ -125,7 +125,7 @@ $eco_pmax = 1024;
  *
  * Adds a visual link of the comment ID to faciliate sharing.
  */
-$eco_perm = 1;
+$eco_perm       = 1;
 
 
 /**
@@ -135,7 +135,7 @@ $eco_perm = 1;
  * e.g. Chinese, Russian, Arab, etc. The default is to allow 
  * any script, including Klingon :)
  */
-$eco_plat = 0;
+$eco_plat       = 0;
 
 
 /**
@@ -143,7 +143,7 @@ $eco_plat = 0;
  *
  * Enabling this requires $eco_note = 1;
  */
-$eco_moda = 0;
+$eco_moda       = 0;
 
 
 /**
@@ -152,7 +152,7 @@ $eco_moda = 0;
  * Enable to send notification for new posts.
  * Depending how active your site is, this may produce A LOT of mail!
  */
-$eco_note = 0;
+$eco_note       = 0;
 
 
 /**
@@ -160,7 +160,7 @@ $eco_note = 0;
  *
  * Adds a simple text CAPTCHA to limit SPAM.
  */
-$eco_ctrl = 1;
+$eco_ctrl       = 1;
 
 
 /**
@@ -168,7 +168,7 @@ $eco_ctrl = 1;
  *
  * Disable to show existing comments but don't accept new entries.
  */
-$eco_anew = 1;
+$eco_anew       = 1;
 
 
 /**
@@ -187,20 +187,25 @@ $eco_anew = 1;
 /**
  * Enable uploads
  */
-$eco_up     = 1;
+$eco_up         = 1;
 
+
+/**
+ * Upload folder
+ */
+$eco_up_fold    = "uploads";
 
 /**
  * Maximum upload size -- bytes
  */
-$eco_up_max = 2048000;
+$eco_up_max     = 2048000;
 
 
 /**
  * Thumbnail width and height -- pixel
  */
-$eco_up_tnw = 64;
-$eco_up_tnh = 64;
+$eco_up_tnw     = 64;
+$eco_up_tnh     = 64;
 
 
 /**
@@ -217,7 +222,7 @@ $eco_up_tnh = 64;
 
 
 //** Document
-$eco_up_doc = array(
+$eco_up_doc     = array(
     "doc",
     "docx",
     "odt",
@@ -227,7 +232,7 @@ $eco_up_doc = array(
 
 
 //** Image
-$eco_up_img = array(
+$eco_up_img     = array(
     "bmp",
     "gif",
     "jpeg",
@@ -237,7 +242,7 @@ $eco_up_img = array(
 
 
 //** Sound
-$eco_up_snd = array(
+$eco_up_snd     = array(
     "m4a",
     "mid",
     "mp3",
@@ -248,7 +253,7 @@ $eco_up_snd = array(
 
 
 //** Video
-$eco_up_vid = array(
+$eco_up_vid     = array(
     "avi",
     "m4v",
     "mp4",
@@ -261,7 +266,7 @@ $eco_up_vid = array(
 
 
 //** Archives
-$eco_up_arc = array(
+$eco_up_arc     = array(
     "bz2",
     "gz",
     "rar",
@@ -272,7 +277,7 @@ $eco_up_arc = array(
 
 
 //** Query string to show upload info
-$eco_up_inf = "UPLOAD_INFO";
+$eco_up_inf     = "UPLOAD_INFO";
 
 
 /**
